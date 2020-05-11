@@ -3,7 +3,8 @@ import {
     IDS_REMOVIDOS_IMAGENS_VARIACAO_ANUNCIO,
     SOURCES,
     PAGE_OFFSET,
-    IMAGENS_ANUNCIO
+    IMAGENS_ANUNCIO,
+    IMAGE_DUPLICADA
 } from '../../constants/constants'
 
 /**
@@ -36,7 +37,7 @@ function anuncioReducer(state = INIT_STATE, action){
         case PAGE_OFFSET:
             return {...state, page: action.data}
         case IMAGENS_ANUNCIO:
-            return {...state, urlImage: action.data}                   
+            return {...state, urlImage: action.data}                    
          default:     
              return {...state};   
     }

@@ -11,6 +11,7 @@ export const SOURCES = 'SOURCES'
 export const LISTAR_TODOS_ANUNCIOS = 'LISTAR_TODOS_ANUNCIOS'
 export const PAGE_OFFSET = 'PAGE_OFFSET'
 export const IMAGENS_ANUNCIO = 'IMAGENS_ANUNCIO'   
+export const IMAGE_DUPLICADA = 'IMAGE_DUPLICADA'
 
 //Perguntas
 export const GET_PERGUNTAS = 'GET_PERGUNTAS'

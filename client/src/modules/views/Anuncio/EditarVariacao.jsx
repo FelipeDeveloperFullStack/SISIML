@@ -85,13 +85,32 @@ export default function EditarVariacao(props) {
             if (urlMain !== '') {
                 await sendNotification('success', 'Atualizando a imagem, por favor aguarde...', 2000)
                 await props.getImageSite(urlMain.replace("/mostrar-codigo", ""))
-                setOpenDialogImage(false)
-                //await props.setImageVariation(atualizarImagem())
-                dispatch({ type: IMAGENS_ANUNCIO, data: atualizarImagem() })
+                let image = state.urlImage.filter((image) => {
+                    if(image.url === localStorage.getItem("@sisiml/url_image")){
+                        return image.url
+                    }
+                })
+                if(image.length === 0){
+                    atualizar()
+                }else{
+                    image.map(img => {
+                        if (img.url === localStorage.getItem("@sisiml/url_image")) {
+                            sendNotification('error', 'Você já possui essa imagem nessa variação, informe outra imagem diferente.', 10000)
+                        }
+                    })
+                }
+                
             } else {
                 sendNotification('error', MENSAGEM_USUARIO, 5000)
             }
         }
+    }
+
+    const atualizar = () => {
+        setOpenDialogImage(false)
+        //await props.setImageVariation(atualizarImagem())
+        dispatch({ type: IMAGENS_ANUNCIO, data: atualizarImagem() })
+        console.log("IMAGE: " + localStorage.getItem("@sisiml/url_image"))
     }
 
     const adicionarImagem = async () => {

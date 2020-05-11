@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import AnuncioView from './AnuncioView';
 import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
-import { DOMAIN, LISTAR_TODOS_ANUNCIOS, OBTER_STATUS_ANUNCIOS } from '../../constants/constants'
+import { DOMAIN, LISTAR_TODOS_ANUNCIOS, OBTER_STATUS_ANUNCIOS, IMAGE_DUPLICADA } from '../../constants/constants'
 import sendNotification from '../../components/Notification/Notification'
 import swal from 'sweetalert'
 
@@ -452,7 +452,7 @@ export default function AnuncioController() {
     }
 
     let getImageSite = async (url) => {
-        await axios.post(`${DOMAIN}/anuncio/obter_imagem_site`, { url }).then(response => {
+        await axios.post(`${DOMAIN}/anuncio/obter_imagem_site`, { url }).then(async response => {
             localStorage.setItem("@sisiml/url_image", response.data)
         })
     }

@@ -12,7 +12,7 @@ const productRoute = require('./src/routes/product.route');
 const anuncioRoute = require('./src/routes/anuncio.route');
 const mercadoLivreRoute = require('./src/routes/mercadoLivre.route');
 const app = express();
-require('./src/config/passport.mercadolivre')(passport); //PASSPORT MERCADOLIVRE - INJETANDO O PASSPORT
+//require('./src/config/passport.mercadolivre')(passport); //PASSPORT MERCADOLIVRE - INJETANDO O PASSPORT
 const cors = require('cors');
 const usuarioRoute = require('./src/routes/usuario.route');
 const session = require('express-session');

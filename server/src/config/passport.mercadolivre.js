@@ -2,10 +2,9 @@
 const MercadoLibreStrategy = require('./mercado-livre').Strategy
 const keys = require('./keys');
 const usuarioService = require("../services/usuario-service");
-const axios = require('axios')
-const constants = require('../constants/constants');
 
-module.exports = (passport) => {
+
+module.exports = (passport, io) => {
 
   passport.use(new MercadoLibreStrategy({
 
@@ -26,6 +25,9 @@ module.exports = (passport) => {
     });
     */
     usuarioService.salvarUsuario(setUsuario(profile, accessToken, refreshToken))
+    io.on("user", (user) => {
+      console.log("User: "+user)
+    })
     //console.log("Mercado livre - profile " + JSON.stringify(profile))
 
     return done(null, profile);

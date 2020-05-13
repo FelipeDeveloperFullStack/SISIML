@@ -5,10 +5,9 @@ import swal from 'sweetalert'
 import { DOMAIN } from '../../constants/constants'
 import { Redirect } from 'react-router-dom'
 import moment from 'moment'
+import socketIOClient from 'socket.io-client'
 
 export default class SignInController extends React.Component {
-
-    
 
     constructor(props) {
         super(props)
@@ -73,7 +72,11 @@ export default class SignInController extends React.Component {
                         localStorage.setItem('@sigiml/data_expiracao_plano_free', user.data_expiracao_plano_free)
                         localStorage.setItem('@sigiml/data_inicio_plano', user.data_inicio_plano)
                         localStorage.setItem('@sigiml/expiration_day', this.calcularDiferenteEmDias())
+                        
+                        let socket = socketIOClient(DOMAIN)
+                        socket.emit("user", user.email)
                         this.setState({ redirect: true })
+                        
                     } else {
                         swal('Atenção', 'Email e/ou senha incorretos! Por favor, tente novamente! \n', 'warning')
                     }

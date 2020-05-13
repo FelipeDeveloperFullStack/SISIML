@@ -1,11 +1,13 @@
 const app = require('./app');
 const http = require('http');
 //const debug = require('debug')('nodestr: server');
+const passport = require('passport')
 const mongoose = require('mongoose');
 const socketIO = require('socket.io')
 const server = http.createServer(app);
 const io = socketIO(server)
 const notificacoesMercadoLivreRoute = require('./src/routes/notificacoes.mercadolivre.route')(io)
+require('./src/config/passport.mercadolivre')(passport, io); //PASSPORT MERCADOLIVRE - INJETANDO O PASSPORT
 
 mongoose.connect('mongodb+srv://admin:admin@cluster0-5qx8r.mongodb.net/sigiml?retryWrites=true&w=majority',
     {

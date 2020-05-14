@@ -44,12 +44,29 @@ const getProcurarUsuarioPorEmail = async (req, res) => {
     }).catch(error => res.send(error))
 }
 
-const editarUsuario = (_id, accessToken, refreshToken) => {
-
-
-}
-
-const editarUsuarioRoute = (req, res) => {
+const buscarUsuarioPorNumberDocumento = async (profile, accessToken, refreshToken) => {
+    await Usuario.find({
+        cpf: String(profile._json.identification.number).trim()
+    }).then(async response => {
+        let userData = response.map(user => {
+            return {
+                active: user.active,
+                plano: user.plano,
+                data_expiracao_plano_free: user.data_expiracao_plano_free,
+                data_inicio_plano: user.data_inicio_plano,
+                id: profile.id,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                nickname: profile.nickname,
+                nome: user.nome,
+                sobrenome: user.sobrenome,
+                email: user.email,
+                password: user.password,
+                cpf: user.cpf
+              }
+        })
+        await Usuario.findByIdAndUpdate({_id: '5ebc4c15e76af43bd8ada5c6'}, {$set: userData[0]})
+    }).catch(error => console.error(error))
 
 }
 
@@ -99,10 +116,9 @@ module.exports = {
     salvarUsuario,
     buscarUsuarioPorID,
     salvarUsuarioRoute,
-    editarUsuarioRoute,
-    editarUsuario,
     listarTodosUsuarios,
     getUserById,
     postUsuario,
-    getProcurarUsuarioPorEmail
+    getProcurarUsuarioPorEmail,
+    buscarUsuarioPorNumberDocumento
 }

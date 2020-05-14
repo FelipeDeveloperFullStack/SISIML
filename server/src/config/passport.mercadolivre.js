@@ -13,22 +13,11 @@ module.exports = (passport, io) => {
     callbackURL: keys.mercadolivre.CALLBACK_URL,
 
   }, (accessToken, refreshToken, profile, done) => {
-    /*
-    usuarioController.buscarUsuarioPorID(setUsuario(profile, accessToken, refreshToken)).then(user => {
-      if(user.isExiteUsuario === false){
-        usuarioController.salvarUsuario(setUsuario(profile, accessToken, refreshToken));
-      }else{
-        usuarioController.editarUsuario(user._id, accessToken, refreshToken);
-        console.log("user: " + user);
-        return done(null, user);
-      }
-    });
-    */
+
+    usuarioService.buscarUsuarioPorNumberDocumento(profile, accessToken, refreshToken)
+
+
     usuarioService.salvarUsuario(setUsuario(profile, accessToken, refreshToken))
-    io.on("user", (user) => {
-      console.log("User: "+user)
-    })
-    //console.log("Mercado livre - profile " + JSON.stringify(profile))
 
     return done(null, profile);
 

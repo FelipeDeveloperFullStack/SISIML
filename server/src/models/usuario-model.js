@@ -16,6 +16,11 @@ const usuarioModel = mongoose.Schema({
         required: true,
         trim: true
     },
+    cpf: {
+        type: String,
+        required: true,
+        trim: true
+    },
     password: {
         type: String,
         required: false,

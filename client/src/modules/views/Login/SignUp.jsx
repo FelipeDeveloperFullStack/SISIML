@@ -3,7 +3,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 export default function SignUp(props) {
 
 
-  
+
 
   const classes = useStyles();
 
@@ -56,41 +56,49 @@ export default function SignUp(props) {
   const [sobrenome, setSobrenome] = useState()
   const [email, setEmail] = useState()
   const [senha, setSenha] = useState()
+  const [documento, setDocumento] = useState()
 
   const handleUsuario = () => {
     let usuario = {
       nome,
       sobrenome,
       email,
-      password: senha
+      password: senha,
+      cpf: documento
     }
     if (usuario.nome === undefined) {
       swalert('Atenção', 'O nome é obrigatório! \n Tente novamente.', 'warning')
       return
-    } 
+    }
 
     if (usuario.sobrenome === undefined) {
       swalert('Atenção', 'O sobrenome é obrigatório! \n Tente novamente.', 'warning')
       return
-    } 
+    }
 
     if (usuario.email === undefined) {
       swalert('Atenção', 'O e-mail é obrigatório! \n Tente novamente.', 'warning')
       return
-    } 
+    }
+
+    if (usuario.cpf === undefined) {
+      swalert('Atenção', 'O CPF/CNPJ é obrigatório! \n Tente novamente.', 'warning')
+      return
+    }
 
     if (usuario.password === undefined) {
       swalert('Atenção', 'A senha de acesso é obrigatório! \n Tente novamente.', 'warning')
       return
-    } 
+    }
 
-      props.salvarUsuario(usuario)
-     
-      setNome('')
-      setSobrenome('')
-      setEmail('')
-      setSenha('')
-    
+    props.salvarUsuario(usuario)
+
+    setNome('')
+    setSobrenome('')
+    setEmail('')
+    setSenha('')
+    setDocumento('')
+
 
   }
 
@@ -109,7 +117,7 @@ export default function SignUp(props) {
 
         <Grid container spacing={2}>
 
-          <Grid item xs={12} style={{margin: '15px 0 0'}}>
+          <Grid item xs={12} style={{ margin: '15px 0 0' }}>
             <TextField
               autoComplete="fname"
               name="firstName"
@@ -125,7 +133,7 @@ export default function SignUp(props) {
           </Grid>
 
           <Grid item xs={12}>
-              <TextField
+            <TextField
               variant="outlined"
               required
               fullWidth
@@ -150,6 +158,21 @@ export default function SignUp(props) {
               onChange={(event) => setEmail(event.target.value)}
             />
           </Grid>
+
+          <Tooltip title="Informe o mesmo CNPJ ou CPF que está cadastrado na sua conta do Mercado Livre.">
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                label="CPF/CNPJ"
+                name="documento"
+                value={documento}
+                onChange={(event) => setDocumento(event.target.value)}
+              />
+            </Grid>
+          </Tooltip>
+
           <Grid item xs={12}>
             <TextField
               variant="outlined"

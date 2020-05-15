@@ -12,36 +12,40 @@ module.exports = (passport, io) => {
     clientSecret: keys.mercadolivre.CLIENT_SECRET,
     callbackURL: keys.mercadolivre.CALLBACK_URL,
 
-  }, (accessToken, refreshToken, profile, done) => {
+  }, (accessToken, refreshToken, user, done) => {
 
-    usuarioService.buscarUsuarioPorNumberDocumento(profile, accessToken, refreshToken)
+    usuarioService.buscarUsuarioPorNumberDocumento(user, accessToken, refreshToken)
 
 
-    usuarioService.salvarUsuario(setUsuario(profile, accessToken, refreshToken))
+    usuarioService.salvarUsuario(setUsuario(user, accessToken, refreshToken)) //SALVANDO NO FIREBASE
 
-    return done(null, profile);
+    return done(null, user);
 
-  }
+    }
   ));
 
-  const setUsuario = (profile, accessToken, refreshToken) => {
+  const setUsuario = (user, accessToken, refreshToken) => {
     return usuario = {
-      id: profile.id,
+      id: user.id,
       accessToken: accessToken,
       refreshToken: refreshToken,
-      nickname: profile.nickname,
-      first_name: profile.first_name,
-      last_name: profile.last_name,
-      email: profile.email
+      nickname: user.nickname,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email
     }
   }
 
-  passport.serializeUser((profile, done) => {
-    done(null, profile);
+  passport.serializeUser(function (user, done) {
+    console.log("serializeUser")
+    console.log(user)
+    done(null, user);
   });
-
-  passport.deserializeUser((profile, done) => {
-    done(null, profile);
+  
+  passport.deserializeUser(function (user, done) {
+    console.log("deserializeUser")
+    console.log(user)
+    done(null, user);
   });
 
 }

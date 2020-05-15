@@ -9,10 +9,10 @@ var util = require('util')
  * @api public
  */
 function Strategy(options, verify) {
-  options = options || {}; 
-  options.authorizationURL = options.authorizationURL || 'https://auth.mercadolivre.com.br/authorization';
-  options.tokenURL = options.tokenURL || 'https://api.mercadolibre.com/oauth/token';
-  this.profileUrl = options.profileUrl || "https://api.mercadolibre.com/users/me";
+  //options = options || {}; 
+  options.authorizationURL = 'https://auth.mercadolivre.com.br/authorization';
+  options.tokenURL = 'https://api.mercadolibre.com/oauth/token';
+  this.profileUrl = "https://api.mercadolibre.com/users/me";
   
   OAuth2Strategy.call(this, options, verify);
   this.name = 'mercadolibre';

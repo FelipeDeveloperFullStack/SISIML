@@ -11,11 +11,12 @@ export default class SignInController extends React.Component {
 
     constructor(props) {
         super(props)
-        let checkedStorage =  localStorage.getItem('@sigiml/isMostrarMensagemPrincipal') === null ? false : Boolean(localStorage.getItem('@sigiml/isMostrarMensagemPrincipal'))
+        let checkedStorage = localStorage.getItem('@sigiml/isMostrarMensagemPrincipal') === null ? false : Boolean(localStorage.getItem('@sigiml/isMostrarMensagemPrincipal'))
         this.state = {
-            email: '',
-            password: '',
-            redirect: false,
+            email: 'felipeanalista3@gmail.com',
+            password: 'fmds*963,*963,',
+            redirectServer: false,
+            redirectDashboard: false,
             checked: checkedStorage,
             isShowMessageMain: checkedStorage
         }
@@ -30,7 +31,7 @@ export default class SignInController extends React.Component {
     handleChangeCheckBox = name => event => {
         this.setState({ [name]: event.target.checked })
         localStorage.setItem('@sigiml/isMostrarMensagemPrincipal', event.target.checked)
-      }
+    }
 
     changeEmail = (event) => {
         this.setState({
@@ -72,13 +73,19 @@ export default class SignInController extends React.Component {
                         localStorage.setItem('@sigiml/data_expiracao_plano_free', user.data_expiracao_plano_free)
                         localStorage.setItem('@sigiml/data_inicio_plano', user.data_inicio_plano)
                         localStorage.setItem('@sigiml/expiration_day', this.calcularDiferenteEmDias())
-                        
+
                         /**
                          * Verificar se possui token se sim, direcionar para o dashboard do sistema sem passar pelo server
                          */
-                        
-                        this.setState({ redirect: true })
-                        
+
+                        //console.log(typeof resp.data.accessToken !== undefined)
+                        if (typeof resp.data.accessToken !== undefined) {
+                            this.setState({ redirectDashboard: true })
+                        } else {
+                            this.setState({ redirectServer: true })
+                        }
+
+
                     } else {
                         swal('Atenção', 'Email e/ou senha incorretos! Por favor, tente novamente! \n', 'warning')
                     }
@@ -91,11 +98,10 @@ export default class SignInController extends React.Component {
     }
 
     render() {
-        if (this.state.redirect) {
-            return (
-                <Redirect to='/server-ml' />
-            )
-            
+        if (this.state.redirectServer) {
+            return ( <Redirect to='/server-ml' /> )
+        } else if (this.state.redirectDashboard) {
+            return ( <Redirect to='/admin/dashboard' /> )
         } else {
             return (
                 <>
@@ -105,7 +111,7 @@ export default class SignInController extends React.Component {
                         changePassword={this.changePassword}
                         changeEmail={this.changeEmail}
                         handleChangeCheckBox={this.handleChangeCheckBox}
-                        handleShowMessage={this.handleShowMessage}/>
+                        handleShowMessage={this.handleShowMessage} />
                 </>
             )
         }

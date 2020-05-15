@@ -484,9 +484,9 @@ exports.obterVendasConcluidas = async (req, res) => {
                     }
                 })
                 res.status(200).send(newVendas)
-                console.log("\n")
-                console.log("vendasService - line 486: "+JSON.stringify(vendas))
-                console.log("\n")
+                //console.log("\n")
+                //console.log("vendasService - line 486: "+JSON.stringify(vendas))
+                //console.log("\n")
             })
 
         }).catch(error => res.send(error))

@@ -3,6 +3,7 @@ const http = require('http');
 //const debug = require('debug')('nodestr: server');
 const passport = require('passport')
 const mongoose = require('mongoose');
+mongoose.set('useFindAndModify', false);
 const socketIO = require('socket.io')
 const server = http.createServer(app);
 const io = socketIO(server)

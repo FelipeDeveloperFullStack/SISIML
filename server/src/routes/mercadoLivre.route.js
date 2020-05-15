@@ -22,16 +22,20 @@ router.get('/auth/mercadolibre/callback', passport.authorize('mercadolibre', {
     });
 
 router.get('/', ensureAuthenticated, async (req, res) => {
-       await res.send("Usuario logado: " + req.user.nickname);  
+       // console.log("Usuario logado: " + req.user.nickname)
+       //await res.send("Usuario logado: " + req.user.nickname);  
     }
 );
 
 /** Verifica se o usuário já está autenticado, caso sim, redireciona para a página principal do sistema
   Se não, rediciona para a rota /auth/mercadolibre **/
 function ensureAuthenticated(req, res, next){
+    /*console.log("\n")
+    console.log(req.isAuthenticated())
+    console.log("\n")
     if (req.isAuthenticated()) {
         return next();
-    };
+    };*/
     res.redirect('/auth/mercadolibre');
 };
 

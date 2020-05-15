@@ -3,7 +3,6 @@
 const axios = require('axios');
 const constants = require('../constants/constants');
 const usuarioService = require('../services/usuario-service')
-const jsonEncode = require('json_encode')
 const cheerio = require('cheerio');
 
 /**

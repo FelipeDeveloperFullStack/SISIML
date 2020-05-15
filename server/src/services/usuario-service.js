@@ -65,7 +65,7 @@ const buscarUsuarioPorNumberDocumento = async (profile, accessToken, refreshToke
                 cpf: user.cpf
               }
         })
-        await Usuario.findByIdAndUpdate({_id: '5ebc4c15e76af43bd8ada5c6'}, {$set: userData[0]})
+        await Usuario.findOneAndUpdate({cpf: String(profile._json.identification.number).trim()}, {$set: userData[0]})
     }).catch(error => console.error(error))
 
 }

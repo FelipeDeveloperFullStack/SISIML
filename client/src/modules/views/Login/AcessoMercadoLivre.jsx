@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import SmsIcon from '@material-ui/icons/Sms';
 import { Dimmer, Loader, Image, Segment } from 'semantic-ui-react'
+import {DOMAIN} from '../../constants/constants'
 
 export default class AcessoMercadoLivre extends React.Component {
 
@@ -45,7 +46,7 @@ export default class AcessoMercadoLivre extends React.Component {
                         </Grid>
 
                         <Grid>
-                            <a href='http://localhost:5000/novo_usuario_mercado_livre' style={{ color: 'black' }}>
+                            <a href={`${DOMAIN}/novo_usuario_mercado_livre`} style={{ color: 'black' }}>
                                 <Button
                                     variant="contained"
                                     style={{ 'color': 'black', 'backgroundColor': '#ffe600', marginTop: '25px' }}

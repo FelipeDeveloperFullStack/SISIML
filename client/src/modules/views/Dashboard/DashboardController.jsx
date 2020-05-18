@@ -93,13 +93,15 @@ export default function DashboardController() {
 
     const get = async () => {
 
-        await axios.get(`${DOMAIN}/comunicado`).then(comunicado => {
+        let userId = Number(localStorage.getItem('@sigiml/id'))
+
+        await axios.get(`${DOMAIN}/comunicado/${userId}`).then(comunicado => {
             setComunicado(comunicado.data[0])
         }).catch(error => {
             swal("Error", "Ops, não conseguimos obter as informaçoes do comunicado! :( (Dashboard:98):  \n \n " + error, "error");
         })
 
-        await axios.get(`${DOMAIN}/saldo`).then(res => {
+        await axios.get(`${DOMAIN}/saldo/${userId}`).then(res => {
             dispatch({
                 type: OBTER_SALDO_TOTAL,
                 saldoTotal: res.data.saldo_total.toLocaleString('pt-BR'),
@@ -113,7 +115,7 @@ export default function DashboardController() {
             swal("Error", "Houve um erro ao mostrar os saldos (Dashboard:45):  \n \n " + error, "error");
         })
 
-        await axios.get(`${DOMAIN}/vendas/getTotalDeVendas`).then(resp => {
+        await axios.get(`${DOMAIN}/vendas/getTotalDeVendas/${userId}`).then(resp => {
             dispatch({
                 type: OBTER_TOTAL_VENDAS_NO_MES,
                 totalVendas: resp.data.total_vendas,
@@ -124,7 +126,7 @@ export default function DashboardController() {
             swal("Error", "Houve um erro ao mostrar o total de vendas (Dashboard:56):  \n \n " + error, "error");
         })
 
-        await axios.get(`${DOMAIN}/vendas/getVendasPendentes`).then(resp => {
+        await axios.get(`${DOMAIN}/vendas/getVendasPendentes/get01/get02/get03/${userId}`).then(resp => {
             dispatch({
                 type: OBTER_VENDAS_PENDENTE,
                 vendasPendente: resp.data,
@@ -135,7 +137,7 @@ export default function DashboardController() {
             swal("Error", "Houve um erro ao mostrar as vendas pendentes (Dashboard:67):  \n \n " + error, "error");
         })
 
-        await axios.get(`${DOMAIN}/anuncio/total_status`).then(status => {
+        await axios.get(`${DOMAIN}/anuncio/total_status/get01/${userId}`).then(status => {
             dispatch({
                 type: OBTER_STATUS_ANUNCIOS,
                 totalAtivos: status.data.total_ativos,

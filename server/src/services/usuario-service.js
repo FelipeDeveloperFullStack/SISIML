@@ -87,21 +87,18 @@ const listarTodosUsuarios = async (req, res) => {
     });
 }
 
-const buscarUsuarioPorID = async () => {
+const buscarUsuarioPorID = async (id) => {
    
-     const usuarios = await axios.get(constants.urlbase.COLLECTION_USUARIOS).then(resp => {
+     /*const usuarios = await axios.get(constants.urlbase.COLLECTION_USUARIOS).then(resp => {
         return resp.data;
     }).catch(err => {
         console.log("Houve um erro ao listar todos os usuarios: " + err);
-    });
-    
-      /**
-    const usuarios = await Usuario.find({})
-    console.log("\n")
-    console.log("usuarios: "+JSON.stringify(usuarios))
-    console.log("\n")
-    */
-    return usuarios;
+    });*/
+   
+    const usuarios = await axios.post(`${constants.producao.PRODUCAO}/usuario/post/usuario_by_id`, {id}).then(response => {
+        return response.data[0]
+    }).catch(err => {console.log("Houve um erro ao listar todos os usuarios: " + err);})
+    return usuarios
 }
 
 const getUserById = async (req, res) => {
@@ -112,6 +109,15 @@ const getUserById = async (req, res) => {
     })
 }
 
+const getUsuarioByID = async (req, res) => {
+    Usuario.find({
+        id: req.body.id
+    }).then(response => {
+        res.status(200).send(response)
+    }).catch(error => res.send(error))
+
+}
+
 module.exports = {
     salvarUsuario,
     buscarUsuarioPorID,
@@ -120,5 +126,6 @@ module.exports = {
     getUserById,
     postUsuario,
     getProcurarUsuarioPorEmail,
-    buscarUsuarioPorNumberDocumento
+    buscarUsuarioPorNumberDocumento,
+    getUsuarioByID
 }

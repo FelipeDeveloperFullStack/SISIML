@@ -5,7 +5,7 @@ const router = express.Router();
 const anuncioService = require('../services/anuncio-service');
 
 router.get('/obter_atributos_por_categoria/:categoria', anuncioService.obterAtributosPorCategoria)
-router.get('/total_status', anuncioService.totalStatusAnuncios)
+router.get('/total_status/get01/:userId', anuncioService.totalStatusAnuncios)
 router.get('/:offset/:status', anuncioService.listarTodosAnuncio);
 router.get('/:titulo', anuncioService.listarTodosAnuncio)
 router.get('/obterValorDoCustoFreteGratisPorAnuncio/get/anuncio/custo/:item_id', anuncioService.obterValorDoCustoFreteGratisPorAnuncio)

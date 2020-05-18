@@ -93,18 +93,7 @@ const listarTodosUsuarios = async () => {
     return usuarios;
 }
 
-const buscarUsuarioPorID = async () => {
-    /**
-     * const usuarios = await axios.get(constants.urlbase.COLLECTION_USUARIOS).then(resp => {
-        return resp.data;
-    }).catch(err => {
-        console.log("Houve um erro ao listar todos os usuarios: " + err);
-    });
-     */
-    const usuarios = Usuario.find({})
 
-    return usuarios
-}
 
 const listarTodosAnuncio = async (req, res) => {
     usuarioService.buscarUsuarioPorID().then(resp => {
@@ -801,11 +790,26 @@ const encontrarString = () => {
 }
 
 const obterTotalAnuncios = async () => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    
+    usuarioService.buscarUsuarioPorID(541569110).then(async user => {
         await axios.get(`https://api.mercadolibre.com/users/${user.id}/items/search?access_token=${user.accessToken}&status=paused`).then(response => {
             console.log(response.data.paging.total)
         })
     }).catch(error => console.log(error))
+}
+
+const buscarUsuarioPorID = async () => {
+    usuarioService.buscarUsuarioByID()
+
+   //return usuario;
+}
+
+const getProcurarUsuarioPorEmail = async () => {
+    Usuario.findById({
+    _id: '5ebc4c15e76af43bd8ada5c6'
+    }).then(response => {
+        console.log(response)
+    }).catch(error => res.send(error))
 }
 
 obterTotalAnuncios()

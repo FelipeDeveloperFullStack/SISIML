@@ -69,6 +69,7 @@ export default class SignInController extends React.Component {
                         localStorage.setItem('@sigiml/sobrenome-usuario', user.sobrenome)
                         localStorage.setItem('@sigiml/email-usuario', user.email)
                         localStorage.setItem('@sigiml/_id-usuario', user._id)
+                        localStorage.setItem('@sigiml/id', user.id)
                         localStorage.setItem('@sigiml/plano', user.plano)
                         localStorage.setItem('@sigiml/data_expiracao_plano_free', user.data_expiracao_plano_free)
                         localStorage.setItem('@sigiml/data_inicio_plano', user.data_inicio_plano)

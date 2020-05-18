@@ -10,7 +10,7 @@ exports.obterTotalDeVendas = async (req, res) => {
     var data = new Date();
     let diaAtual = new Date().getDate()
 
-    usuarioService.buscarUsuarioPorID().then(resp => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
         axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${resp.id}&order.date_created.from=${data.getFullYear()}-${data.getMonth() + 1}-01T00:00:00.000-00:00&order.date_created.to=${data.getFullYear()}-${data.getMonth() + 1}-${diaAtual}T00:00:00.000-00:00&&access_token=${resp.accessToken}`).then(response => {
             res.send({
                 total_vendas: response.data.results.length,
@@ -164,7 +164,7 @@ exports.obterVendasPendentes_old = async (req, res) => {
 
 exports.obterVendasPendentes = async (req, res) => {
     let jsonVenda = []
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`${constants.API_MERCADO_LIVRE}/orders/search/pending?seller=${user.id}&access_token=${user.accessToken}`).then(async resp => {
             let vendasPendentes = await resp.data.results.map(async response => {
                 if (response.shipping.id != null) {

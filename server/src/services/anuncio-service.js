@@ -16,7 +16,7 @@ exports.obterVisualizacao = (req, res) => {
 }
 
 exports.totalStatusAnuncios = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/users/${user.id}/items/search?access_token=${user.accessToken}&status=active`).then(async totalAtivos => {
             await axios.get(`https://api.mercadolibre.com/users/${user.id}/items/search?access_token=${user.accessToken}&status=paused`).then(async totalPausados => {
                 let data = {

@@ -52,6 +52,13 @@ export default class SignInController extends React.Component {
         return duration.asDays().toFixed(0)
     }
 
+    handleOnClickSairMercadoLivre = () => {
+        let myWindow = window.open("https://www.mercadolibre.com/jms/mlb/lgz/logout?go=https://www.mercadolivre.com.br#menu-user", "MsgWindow", "width=10, height=10, top=2500px, left=2500px");
+        setTimeout(() => {
+          myWindow.close()
+        }, 3000)
+      }
+
     signinUsuario = async () => {
         if (this.state.email.trim() === '') {
             swal('Atenção', 'Você não informou o e-mail, tente novamente! \n', 'warning')
@@ -74,19 +81,15 @@ export default class SignInController extends React.Component {
                         localStorage.setItem('@sigiml/data_expiracao_plano_free', user.data_expiracao_plano_free)
                         localStorage.setItem('@sigiml/data_inicio_plano', user.data_inicio_plano)
                         localStorage.setItem('@sigiml/expiration_day', this.calcularDiferenteEmDias())
-
                         /**
                          * Verificar se possui token se sim, direcionar para o dashboard do sistema sem passar pelo server
                          */
-
-                        //console.log(typeof resp.data.accessToken !== undefined)
-                        if (typeof resp.data.accessToken !== undefined) {
+                        if (user.accessToken !== undefined) {
                             this.setState({ redirectDashboard: true })
+                            this.handleOnClickSairMercadoLivre()
                         } else {
                             this.setState({ redirectServer: true })
                         }
-
-
                     } else {
                         swal('Atenção', 'Email e/ou senha incorretos! Por favor, tente novamente! \n', 'warning')
                     }

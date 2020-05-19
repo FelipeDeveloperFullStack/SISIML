@@ -8,7 +8,8 @@ export default function CallApiPerguntas() {
     const dispatch = useDispatch()
 
     useEffect(() => {   
-        axios.get(`${DOMAIN}/perguntas/fila_perguntas`).then(pergunta => {
+        let userId = String(localStorage.getItem('@sigiml/id'))
+        axios.get(`${DOMAIN}/perguntas/fila_perguntas/${userId}`).then(pergunta => {
             dispatch({
                 type: GET_PERGUNTAS,
                 question: pergunta.data

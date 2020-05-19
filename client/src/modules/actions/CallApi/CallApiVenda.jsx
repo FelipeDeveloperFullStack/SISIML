@@ -21,13 +21,16 @@ class CallApiVenda extends React.Component {
     }
 
     componentDidMount = async () => {
-        await axios.get(`${DOMAIN}/vendas/getVendasPendentes`).then(vendasPendentes => {
+
+        let userId = String(localStorage.getItem('@sigiml/id'))
+
+        await axios.get(`${DOMAIN}/vendas/getVendasPendentes/get01/get02/get03/${userId}`).then(vendasPendentes => {
             this.props.vendasPendentes(vendasPendentes)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getVendasConcluidas`).then(vendasConcluidas => {
+        await axios.get(`${DOMAIN}/vendas/getVendasConcluidas/get01/get02/${userId}`).then(vendasConcluidas => {
             if (vendasConcluidas !== null) {
                 this.props.vendasConcluidas(vendasConcluidas)
             }
@@ -35,37 +38,37 @@ class CallApiVenda extends React.Component {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getVendasEmTransito`).then(vendasEmTransito => {
+        await axios.get(`${DOMAIN}/vendas/getVendasEmTransito/get01/get02/get03/get04/${userId}`).then(vendasEmTransito => {
             this.props.vendasEmTransito(vendasEmTransito)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getVendasAEnviar`).then(vendasAEnviar => {
+        await axios.get(`${DOMAIN}/vendas/getVendasAEnviar/get01/get02/get03/get04/get05/${userId}`).then(vendasAEnviar => {
             this.props.vendasAEnviar(vendasAEnviar)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getTotalVendas`).then(totalVendas => {
+        await axios.get(`${DOMAIN}/vendas/getTotalVendas/get01/get02/get03/get04/get05/get06/${userId}`).then(totalVendas => {
             this.props.totalVendas(totalVendas)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getTotalVendasEmTransito`).then(totalVendasEmTransito => {
+        await axios.get(`${DOMAIN}/vendas/getTotalVendasEmTransito/get01/get02/get03/get04/get05/get06/get07/${userId}`).then(totalVendasEmTransito => {
             this.props.totalVendasEmTransito(totalVendasEmTransito)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar`).then(totalVendasAEnviar => {
+        await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/${userId}`).then(totalVendasAEnviar => {
             this.props.totalVendasAEnviar(totalVendasAEnviar)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getTotalVendasPendentes`).then(totalVendasPendentes => {
+        await axios.get(`${DOMAIN}/vendas/getTotalVendasPendentes/get01/get02/get03/get04/get05/get06/get07/get08/get09/${userId}`).then(totalVendasPendentes => {
             this.props.totalVendasPendentes(totalVendasPendentes)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')

@@ -60,7 +60,7 @@ export default class SignUpController extends React.Component {
         } else {
             return (
                 <>
-                    <Redirect to='/acesso_ml' />
+                    <Redirect to='/' />
                 </>
             )
         }

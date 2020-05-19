@@ -28,7 +28,7 @@ exports.obterVendaProntoParaEnviar = async (req, res) => {
     let cincoDiasAtras = new Date().getDate() - 5
     let diaAtual = new Date().getDate()
 
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&order.date_created.from=${anoAtual}-${mesAtual}-01T00:00:00.000-00:00&order.date_created.to=${anoAtual}-${mesAtual}-${diaAtual}T00:00:00.000-00:00&&access_token=${user.accessToken}`).then(resp => {
             let vendasAEnviar = resp.data.results.map(async response => {
                 if (response.shipping.substatus !== null) {
@@ -108,7 +108,7 @@ exports.obterVendaProntoParaEnviar = async (req, res) => {
 }
 
 exports.gerarEtiquetaEnvio = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         /*await axios.get(`https://api.mercadolibre.com/shipment_labels?shipment_ids=${req.params.shipping_id}&savePdf=Y&access_token=${user.accessToken}`).then(response => {
             //res.header('content-disposition', 'inline');
             //res.contentType("application/pdf")
@@ -122,7 +122,7 @@ exports.gerarEtiquetaEnvio = async (req, res) => {
 }
 
 exports.obterVendasPendentes_old = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async resp => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async resp => {
         await axios.get(`${constants.API_MERCADO_LIVRE}/orders/search/pending?seller=${resp.id}&access_token=${resp.accessToken}`).then(async response => {
             let dadosVendaPendente = await response.data.results.filter(value => value.payments[0].status === 'pending').map(async value => {
                 return await anuncioService.obterFotoPrincipalAnuncio(value.order_items[0].item.id).then(resp => {
@@ -231,7 +231,7 @@ exports.obterVendasPendentes = async (req, res) => {
 
 exports.obterVendasEmTransito = async (req, res) => {
     let jsonVenda = []
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/recent?seller=${user.id}&access_token=${user.accessToken}`).then(async resp => {
             let vendasEmTransito = await resp.data.results.map(async response => {
                 if (response.shipping.id != null) {
@@ -313,7 +313,7 @@ exports.obterVendasEmTransito = async (req, res) => {
 }
 
 exports.obterTotalVendas = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(async result => {
                 return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
@@ -344,7 +344,7 @@ exports.obterTotalVendas = async (req, res) => {
 }
 
 exports.obterTotalVendasEmTransito = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/recent?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(async result => {
                 return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
@@ -369,7 +369,7 @@ exports.obterTotalVendasAEnviar = async (req, res) => {
     let cincoDiasAtras = new Date().getDate() - 5
     let diaAtual = new Date().getDate()
 
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&order.date_created.from=${anoAtual}-${mesAtual}-01T00:00:00.000-00:00&order.date_created.to=${anoAtual}-${mesAtual}-${diaAtual}T00:00:00.000-00:00&&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(result => {
                 if (result.shipping.status === 'ready_to_ship') {
@@ -386,7 +386,7 @@ exports.obterTotalVendasAEnviar = async (req, res) => {
 }
 
 exports.obterTotalVendasPendentes = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/pending?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(async result => {
                 return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
@@ -408,7 +408,7 @@ exports.obterTotalVendasPendentes = async (req, res) => {
 
 
 exports.obterVendasConcluidas = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(resp => {
             let vendasConcluidas = resp.data.results.map(async response => {
                 return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {

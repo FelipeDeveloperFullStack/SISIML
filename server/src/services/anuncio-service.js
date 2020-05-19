@@ -40,7 +40,7 @@ exports.totalStatusAnuncios = async (req, res) => {
 
 /** Function responsible for get for all product */
 exports.listarTodosAnuncio = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(resp01 => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(resp01 => {
         axios.get(`${constants.API_MERCADO_LIVRE}/users/${resp01.id}/items/search?access_token=${resp01.accessToken}&limit=100&offset=${req.params.offset}&status=${req.params.status}`).then(resp07 => {
             var detalhesAnuncio = resp07.data.results.map(resp02 => {
                 return axios.get(`${constants.API_MERCADO_LIVRE}/items/${resp02}?access_token=${resp01.accessToken}`).then(resp03 => {
@@ -162,7 +162,7 @@ exports.obterFotoPrincipalAnuncio = async (idAnuncio) => {
 }
 
 exports.buscarAnuncioPorTitulo = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(resp => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
         axios.get(`${constants.API_MERCADO_LIVRE}/users/${resp.id}/items/search?search_type=scan&access_token=${resp.accessToken}`)
             .then(response => {
                 let resultadoPesquisa = response.data.results.filter(resp => resp.title === req.params.titulo)
@@ -175,7 +175,7 @@ exports.buscarAnuncioPorTitulo = async (req, res) => {
     Function responsible for to update procuct price
 */
 exports.updatePrice = (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         axios.get(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`).then(response => {
             if (response.data.variations.length === 0) {
                 axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
@@ -211,7 +211,7 @@ exports.updatePrice = (req, res) => {
 
 /** Function responsible for to update status 'paused' or 'active' */
 exports.updateStatus = (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`,
             JSON.stringify({
                 status: req.body.status
@@ -226,7 +226,7 @@ exports.updateStatus = (req, res) => {
 }
 
 exports.updateAvailableQuantity = (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify({
             variations: {
                 id: req.body.id,
@@ -239,7 +239,7 @@ exports.updateAvailableQuantity = (req, res) => {
 }
 
 exports.updateListingType = (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.post(`https://api.mercadolibre.com/items/${req.body.itemId}/listing_type?access_token=${user.accessToken}`, JSON.stringify(
             {
                 id: req.body.id
@@ -251,7 +251,7 @@ exports.updateListingType = (req, res) => {
 }
 
 exports.updateTitle = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
             {
                 title: req.body.title
@@ -263,7 +263,7 @@ exports.updateTitle = async (req, res) => {
 }
 
 exports.obterValorDoCustoFreteGratisPorAnuncio = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/users/${user.id}/shipping_options/free?item_id=${req.params.item_id}`).then(async response => {
             res.status(200).send({ custo: response.data.coverage.all_country.list_cost })
         }).catch(error => res.send(error))
@@ -271,7 +271,7 @@ exports.obterValorDoCustoFreteGratisPorAnuncio = async (req, res) => {
 }
 
 exports.updateShipping = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         if (req.body.free_shipping) {
             await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
                 {
@@ -309,7 +309,7 @@ exports.updateShipping = async (req, res) => {
 }
 
 exports.updateRetirarPessoalmente = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
             {
                 shipping: {
@@ -328,7 +328,7 @@ exports.updateDescription = async (req, res) => {
         return caracter.replace("%", "(porcento)")
     })
 
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}/description?access_token=${user.accessToken}`, JSON.stringify(
             {
                 plain_text: text.join('')
@@ -346,7 +346,7 @@ exports.updateDescription = async (req, res) => {
 }
 
 exports.updateVideoYouTube = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
             {
                 video_id: req.body.videoId
@@ -364,7 +364,7 @@ exports.updateVideoYouTube = async (req, res) => {
 }
 
 exports.updateDisponibilidadeEstoque = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
             {
                 sale_terms: [{
@@ -379,7 +379,7 @@ exports.updateDisponibilidadeEstoque = async (req, res) => {
 }
 
 exports.updateGarantia = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         if (req.body.tipo_garantia === 'Sem garantia') {
             await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
                 {
@@ -420,7 +420,7 @@ exports.updateGarantia = async (req, res) => {
 }
 
 exports.updateCondicao = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`, JSON.stringify(
             {
                 condition: `${req.body.condicao}`
@@ -432,7 +432,7 @@ exports.updateCondicao = async (req, res) => {
 }
 
 exports.getCategoria = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/items/${req.params.itemId}?access_token=${user.accessToken}`).then(async response => {
             await axios.get(`https://api.mercadolibre.com/categories/${response.data.category_id}`).then(categoria => {
                 res.send(categoria.data.path_from_root)
@@ -462,7 +462,7 @@ exports.obterAtributosPorCategoria = async (req, res) => {
 }
 
 exports.updateAtributos = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`,
             {
                 attributes: req.body.attributes
@@ -488,7 +488,7 @@ exports.obterImagemSite = async (req, res) => {
 }
 
 exports.updateImagemVariation = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.put(`https://api.mercadolibre.com/items/${req.body.itemId}?access_token=${user.accessToken}`,
             {
                 pictures: req.body.pictures,
@@ -507,7 +507,7 @@ exports.updateImagemVariation = async (req, res) => {
 }
 
 exports.copiarAnuncioPorID = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(async user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/items/${req.params.itemId}?access_token=${user.accessToken}`).then(async anuncio => {
             await axios.get(`https://api.mercadolibre.com/items/${req.params.itemId}/description?access_token=${user.accessToken}`).then(async description => {
                 await axios.post(`https://api.mercadolibre.com/items?access_token=${user.accessToken}`, JSON.stringify(

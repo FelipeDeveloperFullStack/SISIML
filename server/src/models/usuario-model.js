@@ -46,6 +46,10 @@ const usuarioModel = mongoose.Schema({
         trim: true,
         type: Date
     },
+    data_acesso: {
+        default: new Date(),
+        type: Date
+    },
     id: {
         type: Number,
         trim: true

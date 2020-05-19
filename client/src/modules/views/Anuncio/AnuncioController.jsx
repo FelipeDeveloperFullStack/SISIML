@@ -36,6 +36,7 @@ export default function AnuncioController() {
     
 
     const dispatch = useDispatch()
+    let userId = String(localStorage.getItem('@sigiml/id'))
 
     useEffect(() => {
         obterTotalAnuncios()
@@ -44,7 +45,7 @@ export default function AnuncioController() {
     let updateShipping = async (itemId, free_shipping, custoFrete) => {
         sendNotification('success', 'Processando sua solicitação, por favor aguarde...', 8999)
         setTimeout(async () => {
-            await axios.put(`${DOMAIN}/anuncio/update_shipping`, { itemId, free_shipping }).then(response => {
+            await axios.put(`${DOMAIN}/anuncio/update_shipping/put01/put02/put03/put04/${userId}`, { itemId, free_shipping }).then(response => {
                 dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: updateStateShipping(itemId, free_shipping, custoFrete), isLoading: false })
                 if (free_shipping) {
                     sendNotification('success', 'Objetivo alcançado! Agora você oferece frete grátis.', 5000)
@@ -82,7 +83,7 @@ export default function AnuncioController() {
     }
 
     let updateTitle = async (itemId, title) => {
-        await axios.put(`${DOMAIN}/anuncio/update_title`, { itemId, title }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_title/put01/put02/put03/${userId}`, { itemId, title }).then(response => {
             dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: updateStateTitleProduct(itemId, title), isLoading: false })
             sendNotification('success', 'Pronto, salvamos suas modificações!', 5000)
             setLoadingButtonTitulo(false)
@@ -93,7 +94,7 @@ export default function AnuncioController() {
 
     let updateAnuncioPrice = async (itemId, price) => {
         if (price != '' || price != 0) {
-            await axios.put(`${DOMAIN}/anuncio/update_price`, { itemId: itemId, price: price }).then(user => {
+            await axios.put(`${DOMAIN}/anuncio/update_price/put01/:userId`, { itemId: itemId, price: price }).then(user => {
 
                 setIsShowEditPrice(false)
                 setLoadingButton(false)
@@ -201,7 +202,7 @@ export default function AnuncioController() {
 
 
     let updateStatus = async (itemId, status) => {
-        await axios.put(`${DOMAIN}/anuncio/update_status`, { itemId, status }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_status/put01/put02/${userId}`, { itemId, status }).then(response => {
 
             setLoadingButton(false)
             setDisabledButton(false)
@@ -234,7 +235,7 @@ export default function AnuncioController() {
     }
 
     let updateListingType = async (itemId, listingType) => {
-        await axios.post(`${DOMAIN}/anuncio/update_listing_type`, { id: listingType, itemId: itemId }).then(response => {
+        await axios.post(`${DOMAIN}/anuncio/update_listing_type/put01/put02/put03/put04/put05/${userId}`, { id: listingType, itemId: itemId }).then(response => {
             dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: updateListingTypeInStore(itemId, listingType), isLoading: false })
             if (listingType === 'gold_special') {
                 sendNotification('success', 'Pronto, salvamos suas modificações!', 5000)
@@ -250,7 +251,7 @@ export default function AnuncioController() {
     }
 
     let obterValorDoCustoFreteGratisPorAnuncio = async (itemID) => {
-        await axios.get(`${DOMAIN}/anuncio/obterValorDoCustoFreteGratisPorAnuncio/get/anuncio/custo/${itemID}`).then(response => {
+        await axios.get(`${DOMAIN}/anuncio/obterValorDoCustoFreteGratisPorAnuncio/get/anuncio/custo/${itemID}/${userId}`).then(response => {
             setCustoFrete(response.data.custo.toFixed(2))
         }).catch(error => {
             sendNotification('error', 'Ocorreu um erro ao obter o custo do frete (AnuncioController:189)' + error, 5000)
@@ -258,7 +259,7 @@ export default function AnuncioController() {
     }
 
     let updateRetirarPessoalmente = async (itemId, isRetirarPessoalmente) => {
-        await axios.put(`${DOMAIN}/anuncio/update_retirar_pessoalmente`, { itemId: itemId, local_pick_up: isRetirarPessoalmente }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_retirar_pessoalmente/put01/put02/put03/put04/put05/put06/${userId}`, { itemId: itemId, local_pick_up: isRetirarPessoalmente }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             setLoadingButtonRetirarPessoalmente(false)
             dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: updateStateRetirarPessoalmente(itemId, isRetirarPessoalmente), isLoading: false })
@@ -281,7 +282,7 @@ export default function AnuncioController() {
     }
 
     let updateDescription = async (itemId, plainText) => {
-        await axios.put(`${DOMAIN}/anuncio/update_description`, { itemId: itemId, plain_text: plainText }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_description//put01/put02/put03/put04/put05/put06/put07/${userId}`, { itemId: itemId, plain_text: plainText }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             setLoadingButtonDescription(false)
             dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: updateStateDescription(itemId, plainText), isLoading: false })
@@ -304,7 +305,7 @@ export default function AnuncioController() {
     }
 
     let updateGarantia = async (itemId, tipoGarantia, valueName, tempo, garantia) => {
-        await axios.put(`${DOMAIN}/anuncio/update_garantia`, { itemId: itemId, tipo_garantia: tipoGarantia, value_name: valueName, tempo: tempo }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_garantia/put01/put02/put03/put04/put05/put06/put07/put08/${userId}`, { itemId: itemId, tipo_garantia: tipoGarantia, value_name: valueName, tempo: tempo }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             setLoadingButtonGarantia(false)
             dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: updateStateGarantia(itemId, garantia, valueName, tempo), isLoading: false })
@@ -329,7 +330,7 @@ export default function AnuncioController() {
     }
 
     let updateDisponibilidadeEstoque = async (itemId, valueName) => {
-        await axios.put(`${DOMAIN}/anuncio/update_disponibilidade_estoque`, { itemId: itemId, value_name: valueName }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_disponibilidade_estoque/put01/put02/put03/put04/put05/put06/put07/put08/put09/${userId}`, { itemId: itemId, value_name: valueName }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             setLoadingButtonDisponibilidadeEstoque(false)
         }).catch(error => {
@@ -338,7 +339,7 @@ export default function AnuncioController() {
     }
 
     let updateCondicao = async (itemId, condicao) => {
-        await axios.put(`${DOMAIN}/anuncio/update_condicao`, { itemId: itemId, condicao: condicao }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_condicao/put01/put02/put03/put04/put05/put06/put07/put08/put09/put10/${userId}`, { itemId: itemId, condicao: condicao }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             setLoadingButtonCondicao(false)
         }).catch(error => {
@@ -348,7 +349,7 @@ export default function AnuncioController() {
 
     let obterCategoria = async (itemId) => {
         setCategoria(categoria !== '' ? 'Carregando, aguarde...' : categoria)
-        await axios.get(`${DOMAIN}/anuncio/obter_categoria/get/anuncio/${itemId}`).then(response => {
+        await axios.get(`${DOMAIN}/anuncio/obter_categoria/get/anuncio/${itemId}/${userId}`).then(response => {
             let dados = []
             response.data.map(cat => {
                 dados.push(cat.name)
@@ -364,7 +365,7 @@ export default function AnuncioController() {
 
         let newArray = []
 
-        await axios.get(`${DOMAIN}/anuncio/obter_atributos_por_categoria/${categoria}`).then(async response => {
+        await axios.get(`${DOMAIN}/anuncio/obter_atributos_por_categoria/${categoria}/get01/get02/${userId}`).then(async response => {
             let valorVerificado = response.data.reduce((valorAcumulado, valorCorrente) => {
                 if (valorCorrente.value_name === "") {
                     return true
@@ -418,7 +419,7 @@ export default function AnuncioController() {
             setLoadingButtonAtributos(false)
         } else {
             setValidationAttribute(false)
-            await axios.put(`${DOMAIN}/anuncio/update_atributos`, { attributes: newArray, itemId: itemId }).then(response => {
+            await axios.put(`${DOMAIN}/anuncio/update_atributos/put01/put02/put03/put04/put05/put06/put07/put08/put09/put10/put11/${userId}`, { attributes: newArray, itemId: itemId }).then(response => {
                 sendNotification('success', 'Pronto salvamos suas modificações', 5000)
                 setLoadingButtonAtributos(false)
             }).catch(error => {
@@ -429,7 +430,7 @@ export default function AnuncioController() {
 
     const updateVideoYoutube = async (itemId, linkVideo) => {
         let videoId = linkVideo.replace("https://www.youtube.com/watch?v=", "")
-        await axios.put(`${DOMAIN}/anuncio/update_video_youtube`, { itemId, videoId }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_video_youtube/put01/put02/put03/put04/put05/put06/put07/put08/put09/put10/put11/put12/${userId}`, { itemId, videoId }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             setLoadingButtonVideoYoutube(false)
             updateStateVideoYoutube(itemId, linkVideo)
@@ -452,13 +453,13 @@ export default function AnuncioController() {
     }
 
     let getImageSite = async (url) => {
-        await axios.post(`${DOMAIN}/anuncio/obter_imagem_site`, { url }).then(async response => {
+        await axios.post(`${DOMAIN}/anuncio/obter_imagem_site/put01/put02/put03/put04/put05/put06/put07/put08/put09/put10/put11/put12/post13/${userId}`, { url }).then(async response => {
             localStorage.setItem("@sisiml/url_image", response.data)
         })
     }
 
     let updateImagemVariation = async (itemId, variations, pictures) => {
-        await axios.put(`${DOMAIN}/anuncio/update_imagem_variation`, { itemId, variations, pictures }).then(response => {
+        await axios.put(`${DOMAIN}/anuncio/update_imagem_variation/put01/put02/put03/put04/put05/put06/put07/put08/put09/put10/put11/put12/post13/put14/${userId}`, { itemId, variations, pictures }).then(response => {
             sendNotification('success', 'Pronto salvamos suas modificações', 5000)
             getAnuncioByOffset(0, 'active')
         }).catch(error => {
@@ -468,7 +469,7 @@ export default function AnuncioController() {
 
     let duplicarAnuncioPorID = async (itemId, qtdeX, status) =>{
         for (let index = 0; index < qtdeX; index++) {
-            await axios.get(`${DOMAIN}/anuncio/copiar_anuncio_por_id/copy/anuncio/${itemId}`).then(response => {
+            await axios.get(`${DOMAIN}/anuncio/copiar_anuncio_por_id/copy/anuncio/get01/get02/get03/${itemId}/${userId}`).then(response => {
                 sendNotification('success', (index+1)+' anúncio duplicado!', 5000)
             }).catch(error => {
                 sendNotification('error', 'Ocorreu um erro ao duplicar os anúncios! Por favor entre em contato com o suporte técnico!' + error, 5000)
@@ -483,7 +484,7 @@ export default function AnuncioController() {
     }
 
     let getAnuncioByOffset = async (offset, status) => {
-        await axios.get(`${DOMAIN}/anuncio/${offset}/${status}`).then(response => {
+        await axios.get(`${DOMAIN}/anuncio/${offset}/${status}/${userId}`).then(response => {
             dispatch({ type: LISTAR_TODOS_ANUNCIOS, data: response.data, isLoading: false })
             setOpenBackdrop(false)
         }).catch(error => {
@@ -492,7 +493,7 @@ export default function AnuncioController() {
     }
 
     let obterTotalAnuncios = async () => {
-        await axios.get(`${DOMAIN}/anuncio/total_status`).then(status => {
+        await axios.get(`${DOMAIN}/anuncio/total_status/get01/${userId}`).then(status => {
             dispatch({
                 type: OBTER_STATUS_ANUNCIOS,
                 totalAtivos: status.data.total_ativos,

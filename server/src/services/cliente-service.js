@@ -4,8 +4,8 @@ const constants = require('../constants/constants')
 const { rastro } = require('rastrojs')
 const util = require('../helpers/util')
 
-const obterDadosVendasPorCliente = async (id) => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+const obterDadosVendasPorCliente = async (id, userId) => {
+    usuarioService.buscarUsuarioPorID(userId).then(async user => {
         await axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(orders => {
             let vendas = orders.data.results.filter(ordersClient => {
                 return ordersClient.buyer.id == id
@@ -30,7 +30,7 @@ const obterDadosVendasPorCliente = async (id) => {
 }
 
 exports.obterDadosCliente = async (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(resp => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
         axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${resp.id}&access_token=${resp.accessToken}`).then(resp => {
             let clientes = resp.data.results.filter(function (a) {
                 //Evita os IDs duplicados
@@ -50,7 +50,7 @@ exports.obterDadosCliente = async (req, res) => {
                         cidade: resp.data.address.city,
                         estado: JSON.parse(JSON.stringify(resp.data.address.state).replace("BR-", "")),
                         valorCompra: value.order_items[0].unit_price.toFixed(2),
-                        vendasClient: obterDadosVendasPorCliente(value.buyer.id)
+                        vendasClient: obterDadosVendasPorCliente(value.buyer.id, req.params.userId)
                     }
                     return dadosClient
                 }).catch(err => res.send(err))

@@ -3,7 +3,7 @@ const usuarioService = require("./usuario-service")
 const FilaPerguntas = require("../models/filaPerguntas-model")
 
 exports.obterPerguntasNaoRespondidas = async (req, res) => {
-    await usuarioService.buscarUsuarioPorID().then(user => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         FilaPerguntas.find({
             seller_id: user.id,
             status: 'UNANSWERED'

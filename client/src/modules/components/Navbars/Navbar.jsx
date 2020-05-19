@@ -136,7 +136,7 @@ export default function Navbar(props) {
 
   const handleOnClickSair = () => {
     setState({ open: true })
-    let myWindow = window.open("https://www.mercadolibre.com/jms/mlb/lgz/logout?go=https://www.mercadolivre.com.br#menu-user", "myWindow", "width=10,height=10");
+    let myWindow = window.open("https://www.mercadolibre.com/jms/mlb/lgz/logout?go=https://www.mercadolivre.com.br#menu-user", "MsgWindow", "width=10, height=10, top=2500px, left=2500px");
     setTimeout(() => {
       myWindow.close()
     }, 3000)

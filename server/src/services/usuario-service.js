@@ -88,14 +88,8 @@ const listarTodosUsuarios = async (req, res) => {
 }
 
 const buscarUsuarioPorID = async (id) => {
-   
-     /*const usuarios = await axios.get(constants.urlbase.COLLECTION_USUARIOS).then(resp => {
-        return resp.data;
-    }).catch(err => {
-        console.log("Houve um erro ao listar todos os usuarios: " + err);
-    });*/
-   
     const usuarios = await axios.post(`${constants.producao.PRODUCAO}/usuario/post/usuario_by_id`, {id}).then(response => {
+        //console.log(response.data[0])
         return response.data[0]
     }).catch(err => {console.log("Houve um erro ao listar todos os usuarios: " + err);})
     return usuarios
@@ -109,13 +103,18 @@ const getUserById = async (req, res) => {
     })
 }
 
-const getUsuarioByID = async (req, res) => {
-    Usuario.find({
+const getUsuarioByID = async (req, res) => {    
+    await Usuario.find({
         id: req.body.id
     }).then(response => {
         res.status(200).send(response)
     }).catch(error => res.send(error))
+}
 
+const getAllUsers = async (req, res) => {
+    Usuario.find({}).then(response => {
+        res.status(200).send(response)
+    }).catch(error => res.send(error))
 }
 
 module.exports = {
@@ -127,5 +126,6 @@ module.exports = {
     postUsuario,
     getProcurarUsuarioPorEmail,
     buscarUsuarioPorNumberDocumento,
-    getUsuarioByID
+    getUsuarioByID,
+    getAllUsers
 }

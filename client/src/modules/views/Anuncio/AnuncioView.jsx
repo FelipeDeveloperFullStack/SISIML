@@ -26,6 +26,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import {Dimmer, Segment} from 'semantic-ui-react'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import ModificaEmMassaAnuncio from '../Anuncio/ModificaEmMassaAnuncio'
 
 
 export default function AnuncioView(props) {
@@ -43,7 +44,7 @@ export default function AnuncioView(props) {
   const [isShowPerguntas, setIsShowPerguntas] = useState(false)
   const [isShowDuplicarAnuncio, setIsShowDuplicarAnuncio] = useState(false)
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [page, setPage] = React.useState(0)
+  const [openDialogModificadorEmMassa, setOpenDialogModificadorEmMassa] = React.useState(false)
   
 
   const handleClickNovoAnuncio = (event) => {
@@ -73,6 +74,16 @@ export default function AnuncioView(props) {
 
   function handleChangeSelectedFretePorContaDoComprador() {
     setIsSelectedFrete('')
+  }
+
+  const totalDePaginasAnunciosAtivos = () => {
+    let totalPaginas = (props.stateDashboard.totalAtivos / 100).toFixed(0)
+    return totalPaginas < 1 ? 1 : totalPaginas
+  }
+
+  const totalDePaginasAnunciosPausados = () => {
+    let totalPaginas = (props.stateDashboard.totalPausados / 100).toFixed(0)
+    return totalPaginas < 1 ? 1 : totalPaginas
   }
 
   const options = [
@@ -135,7 +146,7 @@ export default function AnuncioView(props) {
                                     <MenuItem onClick={handleClose}>Cadastrar anúncios em massa</MenuItem>
                                 </Menu>
                             </span>
-                            <span style={{paddingLeft: '5px'}}><ButtonUI size="small" variant="contained">Modificar em massa</ButtonUI></span>
+                            <span style={{paddingLeft: '5px'}}><ButtonUI size="small" onClick={() => setOpenDialogModificadorEmMassa(true)} variant="contained">Modificar em massa</ButtonUI></span>
                           </div>
                       </div>
                       </Form>
@@ -144,8 +155,8 @@ export default function AnuncioView(props) {
                     {/*PAGINAÇÃO*/}                
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '10px'}}>
                         {
-                          isActive === 'active' ? props.stateDashboard.totalAtivos   > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={56} color="primary" showFirstButton showLastButton /> 
-                        : isActive === 'paused' ? props.stateDashboard.totalPausados > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={56} color="primary" showFirstButton showLastButton /> : <></> 
+                          isActive === 'active' ? props.stateDashboard.totalAtivos   > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={totalDePaginasAnunciosAtivos()} color="primary" showFirstButton showLastButton /> 
+                        : isActive === 'paused' ? props.stateDashboard.totalPausados > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={totalDePaginasAnunciosPausados()} color="primary" showFirstButton showLastButton /> : <></> 
                         }
                     </div>
 
@@ -278,13 +289,11 @@ export default function AnuncioView(props) {
                                             setIsShowDuplicarAnuncio(true)
                                             setAnuncio(prop)}}>
                                               <Dropdown.Item>
-                                                  Duplicar anúncio
+                                                Replicar anúncio
                                               </Dropdown.Item>
                                           </a>
                                     </Dropdown.Item>
                                     <Dropdown.Item>Msg automática pós venda</Dropdown.Item>
-                                    <Dropdown.Item>Finalizar</Dropdown.Item>
-                                    <Dropdown.Item>Replicar anúncio</Dropdown.Item>
 
                                    </>
                                     }
@@ -328,8 +337,8 @@ export default function AnuncioView(props) {
                  {/*PAGINAÇÃO*/}                
                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '10px'}}>
                     {
-                      isActive === 'active' ? props.stateDashboard.totalAtivos   > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={56} color="primary" showFirstButton showLastButton /> 
-                    : isActive === 'paused' ? props.stateDashboard.totalPausados > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={56} color="primary" showFirstButton showLastButton /> : <></> 
+                      isActive === 'active' ? props.stateDashboard.totalAtivos   > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={totalDePaginasAnunciosAtivos()} color="primary" showFirstButton showLastButton /> 
+                    : isActive === 'paused' ? props.stateDashboard.totalPausados > 100 && <Pagination page={state.page} onChange={onChangeHandlePage} count={totalDePaginasAnunciosPausados()} color="primary" showFirstButton showLastButton /> : <></> 
                     }
                  </div>
         
@@ -351,6 +360,11 @@ export default function AnuncioView(props) {
                             isShowPerguntas={isShowPerguntas} 
                             setIsShowPerguntas={setIsShowPerguntas}
         />}
+
+        {openDialogModificadorEmMassa && 
+        <ModificaEmMassaAnuncio 
+            openDialogModificadorEmMassa={openDialogModificadorEmMassa} 
+            setOpenDialogModificadorEmMassa={setOpenDialogModificadorEmMassa}/>}
 
         {props.isShowEditPrice && 
           <AlterarPreco options={options} 

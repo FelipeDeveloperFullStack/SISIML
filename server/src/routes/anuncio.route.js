@@ -12,9 +12,6 @@ router.get('/obterValorDoCustoFreteGratisPorAnuncio/get/anuncio/custo/:item_id/:
 router.get('/obter_categoria/get/anuncio/:itemId/:userId', anuncioService.getCategoria)
 router.get('/copiar_anuncio_por_id/copy/anuncio/get01/get02/get03/:itemId/:userId', anuncioService.copiarAnuncioPorID)
 
-
-
-
 router.put('/update_price/put01/:userId', anuncioService.updatePrice)
 router.put('/update_status/put01/put02/:userId', anuncioService.updateStatus)
 router.put('/update_title/put01/put02/put03/:userId', anuncioService.updateTitle)

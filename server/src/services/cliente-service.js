@@ -15,30 +15,42 @@ const obterDadosVendasPorCliente = async (id, userId) => {
                     return order_item
                 })
             })
-                let valor_venda = vendasClient.map(valorCorrente => { return valorCorrente.unit_price })
-                let dados = {
-                    totalCompras: valor_venda.reduce((acumulador, valorCorrent) => { return acumulador + valorCorrent }),
-                    quantidadeCompras: valor_venda.length,
-                    tituloAnuncio: vendasClient[0].item.title,
-                    IDAnuncio: vendasClient[0].item.id
-                }
-                axios.put('https://sisiml.firebaseio.com/cliente.json', {dados_cliente: dados}).then(response =>{
-                    //OK
-                }).catch(error =>console.log(error))
-        }).catch(error =>console.log(error))
+            let valor_venda = vendasClient.map(valorCorrente => { return valorCorrente.unit_price })
+            let dados = {
+                totalCompras: valor_venda.reduce((acumulador, valorCorrent) => { return acumulador + valorCorrent }),
+                quantidadeCompras: valor_venda.length,
+                tituloAnuncio: vendasClient[0].item.title,
+                IDAnuncio: vendasClient[0].item.id
+            }
+            axios.put('https://sisiml.firebaseio.com/cliente.json', { dados_cliente: dados }).then(response => {
+                //OK
+            }).catch(error => console.log(error))
+        }).catch(error => console.log(error))
     }).catch(error => console.log(error))
 }
 
 exports.obterDadosCliente = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
-        axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${resp.id}&access_token=${resp.accessToken}`).then(resp => {
-            let clientes = resp.data.results.filter(function (a) {
+        axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${resp.id}&access_token=${resp.accessToken}`).then(orders => {
+            let clientes = orders.data.results.filter(function (a) {
                 //Evita os IDs duplicados
                 return !this[JSON.stringify(a.buyer.id)] && (this[JSON.stringify(a.buyer.id)] = true)
 
-            }, Object.create(null)).map(value => {
+            }, Object.create(null)).map(async value => {
 
-                return axios.get('https://api.mercadolibre.com/users/' + value.buyer.id).then(resp => {
+                let vendas = orders.data.results.filter(ordersClient => {
+                    return ordersClient.buyer.id === value.buyer.id
+                })
+
+                let comprasCliente = vendas.map(value => {
+                    return value.order_items.reduce((acumulador, order_item) => {
+                        return order_item
+                    })
+                })
+
+                let valor_venda = comprasCliente.map(valorCorrente => { return valorCorrente.unit_price })
+
+                return await axios.get('https://api.mercadolibre.com/users/' + value.buyer.id).then(resp => {
                     var dadosClient = {
                         id: value.buyer.id,
                         nickname: value.buyer.nickname,
@@ -49,8 +61,9 @@ exports.obterDadosCliente = async (req, res) => {
                             value.buyer.billing_info.doc_number === null ? 'Não informado' : value.buyer.billing_info.doc_number,
                         cidade: resp.data.address.city,
                         estado: JSON.parse(JSON.stringify(resp.data.address.state).replace("BR-", "")),
-                        valorCompra: value.order_items[0].unit_price.toFixed(2),
-                        vendasClient: obterDadosVendasPorCliente(value.buyer.id, req.params.userId)
+                        totalCompras: valor_venda.reduce((acumulador, valorCorrent) => { return acumulador + valorCorrent }).toFixed(2),
+                        quantidadeCompras: valor_venda.length,
+                        compras_cliente: comprasCliente
                     }
                     return dadosClient
                 }).catch(err => res.send(err))

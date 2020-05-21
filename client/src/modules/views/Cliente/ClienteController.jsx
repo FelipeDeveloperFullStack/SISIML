@@ -1,25 +1,34 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { connect } from 'react-redux'
 import ClientView from '../Cliente/ClienteView'
 import { Dimmer, Loader } from 'semantic-ui-react'
 //import axios from 'axios'
 import { CARREGANDO_AGUARDE } from '../../constants/constants'
 
 
-export default function ClientController() {
+class ClientController extends React.Component {
 
+    constructor(props){
+        super(props)
+        document.title = "Clientes"
+    }
 
-    const store = useSelector(store => store.cliente)
-
-    document.title = "Clientes"
-
-    return (
-        <Dimmer.Dimmable dimmer={store.isLoading}>
-            <Dimmer active={store.isLoading} inverted>
-                <Loader>{CARREGANDO_AGUARDE}</Loader>
-            </Dimmer>
-            <ClientView result={store.result}  />
-        </Dimmer.Dimmable>
-        
-    )
+    render() {
+        return (
+            <Dimmer.Dimmable dimmer={this.props.store.isLoading}>
+                <Dimmer active={this.props.store.isLoading} inverted>
+                    <Loader>{CARREGANDO_AGUARDE}</Loader>
+                </Dimmer>
+                <ClientView result={this.props.store.result}  />
+            </Dimmer.Dimmable>
+            
+        )
+    }   
 }
+
+const mapStateToProps = (storeApp) => ({
+    store: storeApp.cliente
+})
+
+export default connect(mapStateToProps, null)(ClientController)
+

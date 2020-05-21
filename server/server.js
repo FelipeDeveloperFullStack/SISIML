@@ -7,7 +7,7 @@ const socketIO = require('socket.io')
 const server = http.createServer(app);
 const io = socketIO(server)
 const notificacoesMercadoLivreRoute = require('./src/routes/notificacoes.mercadolivre.route')(io)
-require('./src/config/passport.mercadolivre')(passport, io); //PASSPORT MERCADOLIVRE - INJETANDO O PASSPORT
+require('./src/config/passport.mercadolivre')(passport); //PASSPORT MERCADOLIVRE - INJETANDO O PASSPORT
 const axios = require('axios')
 
 mongoose.connect('mongodb+srv://admin:admin@cluster0-5qx8r.mongodb.net/sigiml?retryWrites=true&w=majority',
@@ -31,13 +31,6 @@ io.on('connection', socket => {
         console.log('disconnected')
     })
 })
-
-/*setInterval(async ()=> {
-    await axios.get("https://sisiml.firebaseio.com/usuarios/usuario.json").then(response => {
-        console.log(response.data)
-    }).catch(err => console.log(err))
-}, 5000)*/
-
 
 server.listen(port, () => {
     console.log("\n");

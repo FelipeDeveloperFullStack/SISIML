@@ -25,7 +25,6 @@ const rastreioRoute = require('./src/routes/rastreio.route')
 const filaPerguntasRoute = require("./src/routes/filaPerguntas.route")
 const comunicadoVendedorRoute = require("./src/routes/comunicadoVendedor.route")
 const atualizadorRefreshToken = require("../server/src/services/agendadorRefreshToken/atualizadorRefreshToken")
-const agendadorRefreshToken = require("../server/src/services/agendadorRefreshToken/atualizadorRefreshToken")
 
 //  Adicionar e configurar middleware
 app.use(session({

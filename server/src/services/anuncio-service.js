@@ -579,4 +579,10 @@ const getVariations = (variations) => {
     }
 }
 
+const modificarDescricaoEmMassa = async (req, res) => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
+        
+    }).catch(error => console.log(error))
+}
+
 

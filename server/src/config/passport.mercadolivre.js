@@ -4,7 +4,7 @@ const keys = require('./keys');
 const usuarioService = require("../services/usuario-service");
 
 
-module.exports = (passport, io) => {
+module.exports = (passport) => {
 
   passport.use(new MercadoLibreStrategy({
 

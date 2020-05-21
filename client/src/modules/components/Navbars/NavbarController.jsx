@@ -1,5 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar';
+import socketIOClient from 'socket.io-client'
+import { DOMAIN } from '../../constants/constants'
 
 export default class NavbarController extends React.Component {
     constructor(props) {
@@ -11,11 +13,17 @@ export default class NavbarController extends React.Component {
         }
     }
 
+    desconectarSocketSession = () => {
+        let socket = socketIOClient(DOMAIN)
+        socket.emit("disconnected")
+    }
+
     render() {
         return (
             <div>
                 <Navbar nomeUsuario={this.state.nomeUsuario} 
                         brandText={this.props.brandText} 
+                        desconectarSocketSession={this.desconectarSocketSession}
                         {...this.props}
                         {...this.state}/>
             </div>

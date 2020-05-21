@@ -22,7 +22,7 @@ import '../../../assets/css/Global/style.css'
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const drawerWidth = 250
-const drawerWidthRight = 500
+const drawerWidthRight = 250
 
 const StyledMenu = withStyles({
   paper: {
@@ -135,6 +135,7 @@ export default function Navbar(props) {
   }
 
   const handleOnClickSair = () => {
+    props.desconectarSocketSession()
     setState({ open: true })
     let myWindow = window.open("https://www.mercadolibre.com/jms/mlb/lgz/logout?go=https://www.mercadolivre.com.br#menu-user", "MsgWindow", "width=10, height=10, top=2500px, left=2500px");
     setTimeout(() => {

@@ -19,7 +19,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 export default function Sidebar(props) {
 
-  const drawerWidth = 500;
+  const drawerWidth = 250;
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -111,12 +111,14 @@ export default function Sidebar(props) {
       <Divider />
 
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-        <div style={{padding: '10px 0 10px'}}>
-          Saldo para duplicar anúncios: <b>157</b>
-        </div>
+        <div style={{padding: '10px 0 10px'}}>Saldo para duplicar anúncios: <b>157</b></div>
         <div style={{padding: '0 0 10px'}}>
           <Button size="small" variant="contained">Adicionar saldo</Button>
         </div>
+      </div>
+      <Divider/>
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+        <div style={{padding: '10px 0 10px'}}>Adicionar conta Mercado Livre</div>
       </div>
 
       <Divider />

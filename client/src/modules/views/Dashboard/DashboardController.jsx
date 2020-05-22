@@ -90,17 +90,7 @@ export default function DashboardController() {
         ]
     };
 
-    const setUserId = async () => {
-        await axios.get(`${DOMAIN}/usuario/procurar_usuario_byEmail/${localStorage.getItem('@sigiml/email-usuario')}`).then(resp => {
-            resp.data.map(user => {
-                localStorage.setItem('@sigiml/id', user.id)
-            })
-        }).catch(error => { swal('Error', 'Houve um erro ao tentar procurar o usuario pelo e-mail \n' + error, 'error') })
-    }
-
-
     const get = async () => {
-        await setUserId()
         let userId = String(localStorage.getItem('@sigiml/id'))
 
         await axios.get(`${DOMAIN}/comunicado/${userId}`).then(comunicado => {

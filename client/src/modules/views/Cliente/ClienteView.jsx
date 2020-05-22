@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import { Row, Col } from 'react-bootstrap'
 import { Accordion, Icon } from 'semantic-ui-react'
 import productIcon48px from '../../../assets/img/product-icon48px.png'
+import warningIcon72px from '../../../assets/img/warning-icon72px.png'
 import Tooltip from '@material-ui/core/Tooltip'
 
 
@@ -21,12 +22,15 @@ export default function ClientView(props) {
 
     return (
         <div>
-
-            <div style={{ margin: '0 0 10px' }}>
-                <TextField size='small' label="Buscar por nome" variant="outlined" style={{ width: '100%' }} />
+            <div display='none' style={{ margin: '0 0 10px' }}>
+                {props.result.length !== 0 && <TextField size='small' label="Buscar por nome" variant="outlined" style={{ width: '100%' }} />}
             </div>
 
-            {props.result.map((resp, key) => {
+            {props.result.length === 0 ? 
+                <div style={{display:  'flex', justifyContent: 'center', fontSize: '30px', color: '#818281', flexDirection: 'column', alignItems: 'center'}}>
+                    <div><img src={warningIcon72px}></img></div>
+                    <div>Ops. Nenhum cliente encontrado!</div>
+                </div> : props.result.map((resp, key) => {
                 if (!props.isLoading) {
                     return (
                         <>
@@ -53,7 +57,7 @@ export default function ClientView(props) {
                                         <div style={{ fontSize: '12px', color: 'black' }}>Valor total</div>
                                     </Col>
 
-                                    <Accordion>
+                                    <Accordion exclusive={false} fluid>
                                         <Tooltip title="Clique para ver os detalhes das compras realizadas pelo cliente!">
                                             <Accordion.Title
                                                 active={activeIndex === resp.id}

@@ -15,6 +15,7 @@ import CallApiPerguntas from '../modules/actions/CallApi/CallApiPerguntas'
 import axios from 'axios'
 import socketIOClient from 'socket.io-client'
 import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS } from '../../src/modules/constants/constants'
+import swal from 'sweetalert'
 
 export default function Admin(props) {
 
@@ -29,8 +30,17 @@ export default function Admin(props) {
     //Enviar para o Mercado livre
   }
 
+  const setUserId = async () => {
+    await axios.get(`${DOMAIN}/usuario/procurar_usuario_byEmail/${localStorage.getItem('@sigiml/email-usuario')}`).then(resp => {
+        resp.data.map(user => {
+            localStorage.setItem('@sigiml/id', user.id)
+        })
+    }).catch(error => { swal('Error', 'Houve um erro ao tentar procurar o usuario pelo e-mail \n' + error, 'error') })
+}
+
 
   useEffect(() => {
+    setUserId()
     let socket = socketIOClient(DOMAIN)
     socket.on('notification-ml', (perguntas) => {
       if (perguntas.status === 'UNANSWERED') {

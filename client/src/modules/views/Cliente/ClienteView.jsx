@@ -6,24 +6,36 @@ import { Accordion, Icon } from 'semantic-ui-react'
 import productIcon48px from '../../../assets/img/product-icon48px.png'
 import warningIcon72px from '../../../assets/img/warning-icon72px.png'
 import Tooltip from '@material-ui/core/Tooltip'
+import _ from 'lodash'
 
 
 
 export default function ClientView(props) {
 
     const [activeIndex, setActiveIndex] = React.useState(0)
+    const [name, setName] = React.useState('')
 
     const handleClick = (event, titleProps) => {
         const { index } = titleProps
         const newIndex = activeIndex === index ? -1 : index
-        console.log(newIndex)
         setActiveIndex(newIndex)
     }
+
+    const sendQuery = name => {
+        props.procurarClientePorNome(name)
+    }
+
+    const handleOnChangeFindByName = event => {
+        setName(event.target.value)
+        debounceFindByName(event.target.value)
+    }
+
+    const debounceFindByName = React.useRef(_.debounce(func => sendQuery(func), 600)).current //Debounce in TextField
 
     return (
         <div>
             <div display='none' style={{ margin: '0 0 10px' }}>
-                {props.result.length !== 0 && <TextField size='small' label="Buscar por nome" variant="outlined" style={{ width: '100%' }} />}
+                <TextField value={name} size='small' onChange={handleOnChangeFindByName} label="Buscar por nome, nickname ou CNPJ/CPF" variant="outlined" style={{ width: '100%' }} />
             </div>
 
             {props.result.length === 0 ? 

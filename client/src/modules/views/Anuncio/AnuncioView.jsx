@@ -20,13 +20,14 @@ import SearchIcon from '@material-ui/icons/Search';
 import TuneIcon from '@material-ui/icons/Tune';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
-import Badge from '@material-ui/core/Badge';
+
 import DuplicaAnuncio from './DuplicaAnuncio'
 import Pagination from '@material-ui/lab/Pagination';
 import {Dimmer, Segment} from 'semantic-ui-react'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import ModificaEmMassaAnuncio from '../Anuncio/ModificaEmMassaAnuncio'
+import {PAGE_OFFSET} from '../../constants/constants'
 
 
 export default function AnuncioView(props) {
@@ -100,8 +101,7 @@ export default function AnuncioView(props) {
 
    const onChangeHandlePage = (event, page, status) => {
         props.setOpenBackdrop(true)
-        //setPage(page)
-        dispatch({type: 'PAGE_OFFSET', data: page})
+        dispatch({type: PAGE_OFFSET, data: page})
         props.getAnuncioByOffset(page === 1 ? 0 : (page * 100) - 100, isActive)
    }
 

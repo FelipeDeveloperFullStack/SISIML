@@ -1,33 +1,7 @@
 const axios = require('axios')
 const usuarioService = require('../services/usuario-service')
 const constants = require('../constants/constants')
-const { rastro } = require('rastrojs')
-const util = require('../helpers/util')
 
-const obterDadosVendasPorCliente = async (id, userId) => {
-    usuarioService.buscarUsuarioPorID(userId).then(async user => {
-        await axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(orders => {
-            let vendas = orders.data.results.filter(ordersClient => {
-                return ordersClient.buyer.id == id
-            })
-            let vendasClient = vendas.map(value => {
-                return value.order_items.reduce((acumulador, order_item) => {
-                    return order_item
-                })
-            })
-            let valor_venda = vendasClient.map(valorCorrente => { return valorCorrente.unit_price })
-            let dados = {
-                totalCompras: valor_venda.reduce((acumulador, valorCorrent) => { return acumulador + valorCorrent }),
-                quantidadeCompras: valor_venda.length,
-                tituloAnuncio: vendasClient[0].item.title,
-                IDAnuncio: vendasClient[0].item.id
-            }
-            axios.put('https://sisiml.firebaseio.com/cliente.json', { dados_cliente: dados }).then(response => {
-                //OK
-            }).catch(error => console.log(error))
-        }).catch(error => console.log(error))
-    }).catch(error => console.log(error))
-}
 
 exports.obterDadosCliente = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
@@ -63,6 +37,7 @@ exports.obterDadosCliente = async (req, res) => {
                         estado: JSON.parse(JSON.stringify(resp.data.address.state).replace("BR-", "")),
                         totalCompras: valor_venda.reduce((acumulador, valorCorrent) => { return acumulador + valorCorrent }).toFixed(2),
                         quantidadeCompras: valor_venda.length,
+                        data_hora: value.date_closed,
                         compras_cliente: comprasCliente
                     }
                     return dadosClient

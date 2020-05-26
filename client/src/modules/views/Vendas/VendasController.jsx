@@ -19,6 +19,10 @@ class VendasController extends React.Component {
         }
     }
 
+    resetDadosRastreamento = () => {
+        this.setState({dadosRastreamento: {}})
+    }
+
     componentDidMount = async () => {
     
         /*const socket = socketIOClient(DOMAIN)
@@ -28,13 +32,9 @@ class VendasController extends React.Component {
           });*/
     }
 
-
-
-
-
     obterRastreioCorreios = async (codigo) => {
-        await axios.get(`${DOMAIN}/rastreio/${codigo}`).then(async response => {
-            await this.setState({
+        await axios.get(`${DOMAIN}/rastreio/${codigo}`).then(response => {
+            this.setState({
                 dadosRastreamento: response.data,
                 isLoading: false
             })
@@ -71,6 +71,7 @@ class VendasController extends React.Component {
                     </Dimmer>
 
                     <VendasView
+                        resetDadosRastreamento={this.resetDadosRastreamento}
                         vendas={this.props.vendas}
                         obterRastreioCorreios={this.obterRastreioCorreios}
                         dadosRastreamento={this.state.dadosRastreamento}

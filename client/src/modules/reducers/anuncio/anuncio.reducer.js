@@ -3,8 +3,7 @@ import {
     IDS_REMOVIDOS_IMAGENS_VARIACAO_ANUNCIO,
     SOURCES,
     PAGE_OFFSET,
-    IMAGENS_ANUNCIO,
-    IMAGE_DUPLICADA
+    IMAGENS_ANUNCIO
 } from '../../constants/constants'
 
 /**

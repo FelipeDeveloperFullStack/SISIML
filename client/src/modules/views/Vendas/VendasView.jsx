@@ -26,16 +26,12 @@ import Iframe from 'react-iframe'
 import { Timeline, TimelineItem } from 'vertical-timeline-component-for-react'
 import SearchIcon from '@material-ui/icons/Search';
 import Chat from '../../components/Chat/Chat'
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-
 import TextField from '@material-ui/core/TextField';
 import Chip from '@material-ui/core/Chip';
 import PrintIcon from '@material-ui/icons/Print';
@@ -63,6 +59,10 @@ export default class VendasView extends React.Component {
 
         this.handleClickSearch = this.handleClickSearch.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
+    }
+
+    closeDialogCodigoRastreio = () => {
+        this.setState({openDialogCodigoRastreio: false})
     }
 
     getStatusPendente = () => {
@@ -156,7 +156,8 @@ export default class VendasView extends React.Component {
         )
     }
 
-    exibirRastreamento = (codigo) => {
+    exibirRastreamento = async (codigo) => {
+        await this.props.resetDadosRastreamento()
         this.setState(
             {
                 openDialogCodigoRastreio: true,
@@ -326,9 +327,9 @@ export default class VendasView extends React.Component {
                                             content={
                                                 <>
                                                     <Row>
-                                                        <Col md={6}>
+                                                        <Col md={5}>
                                                             <Paper elevation={3}>
-                                                                <Card style={{ height: venda.comprador.first_name_comprador === undefined ? '134px' : '' }}>
+                                                                <Card style={{ height: venda.comprador.first_name_comprador === undefined ? '160px' : '160px' }}>
 
                                                                     <CardContent>
                                                                         <Typography gutterBottom variant="h5" component="h2">
@@ -362,10 +363,10 @@ export default class VendasView extends React.Component {
                                                             </Paper>
                                                         </Col>
 
-                                                        <Col md={6}>
+                                                        <Col md={7}>
                                                             <Paper elevation={3}>
 
-                                                                <Card style={{ 'height': '135px' }}>
+                                                                <Card style={{ 'height': '160px' }}>
 
                                                                     <CardContent>
 
@@ -383,6 +384,7 @@ export default class VendasView extends React.Component {
                                                                                             variant="contained"
                                                                                             style={{ 'color': 'black', 'marginBottom': '20px', 'marginTop': '15px', 'marginLeft': '-9px' }}
                                                                                             color='default'
+                                                                                            size='small'
                                                                                             onClick={() => this.exibirBoleto(venda)}
                                                                                             startIcon={<PictureAsPdfIcon color="primary" />}>
                                                                                             Visualizar Boleto
@@ -648,7 +650,7 @@ export default class VendasView extends React.Component {
 
                 {this.state.openDialogCodigoRastreio &&
 
-                    <Modal show={this.state.openDialogCodigoRastreio} onHide={() => this.setState({ openDialogCodigoRastreio: false })} style={{ 'marginTop': '50px' }} dialogClassName="width_modal_900px">
+                    <Modal show={this.state.openDialogCodigoRastreio} onHide={() => this.closeDialogCodigoRastreio()} style={{ 'marginTop': '50px' }} dialogClassName="width_modal_900px">
                         <Modal.Header closeButton style={{ 'backgroundColor': '#467EED', 'color': 'white' }}>
                             <Modal.Title>{this.props.dadosRastreamento.error !== '404' ? <>Rastreamento - {this.props.dadosRastreamento.code}</> : <>Atenção</>}</Modal.Title>
                         </Modal.Header>
@@ -668,8 +670,6 @@ export default class VendasView extends React.Component {
                                                 <div>Última atualização: <b>{this.props.dadosRastreamento.updatedAt}</b></div>
                                             </Col>
                                         </Row>
-
-                                        {console.log("Tracks: " + JSON.stringify(this.props.dadosRastreamento.tracks))}
 
                                         {this.props.dadosRastreamento.tracks !== undefined ?
                                             this.props.dadosRastreamento.tracks.map((track, key) => {

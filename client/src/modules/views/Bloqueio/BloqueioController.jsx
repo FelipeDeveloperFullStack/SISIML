@@ -218,11 +218,14 @@ export default class BloqueioController extends React.Component {
     }
 
     deletarUsuario = async (usuario) => {
+
+        let userId = localStorage.getItem("@sigiml/id")
+
         await axios.get(`${DOMAIN}/bloqueio/nickname/${usuario.nickname}`).then(async user => {
 
             //DELETAR USUARIO NA BLACK LIST PERGUNTAS
             if (usuario.bloquearPerguntas) {
-                await axios.delete(`${DOMAIN}/bloqueio/perguntas/${user.data.id}`).then(async response => {
+                await axios.delete(`${DOMAIN}/bloqueio/perguntas/${user.data.id}/${userId}`).then(async response => {
                     await axios.get(`${DOMAIN}/bloqueio/buscarUsuarioBlackListPerguntasPorNickNameMongoDB/${usuario.nickname}`).then(async resp => {
                         await axios.delete(`${DOMAIN}/bloqueio/mongo/perguntas/${resp.data[0]._id}`).then(res => {
                             swal('Sucesso', 'Usuário ' + usuario.nickname + ' desbloqueado conforme solicitado!', 'success')
@@ -234,7 +237,7 @@ export default class BloqueioController extends React.Component {
 
             //DELETAR USUARIO NA BLACK LIST COMPRAS
             if (usuario.bloquearCompras) {
-                await axios.delete(`${DOMAIN}/bloqueio/compras/${user.data.id}`).then(async response => {
+                await axios.delete(`${DOMAIN}/bloqueio/compras/${user.data.id}/${userId}`).then(async response => {
                     await axios.get(`${DOMAIN}/bloqueio/buscarUsuarioBlackListComprasPorNickNameMongoDB/${usuario.nickname}`).then(async respCompras => {
                          await axios.delete(`${DOMAIN}/bloqueio/mongo/compras/${respCompras.data[0]._id}`).then(res => {
                             swal('Sucesso', 'Usuário ' + usuario.nickname + ' desbloqueado conforme solicitado!', 'success')

@@ -256,11 +256,6 @@ exports.obterVendasEmTransito = async (req, res) => {
                                 },
                                 valor_venda: response.total_amount,
                                 comprador: {
-                                    whatsapp: util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) === null ?
-                                        'Não informado' : 'https://api.whatsapp.com/send?phone=55' + util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) + '',
-                                    numero_contato: util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) === null ?
-                                        'Não informado' : util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number),
-                                    ddd: response.buyer.phone.area_code,
                                     nickname_comprador: response.buyer.nickname,
                                     email_comprador: response.buyer.email,
                                     first_name_comprador: response.buyer.first_name,

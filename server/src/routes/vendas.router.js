@@ -13,8 +13,6 @@ router.get('/getTotalVendasEmTransito/get01/get02/get03/get04/get05/get06/get07/
 router.get('/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/:userId', vendasService.obterTotalVendasAEnviar)
 router.get('/getTotalVendasPendentes/get01/get02/get03/get04/get05/get06/get07/get08/get09/:userId', vendasService.obterTotalVendasPendentes)
 
-
-
 router.get('/gerarEtiquetaEnvio/:shipping_id', vendasService.gerarEtiquetaEnvio)
 
 module.exports = router

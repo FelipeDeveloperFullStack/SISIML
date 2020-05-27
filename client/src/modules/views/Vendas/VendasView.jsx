@@ -62,7 +62,7 @@ export default class VendasView extends React.Component {
     }
 
     closeDialogCodigoRastreio = () => {
-        this.setState({openDialogCodigoRastreio: false})
+        this.setState({ openDialogCodigoRastreio: false })
     }
 
     getStatusPendente = () => {
@@ -292,16 +292,18 @@ export default class VendasView extends React.Component {
                                 value={this.state.textFieldSearch}
                                 label='Buscar por título'
                                 variant='outlined'
+                                size='small'
                                 onChange={(event) => this.handleSearch(event)} />
 
-                            <Button
+                            {/**<Button
                                 variant="contained"
                                 color="primary"
                                 startIcon={<SearchIcon />}
+                                size='small'
                                 onClick={() => this.handleClickSearch()}
                                 style={{ height: '51px', margin: '0 5px 0', backgroundColor: '#4682B4' }}>
                                 Pesquisar
-                            </Button>
+                            </Button>*/}
 
                         </span>
                         <Divider />
@@ -542,7 +544,7 @@ export default class VendasView extends React.Component {
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', color: '#333' }}>
                             <img src={iconInterrogation} style={{ width: '50px', height: '50px', margin: '0 0 18px' }}></img>
                         </div>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', color: '#818181', 'fontSize': '16px', margin: '0 0 14px' }}>
                             Não há vendas com este filtro ou nenhum filtro foi clicado. Por favor, tente tente novamente nas opções acima.
                         </div>
@@ -587,8 +589,8 @@ export default class VendasView extends React.Component {
                                             nomeEmpresa={this.state.venda.id_usuario === msg.from.user_id ? msg.from.name : null}
                                             displayFooter={'none'}
                                             displayButtonClose={'none'}
-                                            height={this.state.venda.msg.length === 0 ? '400px' : ''} 
-                                            rows={this.state.venda.qtde[key].qtdeBarraN +1 }/>
+                                            height={this.state.venda.msg.length === 0 ? '400px' : ''}
+                                            rows={this.state.venda.qtde[key].qtdeBarraN + 1} />
 
                                     </>
                                 )
@@ -597,15 +599,15 @@ export default class VendasView extends React.Component {
 
                         </Modal.Body>
 
-                            <TextField multiline variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SendIcon />}
-                                style={{ backgroundColor: '#4682B4', height: '53px' }}>
-                                Enviar mensagem
+                        <TextField multiline variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SendIcon />}
+                            style={{ backgroundColor: '#4682B4', height: '53px' }}>
+                            Enviar mensagem
                             </Button>
-                        
+
                     </Modal>
 
                 }
@@ -614,43 +616,30 @@ export default class VendasView extends React.Component {
 
                     <Modal show={this.state.openModalVerMaisDetalhes} onHide={() => this.setState({ openModalVerMaisDetalhes: false })} style={{ 'marginTop': '50px' }} dialogClassName="width_modal_1000px">
                         <Modal.Header closeButton style={{ 'backgroundColor': '#467EED', 'color': 'white' }}>
-                            <Modal.Title>{this.state.venda.itens_pedido.titulo_anuncio} - {this.state.venda.itens_pedido.id_anuncio}</Modal.Title>
+                            {/*<Modal.Title>{this.state.venda.itens_pedido.titulo_anuncio} - {this.state.venda.itens_pedido.id_anuncio}</Modal.Title>*/}
+                            <Modal.Title>Mais detalhes</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
 
-                            <TableContainer component={Paper}>
-                                <Table aria-label="simple table">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>SKU</TableCell>
-                                            <TableCell align="right">Taxa da venda</TableCell>
-                                            <TableCell align="right">Garantia</TableCell>
-                                            <TableCell align="right"></TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell component="th" scope="row">
-                                                {this.state.venda.itens_pedido.sku === null ? <>Não informado</> : this.state.venda.itens_pedido.sku}
-                                            </TableCell>
-                                            <TableCell align="right">R$ {this.state.venda.itens_pedido.taxa_venda.toFixed(2)}</TableCell>
-                                            <TableCell align="right">{this.state.venda.itens_pedido.garantia === null ? <>Não informado</> : this.state.venda.itens_pedido.garantia}</TableCell>
-                                            {this.state.venda.itens_pedido.variation_attributes.map((variation, key) => {
-                                                return (
-                                                    <TableCell key={key} align="right"><b>{variation.value_name}</b></TableCell>
-                                                )
-                                            })}
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                            <Paper elevation={3} style={{padding: '20px 20px 20px', fontSize: '14px'}}>
+                                <div style={{paddingBottom: '5px'}}><b>SKU:</b> {this.state.venda.itens_pedido.sku === null ? <>Não informado</> : this.state.venda.itens_pedido.sku}</div>
+                                <div style={{paddingBottom: '5px'}}><b>Taxa da venda:</b> R$ {this.state.venda.itens_pedido.taxa_venda.toFixed(2)}</div>
+                                <div style={{paddingBottom: '5px'}}><b>Garantia:</b> {this.state.venda.itens_pedido.garantia === null ? <>Não informado</> : this.state.venda.itens_pedido.garantia}</div>
+                                <div style={{paddingBottom: '5px'}}><b>Variação:</b>
+                                    {this.state.venda.itens_pedido.variation_attributes.map((variation, key) => {
+                                        return (
+                                            <span key={key}> {variation.value_name}{'  '}</span>
+                                        )
+                                    })}
+                                </div>
+                            </Paper>
                         </Modal.Body>
                     </Modal>
                 }
 
                 {this.state.openDialogCodigoRastreio &&
 
-                    <Modal show={this.state.openDialogCodigoRastreio} onHide={() => this.closeDialogCodigoRastreio()} style={{ 'marginTop': '50px' }} dialogClassName="width_modal_900px">
+                    <Modal show={this.state.openDialogCodigoRastreio} onHide={() => this.closeDialogCodigoRastreio()} style={{ 'marginTop': '50px' }} dialogClassName="width_modal_rastreamento900px">
                         <Modal.Header closeButton style={{ 'backgroundColor': '#467EED', 'color': 'white' }}>
                             <Modal.Title>{this.props.dadosRastreamento.error !== '404' ? <>Rastreamento - {this.props.dadosRastreamento.code}</> : <>Atenção</>}</Modal.Title>
                         </Modal.Header>

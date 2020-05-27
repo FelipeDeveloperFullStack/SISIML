@@ -19,9 +19,9 @@ class ChatController extends React.Component {
         this.props.listarPerguntas(this.props.perguntas)
     }
 
-    responder = (question_id, text) => {
-        axios.post(`${DOMAIN}/notifications/responder`, {question_id: question_id, text: text}).then(response => {
-            console.log("Pergunta respondida")
+    responder = async (question_id, text) => {
+        let userId = localStorage.getItem("@sigiml/id")
+        await axios.post(`${DOMAIN}/notifications/responder/${userId}`, {question_id: question_id, text: text}).then(response => {
             this.mostrarPerguntas()
             swal('Respondido!', 'Pergunta respondida.', 'success')
         }).catch(error => console.log(error))

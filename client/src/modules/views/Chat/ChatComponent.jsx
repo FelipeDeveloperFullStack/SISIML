@@ -46,6 +46,11 @@ export default function ChatComponent(props) {
         setShowImage(false)
     }
 
+    const responder = () => {
+        props.responder(prop.id, textField)
+        setShowImage(true)
+    }
+
     return (
         <Grid columns={2} divided>
             <Grid.Row>
@@ -161,7 +166,7 @@ export default function ChatComponent(props) {
                                     <Button
                                         variant="contained"
                                         color="default"
-                                        onClick={() => {props.responder(prop.id, textField)}}
+                                        onClick={() => responder()}
                                         startIcon={<SendIcon />}>
                                         Enviar
                                     </Button>

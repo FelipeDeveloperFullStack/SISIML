@@ -21,7 +21,7 @@ exports.listarTodosUsuariosListaNegraPerguntas = (req, res) => {
 }
 
 exports.removerUsuarioListaNegraPerguntas = (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         axios.delete(`https://api.mercadolibre.com/users/${user.id}/questions_blacklist/${req.params.user_id_perguntas}?access_token=${user.accessToken}`).then(response => {
             res.send(response.data)
         }).catch(error => { res.send(error) })
@@ -89,7 +89,7 @@ exports.listarTodosUsuariosListaNegraCompras = (req, res) => {
 }
 
 exports.removerUsuarioListaNegraCompras = (req, res) => {
-    usuarioService.buscarUsuarioPorID().then(user => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         axios.delete(`https://api.mercadolibre.com/users/${user.id}/order_blacklist/${req.params.user_id_compras}?access_token=${user.accessToken}`).then(response => {
             res.send(response.data)
         }).catch(error => { res.send(error) })

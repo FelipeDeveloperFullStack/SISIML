@@ -8,8 +8,14 @@
     left: 20px
 }
 
+.width_modal_rastreamento900px {
+    width: 900px;
+    left: 25px
+}
+
 .width_modal_1000px {
-    width: 1000px;
+    /*width: 1000px;*/
+    left: 68px
 }
 
 @media (min-width: 768px){

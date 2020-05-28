@@ -27,7 +27,7 @@ export default function BloqueioView(props) {
 
     const textInsidePaper = {
         padding: '30px 30px 18px',
-        fontSize: '16px',
+        fontSize: '14px',
         color: '#818181'
     }
 

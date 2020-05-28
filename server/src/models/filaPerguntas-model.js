@@ -9,10 +9,6 @@ const filaPerguntas = mongoose.Schema({
         type: Number,
         trim: true
     },
-    resource:{
-        type: Number,
-        trim: true
-    },
     nick_name: {
         type: String,
         trim: true

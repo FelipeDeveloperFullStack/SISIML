@@ -94,9 +94,9 @@ export default function ChatComponent(props) {
                             )
                         }) : <>
                         
-                        <div style={{display: 'flex', justifyContent: 'center', fontSize: '16px', color: '#263238', fontWeight: 'bold' }}>Nenhuma pergunta disponível no momento</div>
+                                <div style={{display: 'flex', justifyContent: 'center', fontSize: '16px', color: '#263238', fontWeight: 'bold' }}>Nenhuma pergunta disponível no momento</div>
 
-                        </>}
+                            </>}
                     </List>
                 </Grid.Column>
 

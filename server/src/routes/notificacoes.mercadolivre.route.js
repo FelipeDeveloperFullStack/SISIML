@@ -15,7 +15,6 @@ module.exports = (io) => {
                         await axios.get(`https://api.mercadolibre.com/users/${question.data.from.id}`).then(userName => {
                             question.data.title = item.data.title
                             question.data.nick_name = userName.data.nickname
-                            question.resource = resource
                             salvarNotificacaoFilaBD(question.data, req.body)
                             io.emit('notification-ml', question.data)
                             res.send(question.data)
@@ -28,11 +27,12 @@ module.exports = (io) => {
     })
 
     const salvarNotificacaoFilaBD = (body, reqML) => {
-        /*let filaPerguntas = new FilaPerguntas(body)
+        let filaPerguntas = new FilaPerguntas(body)
         filaPerguntas.save().then(response => {
             console.log("Notificacoes salvo no banco de dados!")
-        })*/
-        FilaPerguntas.findOne({ seller_id: reqML.user_id }).then(response => {
+        })
+
+        /*FilaPerguntas.findOne({ seller_id: reqML.user_id }).then(response => {
             if (response === null) {
                 let filaPerguntas = new FilaPerguntas(body)
                 filaPerguntas.save().then(response => {
@@ -49,7 +49,7 @@ module.exports = (io) => {
                     }).catch(error => console.log(error))
                 }
             }
-        }).catch(error => console.log(error))
+        }).catch(error => console.log(error))*/
 
     }
 

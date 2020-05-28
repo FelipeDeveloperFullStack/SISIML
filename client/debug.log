@@ -122,3 +122,4 @@
 [0525/043410.254:ERROR:exception_snapshot_win.cc(98)] thread ID 29384 not found in process
 [0525/043410.082:ERROR:process_reader_win.cc(123)] NtOpenThread: {Acesso Negado} Um processo solicitou acesso a um objeto, mas o direito de acesso não lhe foi concedido. (0xc0000022)
 [0525/043410.317:ERROR:exception_snapshot_win.cc(98)] thread ID 23312 not found in process
+[0527/214640.667:ERROR:registration_protocol_win.cc(131)] TransactNamedPipe: O pipe foi finalizado. (0x6D)

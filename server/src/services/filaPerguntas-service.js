@@ -5,10 +5,9 @@ const FilaPerguntas = require("../models/filaPerguntas-model")
 exports.obterPerguntasNaoRespondidas = async (req, res) => {
     await usuarioService.buscarUsuarioPorID(req.params.userId).then(user => {
         FilaPerguntas.find({
-            seller_id: user.id,
-            status: 'UNANSWERED'
+            seller_id: user.id
         }).then(response => {
-           res.send(response)
+            console.log(response)
         }).catch(error => res.send(error))
     }).catch(error => res.send(error))
 }

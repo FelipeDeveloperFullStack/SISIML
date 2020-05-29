@@ -615,13 +615,14 @@ let getDataSite = async () => {
 
 
 
-let obterVendasConcluidas = async () => {
-    usuarioService.buscarUsuarioPorID().then(async user => {
+let obterVendasConcluidas = async (userId) => {
+    usuarioService.buscarUsuarioPorID(userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(resp => {
             let vendasConcluidas = resp.data.results.map(async response => {
                 return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
                     return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
                         let json = {
+                            id_usuario: JSON.stringify(user.id),
                             id_venda: response.id,
                             status: response.status,
                             data_venda: util.formatarDataHora(response.date_closed),
@@ -640,11 +641,6 @@ let obterVendasConcluidas = async () => {
                             },
                             valor_venda: response.total_amount,
                             comprador: {
-                                //whatsapp: util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) === null ?
-                                    //'Não informado' : 'https://api.whatsapp.com/send?phone=55' + util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) + '',
-                                //numero_contato: util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) === null ?
-                                    //'Não informado' : util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number),
-                                //ddd: response.buyer.phone.area_code,
                                 nickname_comprador: response.buyer.nickname,
                                 email_comprador: response.buyer.email,
                                 first_name_comprador: response.buyer.first_name,
@@ -673,13 +669,14 @@ let obterVendasConcluidas = async () => {
                                     telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
                                 }
                             },
-                            
-                            msg: msg.data.messages
-                            
+
+                            msg: msg.data.messages,
+                            qtde: obterQuantidadeChar(msg.data.messages)
+
                         }
                         return json
                     }).catch(error => console.log(error))
-                })
+                }).catch(error => console.log(error))
             })
 
             Promise.all(vendasConcluidas).then(vendas => {
@@ -689,11 +686,10 @@ let obterVendasConcluidas = async () => {
                         newVendas.push(venda)
                     }
                 })
-                //res.status(200).send(newVendas)
                 console.log(newVendas)
             })
 
-        }).catch(error =>console.log(error))
+        }).catch(error => console.log(error))
     }).catch(error => console.log(error))
 }
 
@@ -817,4 +813,4 @@ const getProcurarUsuarioPorEmail = async () => {
     }).catch(error => console.log(error))
 }
 
-obterVendasEmTransito(362614126)
+obterVendasConcluidas(541569110)

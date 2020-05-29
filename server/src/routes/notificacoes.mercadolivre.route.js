@@ -23,6 +23,12 @@ module.exports = (io) => {
                     })
                 })
             }
+            if(req.body.topic === 'orders_v2'){
+                console.log("Nova venda \n")
+                console.log(req.body)
+                console.log("Nova venda \n")
+                res.send("Nova venda")
+            }
         }).catch(error => res.send(error))
     })
 
@@ -33,7 +39,6 @@ module.exports = (io) => {
         })*/
 
         FilaPerguntas.findOne({ id: body.id }).then(response => {
-            console.log(response)
             if (response === null) {
                 let filaPerguntas = new FilaPerguntas(body)
                 filaPerguntas.save().then(response => {

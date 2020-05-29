@@ -15,7 +15,7 @@ module.exports = (io) => {
                         await axios.get(`https://api.mercadolibre.com/users/${question.data.from.id}`).then(userName => {
                             question.data.title = item.data.title
                             question.data.nick_name = userName.data.nickname
-                            salvarNotificacaoFilaBD(question.data, req.body)
+                            salvarNotificacaoFilaBD(question.data)
                             io.emit('notification-ml', question.data)
                             res.send(question.data)
                             console.log(req.body)
@@ -26,30 +26,25 @@ module.exports = (io) => {
         }).catch(error => res.send(error))
     })
 
-    const salvarNotificacaoFilaBD = (body, reqML) => {
-        let filaPerguntas = new FilaPerguntas(body)
+    const salvarNotificacaoFilaBD = (body) => {
+        /*let filaPerguntas = new FilaPerguntas(body)
         filaPerguntas.save().then(response => {
             console.log("Notificacoes salvo no banco de dados!")
-        })
+        })*/
 
-        /*FilaPerguntas.findOne({ seller_id: reqML.user_id }).then(response => {
+        FilaPerguntas.findOne({ id: body.id }).then(response => {
+            console.log(response)
             if (response === null) {
                 let filaPerguntas = new FilaPerguntas(body)
                 filaPerguntas.save().then(response => {
                     console.log("Notificacoes salvo no banco de dados!")
                 }).catch(error => console.log(error))
             }else{
-                if(response.resource === reqML.resource){
-                    FilaPerguntas.findOneAndUpdate({ seller_id: reqML.user_id }, {$set: {status: body.status}}).then(response => {
-                        console.log("Notificacoes atualizada no banco de dados!")
-                    }).catch(error => console.log(error))
-                }else{
-                    filaPerguntas.save().then(response => {
-                        console.log("Notificacoes salvo no banco de dados!")
-                    }).catch(error => console.log(error))
-                }
+                FilaPerguntas.findOneAndUpdate({ id: body.id }, {$set: {status: body.status}}).then(response => {
+                    console.log("Notificacoes atualizada no banco de dados!")
+                }).catch(error => console.log(error))
             }
-        }).catch(error => console.log(error))*/
+        }).catch(error => console.log(error))
 
     }
 

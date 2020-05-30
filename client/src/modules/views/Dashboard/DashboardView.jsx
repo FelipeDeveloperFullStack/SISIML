@@ -121,7 +121,7 @@ export default function DashboardView(props) {
 
             <Row>
               <Col md={6}>
-                <div style={{ 'color': '#4194D8', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>0</div>
+                <div style={{ 'color': '#4194D8', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>{props.statePerguntas.question.length}</div>
                 <div style={{ 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center' }}>Perguntas</div>
                 <div style={{ 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center' }}>sem responder</div>
               </Col>

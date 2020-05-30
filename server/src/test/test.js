@@ -525,10 +525,10 @@ let obterVendasEmTransito = async (userId) => {
 }
 
 let obterImagemSite = async (url) => {
-    await axios.get('https://uploaddeimagens.com.br/imagens/unNVwzQ').then(async response =>{
+    await axios.get('https://uploaddeimagens.com.br/imagens/unNVwzQ').then(async response => {
         let $ = cheerio.load(response.data)
         let imagem = $('.fancybox').find('img').attr('src')
-        console.log('https://uploaddeimagens.com.br/'+imagem)
+        console.log('https://uploaddeimagens.com.br/' + imagem)
     })
 }
 
@@ -572,7 +572,7 @@ let getDataSite = async () => {
             })
 
             let faturamento = soma.toLocaleString("pt-BR", { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' })
-            
+
 
             Promise.all(visitas).then(async resp => {
 
@@ -619,64 +619,11 @@ let obterVendasConcluidas = async (userId) => {
     usuarioService.buscarUsuarioPorID(userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(resp => {
             let vendasConcluidas = resp.data.results.map(async response => {
-                return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
-                    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
-                        let json = {
-                            id_usuario: JSON.stringify(user.id),
-                            id_venda: response.id,
-                            status: response.status,
-                            data_venda: util.formatarDataHora(response.date_closed),
-                            pack_id: response.pack_id,
-                            itens_pedido: {
-                                quantidade_vendido: response.order_items[0].quantity,
-                                id_variacao: response.order_items[0].item.variation_id,
-                                sku: response.order_items[0].item.seller_sku,
-                                id_anuncio: response.order_items[0].item.id,
-                                condicao: response.order_items[0].item.condition,
-                                garantia: response.order_items[0].item.warranty,
-                                id_categoria: response.order_items[0].item.category_id,
-                                titulo_anuncio: response.order_items[0].item.title,
-                                taxa_venda: response.order_items[0].sale_fee,
-                                variation_attributes: response.order_items[0].item.variation_attributes,
-                            },
-                            valor_venda: response.total_amount,
-                            comprador: {
-                                nickname_comprador: response.buyer.nickname,
-                                email_comprador: response.buyer.email,
-                                first_name_comprador: response.buyer.first_name,
-                                last_name_comprador: response.buyer.last_name,
-                                tipo_documento_comprador: response.buyer.billing_info.doc_type,
-                                documento_comprador: response.buyer.billing_info.doc_number === undefined ||
-                                    response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
-                            },
-                            dados_pagamento: obterDadosPagamento(response.payments),
-                            dados_entrega: {
-                                status: ship.data.status,
-                                substatus: ship.data.substatus,
-                                id: ship.data.id,
-                                cod_rastreamento: ship.data.tracking_number,
-                                metodo_envio: ship.data.tracking_method,
-                                endereco_entrega: {
-                                    rua: ship.data.receiver_address.street_name,
-                                    numero: ship.data.receiver_address.street_number,
-                                    cep: ship.data.receiver_address.zip_code,
-                                    cidade: ship.data.receiver_address.city,
-                                    estado: ship.data.receiver_address.state,
-                                    bairro: ship.data.receiver_address.neighborhood,
-                                    latitude: ship.data.receiver_address.latitude,
-                                    longitude: ship.data.receiver_address.longitude,
-                                    nomePessoaEntrega: ship.data.receiver_address.receiver_name,
-                                    telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
-                                }
-                            },
-
-                            msg: msg.data.messages,
-                            qtde: obterQuantidadeChar(msg.data.messages)
-
-                        }
-                        return json
-                    }).catch(error => console.log(error))
-                }).catch(error => console.log(error))
+                if (response.shipping.id === undefined) {
+                    return processarVendasConcluidasSemShipmentsEntregaACombinar(response, user)
+                } else {
+                    return processarVendasConcluidasComShipments(response, user)
+                }
             })
 
             Promise.all(vendasConcluidas).then(vendas => {
@@ -693,6 +640,121 @@ let obterVendasConcluidas = async (userId) => {
     }).catch(error => console.log(error))
 }
 
+const processarVendasConcluidasComShipments = async (response, user) => {
+    return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
+        return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+            let json = {
+                id_usuario: JSON.stringify(user.id),
+                id_venda: response.id,
+                status: response.status,
+                data_venda: util.formatarDataHora(response.date_closed),
+                pack_id: response.pack_id,
+                itens_pedido: {
+                    quantidade_vendido: response.order_items[0].quantity,
+                    id_variacao: response.order_items[0].item.variation_id,
+                    sku: response.order_items[0].item.seller_sku,
+                    id_anuncio: response.order_items[0].item.id,
+                    condicao: response.order_items[0].item.condition,
+                    garantia: response.order_items[0].item.warranty,
+                    id_categoria: response.order_items[0].item.category_id,
+                    titulo_anuncio: response.order_items[0].item.title,
+                    taxa_venda: response.order_items[0].sale_fee,
+                    variation_attributes: response.order_items[0].item.variation_attributes,
+                },
+                valor_venda: response.total_amount,
+                comprador: {
+                    nickname_comprador: response.buyer.nickname,
+                    email_comprador: response.buyer.email,
+                    first_name_comprador: response.buyer.first_name,
+                    last_name_comprador: response.buyer.last_name,
+                    tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                    documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                        response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+                },
+                dados_pagamento: obterDadosPagamento(response.payments),
+                dados_entrega: {
+                    status: ship.data.status,
+                    substatus: ship.data.substatus,
+                    id: ship.data.id,
+                    cod_rastreamento: ship.data.tracking_number,
+                    metodo_envio: ship.data.tracking_method,
+                    endereco_entrega: {
+                        rua: ship.data.receiver_address.street_name,
+                        numero: ship.data.receiver_address.street_number,
+                        cep: ship.data.receiver_address.zip_code,
+                        cidade: ship.data.receiver_address.city,
+                        estado: ship.data.receiver_address.state,
+                        bairro: ship.data.receiver_address.neighborhood,
+                        latitude: ship.data.receiver_address.latitude,
+                        longitude: ship.data.receiver_address.longitude,
+                        nomePessoaEntrega: ship.data.receiver_address.receiver_name,
+                        telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
+                    }
+                },
+
+                msg: msg.data.messages,
+                qtde: obterQuantidadeChar(msg.data.messages)
+
+            }
+            return json
+        }).catch(error => console.log(error))
+    }).catch(error => console.log(error))
+}
+
+const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, user) => {
+        return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+            let json = {
+                id_usuario: JSON.stringify(user.id),
+                id_venda: response.id,
+                status: response.status,
+                data_venda: util.formatarDataHora(response.date_closed),
+                pack_id: response.pack_id,
+                itens_pedido: {
+                    quantidade_vendido: response.order_items[0].quantity,
+                    id_variacao: response.order_items[0].item.variation_id,
+                    sku: response.order_items[0].item.seller_sku,
+                    id_anuncio: response.order_items[0].item.id,
+                    condicao: response.order_items[0].item.condition,
+                    garantia: response.order_items[0].item.warranty,
+                    id_categoria: response.order_items[0].item.category_id,
+                    titulo_anuncio: response.order_items[0].item.title,
+                    taxa_venda: response.order_items[0].sale_fee,
+                    variation_attributes: response.order_items[0].item.variation_attributes,
+                },
+                valor_venda: response.total_amount,
+                comprador: {
+                    nickname_comprador: response.buyer.nickname,
+                    email_comprador: response.buyer.email,
+                    first_name_comprador: response.buyer.first_name,
+                    last_name_comprador: response.buyer.last_name,
+                    tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                    documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                        response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+                },
+                dados_pagamento: obterDadosPagamento(response.payments),
+                status_entrega:  "Entrega a combinar com o vendedor",
+                msg: msg.data.messages,
+                qtde: obterQuantidadeChar(msg.data.messages)
+
+            }
+            return json
+        }).catch(error => console.log(error))
+}
+
+let obterQuantidadeChar = (messages) => {
+
+    return messages.map(msg => {
+        if (msg !== undefined) {
+            let obj = {
+                qtdeBarraN: msg.text.split('').filter(c => { return c === "\n" }).length + 2,
+            }
+            return obj
+        } else {
+            return 0
+        }
+    })
+}
+
 
 const obterDadosVendasPorCliente = async (id) => {
     usuarioService.buscarUsuarioPorID().then(async user => {
@@ -703,22 +765,22 @@ const obterDadosVendasPorCliente = async (id) => {
             let vendasClient = vendas.map(value => {
                 //console.log(value.order_items)
                 return value.order_items.reduce((acumulador, order_item) => {
-                  return order_item
+                    return order_item
                 })
             })
-            
-                let valor_venda = vendasClient.map(valorCorrente =>{return valorCorrente.unit_price})
-                let dados = {
-                    totalCompras : valor_venda.reduce((acumulador, valorCorrent) => {return acumulador + valorCorrent}),
-                    quantidadeCompras: valor_venda.length,
-                    tituloAnuncio: vendasClient.reduce((acumulador, valorCorrente) => {return valorCorrente.item.title}),
-                    IDAnuncio: vendasClient.reduce((a, valorCorrente) => {return valorCorrente.item.id})
-                }
 
-              console.log(dados)
-            
-        }).catch(error =>  console.log(error))
-    }).catch(error =>  console.log(error))
+            let valor_venda = vendasClient.map(valorCorrente => { return valorCorrente.unit_price })
+            let dados = {
+                totalCompras: valor_venda.reduce((acumulador, valorCorrent) => { return acumulador + valorCorrent }),
+                quantidadeCompras: valor_venda.length,
+                tituloAnuncio: vendasClient.reduce((acumulador, valorCorrente) => { return valorCorrente.item.title }),
+                IDAnuncio: vendasClient.reduce((a, valorCorrente) => { return valorCorrente.item.id })
+            }
+
+            console.log(dados)
+
+        }).catch(error => console.log(error))
+    }).catch(error => console.log(error))
 }
 
 const obterDadosCliente = async () => {
@@ -763,10 +825,10 @@ const obterAtributosPorCategoria = async () => {
         await axios.get(`https://api.mercadolibre.com/categories/MLB3112/attributes`).then(async atrib => {
             atrib.data.map(value => {
                 console.log("\n")
-                console.log("Id: "+ value.id)
-                console.log("Name: "+ value.name)
-                console.log("Type: "+value.value_type)
-                console.log("Values: "+ JSON.stringify(value.values))
+                console.log("Id: " + value.id)
+                console.log("Name: " + value.name)
+                console.log("Type: " + value.value_type)
+                console.log("Values: " + JSON.stringify(value.values))
                 console.log("\n")
             })
         }).catch(error => console.error(error))
@@ -791,7 +853,7 @@ const encontrarString = () => {
 }
 
 const obterTotalAnuncios = async () => {
-    
+
     usuarioService.buscarUsuarioPorID(541569110).then(async user => {
         await axios.get(`https://api.mercadolibre.com/users/${user.id}/items/search?access_token=${user.accessToken}&status=paused`).then(response => {
             console.log(response.data.paging.total)
@@ -802,12 +864,12 @@ const obterTotalAnuncios = async () => {
 const buscarUsuarioPorID = async () => {
     usuarioService.buscarUsuarioByID()
 
-   //return usuario;
+    //return usuario;
 }
 
 const getProcurarUsuarioPorEmail = async () => {
     Usuario.findById({
-    _id: '5ebc4c15e76af43bd8ada5c6'
+        _id: '5ebc4c15e76af43bd8ada5c6'
     }).then(response => {
         console.log(response)
     }).catch(error => console.log(error))

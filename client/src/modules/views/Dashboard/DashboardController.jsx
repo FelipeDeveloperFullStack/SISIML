@@ -9,8 +9,8 @@ import {
     OBTER_SALDO_TOTAL,
     OBTER_TOTAL_VENDAS_NO_MES,
     OBTER_VENDAS_PENDENTE,
-    CARREGANDO_AGUARDE,
-    OBTER_STATUS_ANUNCIOS
+    OBTER_STATUS_ANUNCIOS,
+    GET_PERGUNTAS
 }
     from '../../constants/constants'
 import { DOMAIN } from '../../constants/constants'
@@ -18,7 +18,8 @@ import { DOMAIN } from '../../constants/constants'
 export default function DashboardController() {
 
     const dispatch = useDispatch()
-    const state = useSelector(state => state.dashboard)
+    const state = useSelector(store => store.dashboard)
+    const statePerguntas = useSelector(store => store.perguntas)
     const [comunicado, setComunicado] = useState({})
 
     document.title = "Dashboard"
@@ -93,10 +94,19 @@ export default function DashboardController() {
     const get = async () => {
         let userId = String(localStorage.getItem('@sigiml/id'))
 
+        await axios.get(`${DOMAIN}/perguntas/fila_perguntas/${userId}`).then(pergunta => {
+            dispatch({
+                type: GET_PERGUNTAS,
+                question: pergunta.data
+            })
+        }).catch(error => {
+            swal("Error", "Ops, não conseguimos obter as informações de perguntas:(  \n \n " + error, "error");
+        })
+
         await axios.get(`${DOMAIN}/comunicado/${userId}`).then(comunicado => {
             setComunicado(comunicado.data[0])
         }).catch(error => {
-            swal("Error", "Ops, não conseguimos obter as informaçoes do comunicado! :( (Dashboard:98):  \n \n " + error, "error");
+            swal("Error", "Ops, não conseguimos obter as informaçoes do comunicado! :(  \n \n " + error, "error");
         })
 
         await axios.get(`${DOMAIN}/saldo/${userId}`).then(res => {
@@ -110,7 +120,7 @@ export default function DashboardController() {
                 isLoadingStatusPublicacoes: false
             })
         }).catch(error => {
-            swal("Error", "Houve um erro ao mostrar os saldos (Dashboard:45):  \n \n " + error, "error");
+            swal("Error", "Houve um erro ao mostrar os saldos  \n \n " + error, "error");
         })
 
         await axios.get(`${DOMAIN}/vendas/getTotalDeVendas/${userId}`).then(resp => {
@@ -121,7 +131,7 @@ export default function DashboardController() {
                 isLoading: false
             })
         }).catch(error => {
-            swal("Error", "Houve um erro ao mostrar o total de vendas (Dashboard:56):  \n \n " + error, "error");
+            swal("Error", "Houve um erro ao mostrar o total de vendas  \n \n " + error, "error");
         })
 
         await axios.get(`${DOMAIN}/vendas/getVendasPendentes/get01/get02/get03/${userId}`).then(resp => {
@@ -132,7 +142,7 @@ export default function DashboardController() {
                 isLoading: false
             })
         }).catch(error => {
-            swal("Error", "Houve um erro ao mostrar as vendas pendentes (Dashboard:67):  \n \n " + error, "error");
+            swal("Error", "Houve um erro ao mostrar as vendas pendentes   \n \n " + error, "error");
         })
 
         await axios.get(`${DOMAIN}/anuncio/total_status/get01/${userId}`).then(status => {
@@ -143,7 +153,7 @@ export default function DashboardController() {
                 isLoading: false
             })
         }).catch(error => {
-            swal("Error", "Houve um erro ao mostrar os status dos anuncios (Dashboard:78):  \n \n " + error, "error");
+            swal("Error", "Houve um erro ao mostrar os status dos anuncios   \n \n " + error, "error");
         })
     }
 
@@ -156,6 +166,7 @@ export default function DashboardController() {
                 <DashboardView {...state}
                     options={options}
                     series={series}
+                    statePerguntas={statePerguntas}
                     dataVendas={dataVendas}
                     dataFaturamento={dataFaturamento}
                     comunicado={comunicado}

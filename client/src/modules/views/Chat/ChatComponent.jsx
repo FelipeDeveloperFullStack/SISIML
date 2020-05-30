@@ -41,9 +41,11 @@ export default function ChatComponent(props) {
     const [textField, setTextField] = React.useState('')
     const [showImage, setShowImage] = React.useState(true)
 
+   
     const handleClickListItem = (prop) => {
         setProp(prop)
         setShowImage(false)
+        setTextField('')
     }
 
     const responder = () => {

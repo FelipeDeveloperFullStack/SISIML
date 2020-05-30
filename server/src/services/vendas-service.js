@@ -10,7 +10,7 @@ exports.obterTotalDeVendas = async (req, res) => {
     var data = new Date();
     let diaAtual = new Date().getDate()
 
-    usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
+    await usuarioService.buscarUsuarioPorID(req.params.userId).then(resp => {
         axios.get(`${constants.API_MERCADO_LIVRE}/orders/search?seller=${resp.id}&order.date_created.from=${data.getFullYear()}-${data.getMonth() + 1}-01T00:00:00.000-00:00&order.date_created.to=${data.getFullYear()}-${data.getMonth() + 1}-${diaAtual}T00:00:00.000-00:00&&access_token=${resp.accessToken}`).then(response => {
             res.send({
                 total_vendas: response.data.results.length,
@@ -31,70 +31,11 @@ exports.obterVendaProntoParaEnviar = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&order.date_created.from=${anoAtual}-${mesAtual}-01T00:00:00.000-00:00&order.date_created.to=${anoAtual}-${mesAtual}-${diaAtual}T00:00:00.000-00:00&&access_token=${user.accessToken}`).then(resp => {
             let vendasAEnviar = resp.data.results.map(async response => {
-                if (response.shipping.substatus !== null) {
-                    if (response.shipping.substatus === 'ready_to_print' || response.shipping.substatus === 'printed') {
-                        if (response.shipping.id != null) {
-                            return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(ship => {
-                                //return await axios.get(`https://api.mercadolibre.com/messages/packs/${req.params.packId}/sellers/${user.id}?access_token=${user.accessToken}`)
-                                let json = {
-                                    id_venda: response.id,
-                                    status: response.status,
-                                    data_venda: util.formatarDataHora(response.date_closed),
-                                    pack_id: response.pack_id,
-                                    itens_pedido: {
-                                        quantidade_vendido: response.order_items[0].quantity,
-                                        id_variacao: response.order_items[0].item.variation_id,
-                                        sku: response.order_items[0].item.seller_sku,
-                                        id_anuncio: response.order_items[0].item.id,
-                                        condicao: response.order_items[0].item.condition,
-                                        garantia: response.order_items[0].item.warranty,
-                                        id_categoria: response.order_items[0].item.category_id,
-                                        titulo_anuncio: response.order_items[0].item.title,
-                                        taxa_venda: response.order_items[0].sale_fee,
-                                        variation_attributes: response.order_items[0].item.variation_attributes,
-                                    },
-                                    valor_venda: response.total_amount,
-                                    comprador: {
-                                        whatsapp: util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) === null ?
-                                            'Não informado' : 'https://api.whatsapp.com/send?phone=55' + util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) + '',
-                                        numero_contato: util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number) === null ?
-                                            'Não informado' : util.tratarNumeroCelularComDDD(response.buyer.phone.area_code, response.buyer.phone.number),
-                                        ddd: response.buyer.phone.area_code,
-                                        nickname_comprador: response.buyer.nickname,
-                                        email_comprador: response.buyer.email,
-                                        first_name_comprador: response.buyer.first_name,
-                                        last_name_comprador: response.buyer.last_name,
-                                        tipo_documento_comprador: response.buyer.billing_info.doc_type,
-                                        documento_comprador: response.buyer.billing_info.doc_number === undefined ||
-                                            response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
-                                    },
-                                    dados_pagamento: obterDadosPagamento(response.payments),
-                                    dados_entrega: {
-                                        status: ship.data.status,
-                                        substatus: ship.data.substatus,
-                                        id: ship.data.id,
-                                        cod_rastreamento: ship.data.tracking_number,
-                                        metodo_envio: ship.data.tracking_method,
-                                        endereco_entrega: {
-                                            rua: ship.data.receiver_address.street_name,
-                                            numero: ship.data.receiver_address.street_number,
-                                            cep: ship.data.receiver_address.zip_code,
-                                            cidade: ship.data.receiver_address.city,
-                                            estado: ship.data.receiver_address.state,
-                                            bairro: ship.data.receiver_address.neighborhood,
-                                            latitude: ship.data.receiver_address.latitude,
-                                            longitude: ship.data.receiver_address.longitude,
-                                            nomePessoaEntrega: ship.data.receiver_address.receiver_name,
-                                            telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
-                                        }
-                                    }
-                                }
-                                return json
-                            })
-                        }
-                    }
+                if (response.shipping.id !== undefined) {
+                    return obterVendaProntoParaEnviarCOMShipping(response, user)
+                } else {
+                    return obterVendaProntoParaEnviarSEMShipping(response, user)
                 }
-                return response.data
             })
 
             Promise.all(vendasAEnviar).then(vendas => {
@@ -105,6 +46,113 @@ exports.obterVendaProntoParaEnviar = async (req, res) => {
 
         }).catch(error => res.send(error))
     }).catch(error => res.send(error))
+}
+
+const obterVendaProntoParaEnviarCOMShipping = async (response, user) => {
+    if (response.shipping.substatus !== null) {
+        if (response.shipping.substatus === 'ready_to_print' || response.shipping.substatus === 'printed') {
+            if (response.shipping.id != null) {
+                return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
+                    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+                        let json = {
+                            id_venda: response.id,
+                            status: response.status,
+                            data_venda: util.formatarDataHora(response.date_closed),
+                            pack_id: response.pack_id,
+                            itens_pedido: {
+                                quantidade_vendido: response.order_items[0].quantity,
+                                id_variacao: response.order_items[0].item.variation_id,
+                                sku: response.order_items[0].item.seller_sku,
+                                id_anuncio: response.order_items[0].item.id,
+                                condicao: response.order_items[0].item.condition,
+                                garantia: response.order_items[0].item.warranty,
+                                id_categoria: response.order_items[0].item.category_id,
+                                titulo_anuncio: response.order_items[0].item.title,
+                                taxa_venda: response.order_items[0].sale_fee,
+                                variation_attributes: response.order_items[0].item.variation_attributes,
+                            },
+                            valor_venda: response.total_amount,
+                            comprador: {
+                                nickname_comprador: response.buyer.nickname,
+                                email_comprador: response.buyer.email,
+                                first_name_comprador: response.buyer.first_name,
+                                last_name_comprador: response.buyer.last_name,
+                                tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                                documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                                    response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+                            },
+                            dados_pagamento: obterDadosPagamento(response.payments),
+                            dados_entrega: {
+                                status: ship.data.status,
+                                substatus: ship.data.substatus,
+                                id: ship.data.id,
+                                cod_rastreamento: ship.data.tracking_number,
+                                metodo_envio: ship.data.tracking_method,
+                                endereco_entrega: {
+                                    rua: ship.data.receiver_address.street_name,
+                                    numero: ship.data.receiver_address.street_number,
+                                    cep: ship.data.receiver_address.zip_code,
+                                    cidade: ship.data.receiver_address.city,
+                                    estado: ship.data.receiver_address.state,
+                                    bairro: ship.data.receiver_address.neighborhood,
+                                    latitude: ship.data.receiver_address.latitude,
+                                    longitude: ship.data.receiver_address.longitude,
+                                    nomePessoaEntrega: ship.data.receiver_address.receiver_name,
+                                    telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
+                                }
+                            },
+                            msg: msg.data.messages,
+                            qtde: obterQuantidadeChar(msg.data.messages)
+                        }
+                        return json
+                    })
+                })
+            }
+        }
+    }
+}
+
+const obterVendaProntoParaEnviarSEMShipping = async (response, user) => {
+    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+        let json = {
+            id_venda: response.id,
+            status: response.status,
+            data_venda: util.formatarDataHora(response.date_closed),
+            pack_id: response.pack_id,
+            itens_pedido: {
+                quantidade_vendido: response.order_items[0].quantity,
+                id_variacao: response.order_items[0].item.variation_id,
+                sku: response.order_items[0].item.seller_sku,
+                id_anuncio: response.order_items[0].item.id,
+                condicao: response.order_items[0].item.condition,
+                garantia: response.order_items[0].item.warranty,
+                id_categoria: response.order_items[0].item.category_id,
+                titulo_anuncio: response.order_items[0].item.title,
+                taxa_venda: response.order_items[0].sale_fee,
+                variation_attributes: response.order_items[0].item.variation_attributes,
+            },
+            valor_venda: response.total_amount,
+            comprador: {
+                nickname_comprador: response.buyer.nickname,
+                email_comprador: response.buyer.email,
+                first_name_comprador: response.buyer.first_name,
+                last_name_comprador: response.buyer.last_name,
+                tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                    response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+            },
+            dados_pagamento: obterDadosPagamento(response.payments),
+            dados_entrega: {
+                substatus: "to_be_agreed",
+                status: "to_be_agreed",
+                status_message: "Entrega a combinar com o vendedor"
+            },
+            msg: msg.data.messages,
+            qtde: obterQuantidadeChar(msg.data.messages)
+        }
+        return json
+    })
+
 }
 
 exports.gerarEtiquetaEnvio = async (req, res) => {
@@ -163,56 +211,14 @@ exports.obterVendasPendentes_old = async (req, res) => {
 
 
 exports.obterVendasPendentes = async (req, res) => {
-    let jsonVenda = []
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`${constants.API_MERCADO_LIVRE}/orders/search/pending?seller=${user.id}&access_token=${user.accessToken}`).then(async resp => {
             let vendasPendentes = await resp.data.results.map(async response => {
-                if (response.shipping.id != null) {
-                    return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(ship => {
-                        let json = {
-                            id_venda: response.id,
-                            status: response.status,
-                            data_venda: util.formatarDataHora(response.date_created),
-                            itens_pedido: {
-                                quantidade_vendido: response.order_items[0].quantity,
-                                id_variacao: response.order_items[0].item.variation_id,
-                                sku: response.order_items[0].item.seller_sku,
-                                id_anuncio: response.order_items[0].item.id,
-                                condicao: response.order_items[0].item.condition,
-                                garantia: response.order_items[0].item.warranty,
-                                id_categoria: response.order_items[0].item.category_id,
-                                titulo_anuncio: response.order_items[0].item.title,
-                                taxa_venda: response.order_items[0].sale_fee,
-                                variation_attributes: response.order_items[0].item.variation_attributes,
-                            },
-                            valor_venda: response.total_amount,
-                            comprador: {
-                                nickname_comprador: response.buyer.nickname,
-                            },
-                            dados_pagamento: obterDadosPagamento(response.payments),
-                            dados_entrega: {
-                                status: ship.data.status,
-                                id: ship.data.id,
-                                cod_rastreamento: ship.data.tracking_number,
-                                metodo_envio: ship.data.tracking_method,
-                                endereco_entrega: {
-                                    rua: ship.data.receiver_address.street_name,
-                                    numero: ship.data.receiver_address.street_number,
-                                    cep: ship.data.receiver_address.zip_code,
-                                    cidade: ship.data.receiver_address.city,
-                                    estado: ship.data.receiver_address.state,
-                                    bairro: ship.data.receiver_address.neighborhood,
-                                    latitude: ship.data.receiver_address.latitude,
-                                    longitude: ship.data.receiver_address.longitude,
-                                    nomePessoaEntrega: ship.data.receiver_address.receiver_name,
-                                    telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
-                                }
-                            }
-                        }
-                        return json
-                    })
+                if (response.shipping.id !== undefined) {
+                    return obterVendasPendentesCOMShipping(response, user)
+                } else {
+                    return obterVendasPendentesSEMShipping(response)
                 }
-                return jsonVenda
             })
 
             Promise.all(vendasPendentes).then(vendas => {
@@ -229,68 +235,94 @@ exports.obterVendasPendentes = async (req, res) => {
     })
 }
 
+const obterVendasPendentesCOMShipping = async (response, user) => {
+    if (response.shipping.id != null) {
+        return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(ship => {
+            let json = {
+                id_venda: response.id,
+                status: response.status,
+                data_venda: util.formatarDataHora(response.date_created),
+                itens_pedido: {
+                    quantidade_vendido: response.order_items[0].quantity,
+                    id_variacao: response.order_items[0].item.variation_id,
+                    sku: response.order_items[0].item.seller_sku,
+                    id_anuncio: response.order_items[0].item.id,
+                    condicao: response.order_items[0].item.condition,
+                    garantia: response.order_items[0].item.warranty,
+                    id_categoria: response.order_items[0].item.category_id,
+                    titulo_anuncio: response.order_items[0].item.title,
+                    taxa_venda: response.order_items[0].sale_fee,
+                    variation_attributes: response.order_items[0].item.variation_attributes,
+                },
+                valor_venda: response.total_amount,
+                comprador: {
+                    nickname_comprador: response.buyer.nickname,
+                },
+                dados_pagamento: obterDadosPagamento(response.payments),
+                dados_entrega: {
+                    status: ship.data.status,
+                    id: ship.data.id,
+                    cod_rastreamento: ship.data.tracking_number,
+                    metodo_envio: ship.data.tracking_method,
+                    endereco_entrega: {
+                        rua: ship.data.receiver_address.street_name,
+                        numero: ship.data.receiver_address.street_number,
+                        cep: ship.data.receiver_address.zip_code,
+                        cidade: ship.data.receiver_address.city,
+                        estado: ship.data.receiver_address.state,
+                        bairro: ship.data.receiver_address.neighborhood,
+                        latitude: ship.data.receiver_address.latitude,
+                        longitude: ship.data.receiver_address.longitude,
+                        nomePessoaEntrega: ship.data.receiver_address.receiver_name,
+                        telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
+                    }
+                }
+            }
+            return json
+        })
+    }
+}
+
+const obterVendasPendentesSEMShipping = async (response) => {
+    let json = {
+        id_venda: response.id,
+        status: response.status,
+        data_venda: util.formatarDataHora(response.date_created),
+        itens_pedido: {
+            quantidade_vendido: response.order_items[0].quantity,
+            id_variacao: response.order_items[0].item.variation_id,
+            sku: response.order_items[0].item.seller_sku,
+            id_anuncio: response.order_items[0].item.id,
+            condicao: response.order_items[0].item.condition,
+            garantia: response.order_items[0].item.warranty,
+            id_categoria: response.order_items[0].item.category_id,
+            titulo_anuncio: response.order_items[0].item.title,
+            taxa_venda: response.order_items[0].sale_fee,
+            variation_attributes: response.order_items[0].item.variation_attributes,
+        },
+        valor_venda: response.total_amount,
+        comprador: {
+            nickname_comprador: response.buyer.nickname,
+        },
+        dados_pagamento: obterDadosPagamento(response.payments),
+        dados_entrega: {
+            substatus: "to_be_agreed",
+            status: "to_be_agreed",
+            status_message: "Entrega a combinar com o vendedor"
+        }
+    }
+    return json
+}
+
 exports.obterVendasEmTransito = async (req, res) => {
-    let jsonVenda = []
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/recent?seller=${user.id}&access_token=${user.accessToken}`).then(async resp => {
             let vendasEmTransito = await resp.data.results.map(async response => {
-                if (response.shipping.id != null) {
-                    return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
-                        return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
-                            let json = {
-                                id_venda: response.id,
-                                status: response.status,
-                                data_venda: util.formatarDataHora(response.date_closed),
-                                pack_id: response.pack_id,
-                                itens_pedido: {
-                                    quantidade_vendido: response.order_items[0].quantity,
-                                    id_variacao: response.order_items[0].item.variation_id,
-                                    sku: response.order_items[0].item.seller_sku,
-                                    id_anuncio: response.order_items[0].item.id,
-                                    condicao: response.order_items[0].item.condition,
-                                    garantia: response.order_items[0].item.warranty,
-                                    id_categoria: response.order_items[0].item.category_id,
-                                    titulo_anuncio: response.order_items[0].item.title,
-                                    taxa_venda: response.order_items[0].sale_fee,
-                                    variation_attributes: response.order_items[0].item.variation_attributes,
-                                },
-                                valor_venda: response.total_amount,
-                                comprador: {
-                                    nickname_comprador: response.buyer.nickname,
-                                    email_comprador: response.buyer.email,
-                                    first_name_comprador: response.buyer.first_name,
-                                    last_name_comprador: response.buyer.last_name,
-                                    tipo_documento_comprador: response.buyer.billing_info.doc_type,
-                                    documento_comprador: response.buyer.billing_info.doc_number === undefined ||
-                                        response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
-                                },
-                                dados_pagamento: obterDadosPagamento(response.payments),
-                                dados_entrega: {
-                                    status: ship.data.status,
-                                    id: ship.data.id,
-                                    cod_rastreamento: ship.data.tracking_number,
-                                    metodo_envio: ship.data.tracking_method,
-                                    endereco_entrega: {
-                                        rua: ship.data.receiver_address.street_name,
-                                        numero: ship.data.receiver_address.street_number,
-                                        cep: ship.data.receiver_address.zip_code,
-                                        cidade: ship.data.receiver_address.city,
-                                        estado: ship.data.receiver_address.state,
-                                        bairro: ship.data.receiver_address.neighborhood,
-                                        latitude: ship.data.receiver_address.latitude,
-                                        longitude: ship.data.receiver_address.longitude,
-                                        nomePessoaEntrega: ship.data.receiver_address.receiver_name,
-                                        telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
-                                    }
-                                },
-                                msg: msg.data.messages,
-                                qtde: obterQuantidadeChar(msg.data.messages)
-                            }
-                            return json
-                        }).catch(error => res.send(error))
-                    })
+                if (response.shipping.id !== undefined) {
+                    return obterVendasEmTransitoCOMShipping(response, user)
+                } else {
+                    return obterVendasEmTransitoSEMShipping(response, user)
                 }
-                return jsonVenda
             })
 
             Promise.all(vendasEmTransito).then(vendas => {
@@ -307,21 +339,126 @@ exports.obterVendasEmTransito = async (req, res) => {
     })
 }
 
+const obterVendasEmTransitoCOMShipping = async (response, user) => {
+    if (response.shipping.id != null) {
+        return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
+            return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+                let json = {
+                    id_venda: response.id,
+                    status: response.status,
+                    data_venda: util.formatarDataHora(response.date_closed),
+                    pack_id: response.pack_id,
+                    itens_pedido: {
+                        quantidade_vendido: response.order_items[0].quantity,
+                        id_variacao: response.order_items[0].item.variation_id,
+                        sku: response.order_items[0].item.seller_sku,
+                        id_anuncio: response.order_items[0].item.id,
+                        condicao: response.order_items[0].item.condition,
+                        garantia: response.order_items[0].item.warranty,
+                        id_categoria: response.order_items[0].item.category_id,
+                        titulo_anuncio: response.order_items[0].item.title,
+                        taxa_venda: response.order_items[0].sale_fee,
+                        variation_attributes: response.order_items[0].item.variation_attributes,
+                    },
+                    valor_venda: response.total_amount,
+                    comprador: {
+                        nickname_comprador: response.buyer.nickname,
+                        email_comprador: response.buyer.email,
+                        first_name_comprador: response.buyer.first_name,
+                        last_name_comprador: response.buyer.last_name,
+                        tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                        documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                            response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+                    },
+                    dados_pagamento: obterDadosPagamento(response.payments),
+                    dados_entrega: {
+                        status: ship.data.status,
+                        id: ship.data.id,
+                        cod_rastreamento: ship.data.tracking_number,
+                        metodo_envio: ship.data.tracking_method,
+                        endereco_entrega: {
+                            rua: ship.data.receiver_address.street_name,
+                            numero: ship.data.receiver_address.street_number,
+                            cep: ship.data.receiver_address.zip_code,
+                            cidade: ship.data.receiver_address.city,
+                            estado: ship.data.receiver_address.state,
+                            bairro: ship.data.receiver_address.neighborhood,
+                            latitude: ship.data.receiver_address.latitude,
+                            longitude: ship.data.receiver_address.longitude,
+                            nomePessoaEntrega: ship.data.receiver_address.receiver_name,
+                            telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
+                        }
+                    },
+                    msg: msg.data.messages,
+                    qtde: obterQuantidadeChar(msg.data.messages)
+                }
+                return json
+            }).catch(error => res.send(error))
+        })
+    }
+}
+
+const obterVendasEmTransitoSEMShipping = async (response, user) => {
+    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+        let json = {
+            id_venda: response.id,
+            status: response.status,
+            data_venda: util.formatarDataHora(response.date_closed),
+            pack_id: response.pack_id,
+            itens_pedido: {
+                quantidade_vendido: response.order_items[0].quantity,
+                id_variacao: response.order_items[0].item.variation_id,
+                sku: response.order_items[0].item.seller_sku,
+                id_anuncio: response.order_items[0].item.id,
+                condicao: response.order_items[0].item.condition,
+                garantia: response.order_items[0].item.warranty,
+                id_categoria: response.order_items[0].item.category_id,
+                titulo_anuncio: response.order_items[0].item.title,
+                taxa_venda: response.order_items[0].sale_fee,
+                variation_attributes: response.order_items[0].item.variation_attributes,
+            },
+            valor_venda: response.total_amount,
+            comprador: {
+                nickname_comprador: response.buyer.nickname,
+                email_comprador: response.buyer.email,
+                first_name_comprador: response.buyer.first_name,
+                last_name_comprador: response.buyer.last_name,
+                tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                    response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+            },
+            dados_pagamento: obterDadosPagamento(response.payments),
+            dados_entrega: {
+                substatus: "to_be_agreed",
+                status: "to_be_agreed",
+                status_message: "Entrega a combinar com o vendedor"
+            },
+            msg: msg.data.messages,
+            qtde: obterQuantidadeChar(msg.data.messages)
+        }
+        return json
+    }).catch(error => res.send(error))
+}
+
 exports.obterTotalVendas = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(async result => {
-                return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
-                    if (ship.data.status === 'delivered') {
-                        return 'delivered'
-                    }
-                    if (ship.data.status === 'cancelled') {
-                        return 'cancelled'
-                    }
-                    if (ship.data.status === 'shipped') {
-                        return 'shipped'
-                    }
-                })
+                if (result.shipping.id !== undefined) {
+                    return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
+                        if (ship.data.status === 'delivered') {
+                            return 'delivered'
+                        }
+                        if (ship.data.status === 'cancelled') {
+                            return 'cancelled'
+                        }
+                        if (ship.data.status === 'shipped') {
+                            return 'shipped'
+                        }
+                    })
+                } else {
+                    return "to_be_agreed"
+                }
             })
 
             Promise.all(resultVendas).then(vendas => {
@@ -342,11 +479,13 @@ exports.obterTotalVendasEmTransito = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/recent?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(async result => {
-                return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
-                    if (ship.data.status === 'shipped') {
-                        return 'shipped'
-                    }
-                })
+                if (result.shipping.id !== undefined) {
+                    return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
+                        if (ship.data.status === 'shipped') {
+                            return 'shipped'
+                        }
+                    })
+                }
             })
             Promise.all(resultVendas).then(vendas => {
                 let qtdeVendasEmTransito = vendas.filter(vendasEmTransito => { return vendasEmTransito === 'shipped' }).length
@@ -367,14 +506,21 @@ exports.obterTotalVendasAEnviar = async (req, res) => {
     await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&order.date_created.from=${anoAtual}-${mesAtual}-01T00:00:00.000-00:00&order.date_created.to=${anoAtual}-${mesAtual}-${diaAtual}T00:00:00.000-00:00&&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(result => {
-                if (result.shipping.status === 'ready_to_ship') {
-                    return 'ready_to_ship'
+                if (result.shipping.id !== undefined) {
+                    if (result.shipping.id !== undefined) {
+                        if (result.shipping.status === 'ready_to_ship') {
+                            return 'ready_to_ship'
+                        }
+                    }
+                } else {
+                    return "to_be_agreed"
                 }
             })
 
             Promise.all(resultVendas).then(vendas => {
-                qtdeVendasProntoEnvio = vendas.filter(status => { return status === 'ready_to_ship' }).length
-                res.send({ qtdeVendasAEnviar: qtdeVendasProntoEnvio })
+                let qtdeVendasProntoEnvio = vendas.filter(status => { return status === 'ready_to_ship' }).length
+                let qtdeVendasACombinarComComprador = vendas.filter(status => status === 'to_be_agreed').length
+                res.send({ qtdeVendasAEnviar: (qtdeVendasProntoEnvio + qtdeVendasACombinarComComprador) })
             })
         })
     }).catch(error => res.send(error))
@@ -384,17 +530,22 @@ exports.obterTotalVendasPendentes = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/pending?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(async result => {
-                return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
-                    if (ship.data.status === 'pending') {
-                        return 'pending'
-                    }
-                })
+                if (result.payments[0].status === 'pending' && result.shipping.status === 'pending') {
+                    return await axios.get(`https://api.mercadolibre.com/shipments/${result.shipping.id}?access_token=${user.accessToken}`).then(ship => {
+                        if (ship.data.status === 'pending') {
+                            return 'pending'
+                        }
+                    })
+                }else{
+                    return 'to_be_agreed'
+                }
             })
 
             Promise.all(resultVendas).then(vendas => {
                 let qtdeVendasPendentes = vendas.filter(vendasPendentes => { return vendasPendentes === 'pending' }).length
+                let qtdeVendasPendentesEnvioACombinar = vendas.filter(vendasPendentes => { return vendasPendentes === 'to_be_agreed' }).length
                 res.status(200).send({
-                    qtdeVendasPendentes
+                    qtdeVendasPendentes: (qtdeVendasPendentes + qtdeVendasPendentesEnvioACombinar)
                 })
             })
         })
@@ -489,46 +640,47 @@ const processarVendasConcluidasComShipments = async (response, user) => {
 }
 
 const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, user) => {
-        return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
-            let json = {
-                id_usuario: JSON.stringify(user.id),
-                id_venda: response.id,
-                status: response.status,
-                data_venda: util.formatarDataHora(response.date_closed),
-                pack_id: response.pack_id,
-                itens_pedido: {
-                    quantidade_vendido: response.order_items[0].quantity,
-                    id_variacao: response.order_items[0].item.variation_id,
-                    sku: response.order_items[0].item.seller_sku,
-                    id_anuncio: response.order_items[0].item.id,
-                    condicao: response.order_items[0].item.condition,
-                    garantia: response.order_items[0].item.warranty,
-                    id_categoria: response.order_items[0].item.category_id,
-                    titulo_anuncio: response.order_items[0].item.title,
-                    taxa_venda: response.order_items[0].sale_fee,
-                    variation_attributes: response.order_items[0].item.variation_attributes,
-                },
-                valor_venda: response.total_amount,
-                comprador: {
-                    nickname_comprador: response.buyer.nickname,
-                    email_comprador: response.buyer.email,
-                    first_name_comprador: response.buyer.first_name,
-                    last_name_comprador: response.buyer.last_name,
-                    tipo_documento_comprador: response.buyer.billing_info.doc_type,
-                    documento_comprador: response.buyer.billing_info.doc_number === undefined ||
-                        response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
-                },
-                dados_pagamento: obterDadosPagamento(response.payments),
-                dados_entrega: {
-                    status: "to_be_agreed",
-                    status_message: "Entrega a combinar com o vendedor"
-                },
-                msg: msg.data.messages,
-                qtde: obterQuantidadeChar(msg.data.messages)
+    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+        let json = {
+            id_usuario: JSON.stringify(user.id),
+            id_venda: response.id,
+            status: response.status,
+            data_venda: util.formatarDataHora(response.date_closed),
+            pack_id: response.pack_id,
+            itens_pedido: {
+                quantidade_vendido: response.order_items[0].quantity,
+                id_variacao: response.order_items[0].item.variation_id,
+                sku: response.order_items[0].item.seller_sku,
+                id_anuncio: response.order_items[0].item.id,
+                condicao: response.order_items[0].item.condition,
+                garantia: response.order_items[0].item.warranty,
+                id_categoria: response.order_items[0].item.category_id,
+                titulo_anuncio: response.order_items[0].item.title,
+                taxa_venda: response.order_items[0].sale_fee,
+                variation_attributes: response.order_items[0].item.variation_attributes,
+            },
+            valor_venda: response.total_amount,
+            comprador: {
+                nickname_comprador: response.buyer.nickname,
+                email_comprador: response.buyer.email,
+                first_name_comprador: response.buyer.first_name,
+                last_name_comprador: response.buyer.last_name,
+                tipo_documento_comprador: response.buyer.billing_info.doc_type,
+                documento_comprador: response.buyer.billing_info.doc_number === undefined ||
+                    response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+            },
+            dados_pagamento: obterDadosPagamento(response.payments),
+            dados_entrega: {
+                substatus: "to_be_agreed",
+                status: "to_be_agreed",
+                status_message: "Entrega a combinar com o vendedor"
+            },
+            msg: msg.data.messages,
+            qtde: obterQuantidadeChar(msg.data.messages)
 
-            }
-            return json
-        }).catch(error => res.send(error))
+        }
+        return json
+    }).catch(error => res.send(error))
 }
 
 let obterQuantidadeChar = (messages) => {

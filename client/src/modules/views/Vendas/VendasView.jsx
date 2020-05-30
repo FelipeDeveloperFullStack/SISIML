@@ -79,7 +79,11 @@ export default class VendasView extends React.Component {
     getStatusProntoParaEnviar = () => {
         let vendasAEnviar = this.props.vendas.filter(venda => {
             if (venda !== null) {
-                return (venda.dados_entrega.substatus === 'ready_to_print' || venda.dados_entrega.substatus === 'printed')
+                if(venda.dados_entrega.id !== undefined){
+                    return (venda.dados_entrega.substatus === 'ready_to_print' || venda.dados_entrega.substatus === 'printed' )
+                }else{
+                    return (venda.dados_entrega.status === 'to_be_agreed' && venda.dados_pagamento[0].status_pagamento !== 'pending')
+                }
             }
         })
 
@@ -129,7 +133,7 @@ export default class VendasView extends React.Component {
 
     }
 
-    getTraduzirStatusEnvio = status_envio => {
+    getTraduzirStatusEnvio = (status_envio, dados_pagamento) => {
         if (status_envio === 'shipped') {
             return 'EM TRÂNSITO'
         }
@@ -139,11 +143,18 @@ export default class VendasView extends React.Component {
         if (status_envio === 'cancelled') {
             return 'CANCELADO'
         }
-        if (status_envio === 'pending') {
-            return 'PENDENTE'
+        if (dados_pagamento[0].status_pagamento === 'pending' && status_envio === 'to_be_agreed') {
+            return 'PENDENTE PAGAMENTO/A COMBINAR ENVIO'
+        } else if (status_envio === 'pending') {
+            return 'PENDENTE PAGAMENTO'
         }
+
         if (status_envio === 'ready_to_ship') {
             return 'A ENVIAR'
+        }
+
+        if (status_envio === 'to_be_agreed') {
+            return 'A COMBINAR'
         }
     }
 
@@ -323,19 +334,21 @@ export default class VendasView extends React.Component {
                                     </Dimmer>
 
                                     <Paper elevation={3} key={key}>
-                                        <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div>Pedido <span style={{ 'color': 'white' }}>
-                                            <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
+                                        <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
+                                            <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={
                                                 <>
                                                     <Row>
                                                         <Col md={5}>
-                                                            <Paper elevation={3}>
+                                                            <Paper elevation={2}>
                                                                 <Card style={{ height: venda.comprador.first_name_comprador === undefined ? '160px' : '160px' }}>
 
                                                                     <CardContent>
                                                                         <Typography gutterBottom variant="h5" component="h2">
                                                                             {venda.comprador.first_name_comprador === undefined ? <>Usuario</> : <>Nome</>}:  {venda.comprador.first_name_comprador === undefined ? venda.comprador.nickname_comprador : <>{venda.comprador.first_name_comprador} {venda.comprador.last_name_comprador}</>}
+                                                                            <p></p>
+                                                                            {venda.dados_entrega.status === 'pending' ? <>Nome: {venda.dados_entrega.endereco_entrega.nomePessoaEntrega} </> : <>Nome: Não informado</>}
                                                                         </Typography>
                                                                         <Typography variant="body2" component="p">
                                                                             {venda.comprador.documento_comprador === undefined ? <></> : <><strong>Usuário:</strong> {venda.comprador.nickname_comprador}  <strong>CPF:</strong> {venda.comprador.documento_comprador}</>}
@@ -366,7 +379,7 @@ export default class VendasView extends React.Component {
                                                         </Col>
 
                                                         <Col md={7}>
-                                                            <Paper elevation={3}>
+                                                            <Paper elevation={2}>
 
                                                                 <Card style={{ 'height': '160px' }}>
 
@@ -424,21 +437,29 @@ export default class VendasView extends React.Component {
                                                     </Row>
                                                     <Divider />
                                                     <Row>
-                                                        <Col md={6}>
+                                                        <Col md={venda.dados_entrega.endereco_entrega !== undefined ? 6 : 12}>
 
-                                                            <div className='panel'>
+                                                            <div className='panel' style={venda.dados_entrega.endereco_entrega === undefined ? { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' } : {}}>
                                                                 <div className='panel-heading oneLine'>
                                                                     <h3 className='panel-title'>
                                                                         Dados da Entrega
-                                                                </h3>
+                                                                    </h3>
                                                                 </div>
                                                                 <div className='panel-body'>
-                                                                    {venda.comprador.first_name_comprador === undefined ? <></> : <div>Destinatário: <b>{venda.comprador.first_name_comprador} {venda.comprador.last_name_comprador}</b></div>}
-                                                                    <div>CEP: <b>{venda.dados_entrega.endereco_entrega.cep}</b></div>
-                                                                    <div>Quem recebe: <b>{venda.dados_entrega.endereco_entrega.nomePessoaEntrega}</b> - <b>Tel.: {venda.dados_entrega.endereco_entrega.telefonePessoaEntrega}</b></div>
-                                                                    <div>Endereço: <b>{venda.dados_entrega.endereco_entrega.rua}</b> - Nº <b>{venda.dados_entrega.endereco_entrega.numero}</b></div>
-                                                                    <div>Bairro: <b>{venda.dados_entrega.endereco_entrega.bairro.name}</b></div>
-                                                                    <div>Cidade: <b>{venda.dados_entrega.endereco_entrega.cidade.name}</b> - Estado: <b>{venda.dados_entrega.endereco_entrega.estado.name}</b></div>
+                                                                    {venda.dados_entrega.endereco_entrega !== undefined ?
+                                                                        <div>
+                                                                            {venda.comprador.first_name_comprador === undefined ? <></> : <div>Destinatário: <b>{venda.comprador.first_name_comprador} {venda.comprador.last_name_comprador}</b></div>}
+                                                                            <div>CEP: <b>{venda.dados_entrega.endereco_entrega.cep}</b></div>
+                                                                            <div>Quem recebe: <b>{venda.dados_entrega.endereco_entrega.nomePessoaEntrega}</b> - <b>Tel.: {venda.dados_entrega.endereco_entrega.telefonePessoaEntrega}</b></div>
+                                                                            <div>Endereço: <b>{venda.dados_entrega.endereco_entrega.rua}</b> - Nº <b>{venda.dados_entrega.endereco_entrega.numero}</b></div>
+                                                                            <div>Bairro: <b>{venda.dados_entrega.endereco_entrega.bairro.name}</b></div>
+                                                                            <div>Cidade: <b>{venda.dados_entrega.endereco_entrega.cidade.name}</b> - Estado: <b>{venda.dados_entrega.endereco_entrega.estado.name}</b></div>
+                                                                        </div> :
+                                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                                                            <div>Entrega a combinar com o comprador</div>
+                                                                            <div>Contate-o para combinar o pagamento do frete.</div>
+                                                                        </div>
+                                                                    }
                                                                 </div>
                                                             </div>
 
@@ -446,88 +467,90 @@ export default class VendasView extends React.Component {
 
 
 
-                                                        <Col md={6}>
+                                                        {venda.dados_entrega.endereco_entrega !== undefined ?
 
-                                                            <div className='panel' style={{ 'height': '193px' }}>
+                                                            <Col md={6}>
 
-                                                                {venda.dados_entrega.cod_rastreamento === null
-                                                                    ?
-                                                                    <div>
-                                                                        <div className='panel-heading oneLine' style={{ marginLeft: '-15px' }}>
-                                                                            <h3 className='panel-title'>
-                                                                                Notas:
+                                                                <div className='panel' style={{ 'height': '193px' }}>
+
+                                                                    {venda.dados_entrega.cod_rastreamento === null
+                                                                        ?
+                                                                        <div>
+                                                                            <div className='panel-heading oneLine' style={{ marginLeft: '-15px' }}>
+                                                                                <h3 className='panel-title'>
+                                                                                    Notas:
                                                                             </h3>
-                                                                        </div>
-
-                                                                        {venda.comprador.first_name_comprador === undefined
-                                                                            ? <div className='panel-body' style={{ marginLeft: '-15px' }}>
-
-                                                                                <div><b>SKU:</b> {venda.itens_pedido.sku === null ? <>Não informado</> : venda.itens_pedido.sku}</div>
-                                                                                <div><b>Taxa da venda:</b> R$ {venda.itens_pedido.taxa_venda.toFixed(2)}</div>
-
-                                                                                {venda.itens_pedido.variation_attributes.map((variation, key) => {
-                                                                                    return (
-                                                                                        <div key={key}>
-                                                                                            <b>{variation.name}:</b> {variation.value_name}
-                                                                                        </div>
-                                                                                    )
-                                                                                })}
-
                                                                             </div>
-                                                                            : <>
-                                                                                <div>Uma ordem pode ser cancelada pelos seguintes motivos:</div>
-                                                                                <div>- Requeria aprovação do pagamento para descontar do estoque, mas, no tempo de processo de aprovação, o item foi pausado/finalizado por falta de estoque, portanto, o pagamento é retornado ao comprador.</div>
-                                                                                <div>- Requeria pagamento, mas, após certo tempo, não foi paga, por isso é automaticamente cancelada.</div>
-                                                                            </>}
-                                                                    </div>
-                                                                    : <>
-                                                                        <div className='panel-heading oneLine'>
-                                                                            <h3 className='panel-title'>
-                                                                                Detalhes do Envio
-                                                                        </h3>
-                                                                        </div>
-                                                                        <div className='panel-body'>
-                                                                            <Typography variant="body2">
-                                                                                Código de Rastreio: {venda.dados_entrega.cod_rastreamento}
-                                                                            </Typography>
-                                                                            <Typography variant="body2">
-                                                                                Método de envio: <b>{venda.dados_entrega.metodo_envio}</b>
-                                                                            </Typography>
-                                                                        </div>
-                                                                    </>
-                                                                }
 
-                                                                {venda.dados_entrega.cod_rastreamento !== null
-                                                                    ?
-                                                                    <CardActions style={{ 'marginTop': '-15px' }}>
-                                                                        <Tooltip title="Acompanhar o rastreamento do produto">
-                                                                            {venda.dados_entrega.status !== 'ready_to_ship'
-                                                                                ?
-                                                                                <Button
-                                                                                    variant="contained"
-                                                                                    color="default"
-                                                                                    onClick={() => this.exibirRastreamento(venda.dados_entrega.cod_rastreamento)}
-                                                                                    startIcon={<LocalShippingIcon />}>
-                                                                                    Visualizar rastreamento
-                                                                            </Button>
+                                                                            {venda.comprador.first_name_comprador === undefined
+                                                                                ? <div className='panel-body' style={{ marginLeft: '-15px' }}>
+
+                                                                                    <div><b>SKU:</b> {venda.itens_pedido.sku === null ? <>Não informado</> : venda.itens_pedido.sku}</div>
+                                                                                    <div><b>Taxa da venda:</b> R$ {venda.itens_pedido.taxa_venda.toFixed(2)}</div>
+
+                                                                                    {venda.itens_pedido.variation_attributes.map((variation, key) => {
+                                                                                        return (
+                                                                                            <div key={key}>
+                                                                                                <b>{variation.name}:</b> {variation.value_name}
+                                                                                            </div>
+                                                                                        )
+                                                                                    })}
+
+                                                                                </div>
                                                                                 : <>
+                                                                                    <div>Uma ordem pode ser cancelada pelos seguintes motivos:</div>
+                                                                                    <div>- Requeria aprovação do pagamento para descontar do estoque, mas, no tempo de processo de aprovação, o item foi pausado/finalizado por falta de estoque, portanto, o pagamento é retornado ao comprador.</div>
+                                                                                    <div>- Requeria pagamento, mas, após certo tempo, não foi paga, por isso é automaticamente cancelada.</div>
+                                                                                </>}
+                                                                        </div>
+                                                                        : <>
+                                                                            <div className='panel-heading oneLine'>
+                                                                                <h3 className='panel-title'>
+                                                                                    Detalhes do Envio
+                                                                        </h3>
+                                                                            </div>
+                                                                            <div className='panel-body'>
+                                                                                <Typography variant="body2">
+                                                                                    Código de Rastreio: {venda.dados_entrega.cod_rastreamento}
+                                                                                </Typography>
+                                                                                <Typography variant="body2">
+                                                                                    Método de envio: <b>{venda.dados_entrega.metodo_envio}</b>
+                                                                                </Typography>
+                                                                            </div>
+                                                                        </>
+                                                                    }
+
+                                                                    {venda.dados_entrega.cod_rastreamento !== null
+                                                                        ?
+                                                                        <CardActions style={{ 'marginTop': '-15px' }}>
+                                                                            <Tooltip title="Acompanhar o rastreamento do produto">
+                                                                                {venda.dados_entrega.status !== 'ready_to_ship'
+                                                                                    ?
                                                                                     <Button
                                                                                         variant="contained"
                                                                                         color="default"
-                                                                                        onClick={() => this.props.gerarEtiqueteEnvio(venda.dados_entrega.id)}
-                                                                                        startIcon={<PrintIcon />}>
-                                                                                        Imprimir etiqueta
+                                                                                        onClick={() => this.exibirRastreamento(venda.dados_entrega.cod_rastreamento)}
+                                                                                        startIcon={<LocalShippingIcon />}>
+                                                                                        Visualizar rastreamento
+                                                                            </Button>
+                                                                                    : <>
+                                                                                        <Button
+                                                                                            variant="contained"
+                                                                                            color="default"
+                                                                                            onClick={() => this.props.gerarEtiqueteEnvio(venda.dados_entrega.id)}
+                                                                                            startIcon={<PrintIcon />}>
+                                                                                            Imprimir etiqueta
                                                                                     </Button>
-                                                                                </>}
-                                                                        </Tooltip>
-                                                                    </CardActions>
-                                                                    : <></>
-                                                                }
+                                                                                    </>}
+                                                                            </Tooltip>
+                                                                        </CardActions>
+                                                                        : <></>
+                                                                    }
 
-                                                            </div>
+                                                                </div>
 
 
-                                                        </Col>
+                                                            </Col> : <></>}
                                                     </Row>
                                                 </>
                                             }>
@@ -621,11 +644,11 @@ export default class VendasView extends React.Component {
                         </Modal.Header>
                         <Modal.Body>
 
-                            <Paper elevation={3} style={{padding: '20px 20px 20px', fontSize: '14px'}}>
-                                <div style={{paddingBottom: '5px'}}><b>SKU:</b> {this.state.venda.itens_pedido.sku === null ? <>Não informado</> : this.state.venda.itens_pedido.sku}</div>
-                                <div style={{paddingBottom: '5px'}}><b>Taxa da venda:</b> R$ {this.state.venda.itens_pedido.taxa_venda.toFixed(2)}</div>
-                                <div style={{paddingBottom: '5px'}}><b>Garantia:</b> {this.state.venda.itens_pedido.garantia === null ? <>Não informado</> : this.state.venda.itens_pedido.garantia}</div>
-                                <div style={{paddingBottom: '5px'}}><b>Variação:</b>
+                            <Paper elevation={3} style={{ padding: '20px 20px 20px', fontSize: '14px' }}>
+                                <div style={{ paddingBottom: '5px' }}><b>SKU:</b> {this.state.venda.itens_pedido.sku === null ? <>Não informado</> : this.state.venda.itens_pedido.sku}</div>
+                                <div style={{ paddingBottom: '5px' }}><b>Taxa da venda:</b> R$ {this.state.venda.itens_pedido.taxa_venda.toFixed(2)}</div>
+                                <div style={{ paddingBottom: '5px' }}><b>Garantia:</b> {this.state.venda.itens_pedido.garantia === null ? <>Não informado</> : this.state.venda.itens_pedido.garantia}</div>
+                                <div style={{ paddingBottom: '5px' }}><b>Variação:</b>
                                     {this.state.venda.itens_pedido.variation_attributes.map((variation, key) => {
                                         return (
                                             <span key={key}> {variation.value_name}{'  '}</span>

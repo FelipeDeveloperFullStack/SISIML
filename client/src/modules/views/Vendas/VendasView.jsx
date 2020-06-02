@@ -55,7 +55,8 @@ export default class VendasView extends React.Component {
             openModalVerMaisDetalhes: false,
             openModalEnviarMensagemMercadoLivre: false,
             textFieldSearch: '',
-            temporalizar: false
+            temporalizar: false,
+            id_venda_for_using_checkbox: 0
         }
 
         this.handleClickSearch = this.handleClickSearch.bind(this)
@@ -217,6 +218,11 @@ export default class VendasView extends React.Component {
         this.mostrarLoading()
     }
 
+    handleUpdateCheckbox = event => {
+        this.props.updateCheckbox(event.target.checked, event.target.value)
+        this.setState({id_venda_for_using_checkbox: event.target.value})
+    }
+
     render() {
         return (
             <div className="content">
@@ -336,7 +342,7 @@ export default class VendasView extends React.Component {
 
                                     <Paper elevation={3} key={key}>
                                         <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
-                                            {venda.dados_entrega.id !== undefined ? <Checkbox checked={venda.checkbox} value={venda.id_venda}/> : <></>}
+                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status !== 'pending') ? <Checkbox color="default" checked={this.props.checkbox} value={venda.id_venda} onChange={this.handleUpdateCheckbox}/> : <></>}
                                             <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={

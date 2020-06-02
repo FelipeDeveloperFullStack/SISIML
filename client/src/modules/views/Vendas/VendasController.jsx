@@ -15,7 +15,8 @@ class VendasController extends React.Component {
         super(props)
         document.title = "Vendas"
         this.state = {
-            dadosRastreamento: {}
+            dadosRastreamento: {},
+            checkbox: false
         }
     }
 
@@ -56,10 +57,9 @@ class VendasController extends React.Component {
         })
     }
 
-    updateCheckbox = (value) => {
-        this.props.vendas.map(venda => {
-            
-        })
+    updateCheckbox = (value, id_venda) => {
+        console.log(value, id_venda)
+        this.setState({checkbox: value})    
     }
 
 
@@ -77,8 +77,10 @@ class VendasController extends React.Component {
                     </Dimmer>
 
                     <VendasView
+                        {...this.state}
                         resetDadosRastreamento={this.resetDadosRastreamento}
                         vendas={this.props.vendas}
+                        updateCheckbox={this.updateCheckbox}
                         obterRastreioCorreios={this.obterRastreioCorreios}
                         dadosRastreamento={this.state.dadosRastreamento}
                         gerarEtiqueteEnvio={this.gerarEtiqueteEnvio}
@@ -114,12 +116,6 @@ const mapStateToProps = store => ({
     isLoadingVendasConcluidas: store.venda.isLoadingVendasConcluidas,
     isLoadingVendasEmTransito: store.venda.isLoadingVendasEmTransito,
     isLoadingVendasAEnviar: store.venda.isLoadingVendasAEnviar
-})
-
-const mapDispatchToProps = dispatch => ({
-    updateCheckbox: (vendas) => {
-        dispatch({type: 'GET_VENDAS_CONCLUIDAS', vendas: vendas})
-    }
 })
 
 export default connect(mapStateToProps)(VendasController)

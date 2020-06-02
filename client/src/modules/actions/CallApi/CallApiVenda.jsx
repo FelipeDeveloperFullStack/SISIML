@@ -38,17 +38,17 @@ class CallApiVenda extends React.Component {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })
 
-        await axios.get(`${DOMAIN}/vendas/getVendasEmTransito/get01/get02/get03/get04/${userId}`).then(vendasEmTransito => {
+        /*await axios.get(`${DOMAIN}/vendas/getVendasEmTransito/get01/get02/get03/get04/${userId}`).then(vendasEmTransito => {
             this.props.vendasEmTransito(vendasEmTransito)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
-        })
+        })*/
 
-        await axios.get(`${DOMAIN}/vendas/getVendasAEnviar/get01/get02/get03/get04/get05/${userId}`).then(vendasAEnviar => {
+        /*await axios.get(`${DOMAIN}/vendas/getVendasAEnviar/get01/get02/get03/get04/get05/${userId}`).then(vendasAEnviar => {
            this.props.vendasAEnviar(vendasAEnviar)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
-        })
+        })*/
 
         await axios.get(`${DOMAIN}/vendas/getTotalVendas/get01/get02/get03/get04/get05/get06/${userId}`).then(totalVendas => {
            this.props.totalVendas(totalVendas)

@@ -42,8 +42,8 @@ class VendasController extends React.Component {
     }
 
     gerarEtiqueteEnvio = async (shippingId) => {
-
-        await axios.get(`${DOMAIN}/vendas/gerarEtiquetaEnvio/${shippingId}`).then(response => {
+        let userId = String(localStorage.getItem('@sigiml/id'))
+        await axios.get(`${DOMAIN}/vendas/gerarEtiquetaEnvio/get01/get02/get03/get04/get05/get06/get07/get08/get09/get10/${shippingId}/${userId}`).then(response => {
 
             window.open(response.data);
 
@@ -53,6 +53,12 @@ class VendasController extends React.Component {
     obterQuantidadeDelinhasTextArea = (qtde, msgId) => {
         return qtde.map(line => {
             return line.id === msgId ? line.qtdeBarraN : ''
+        })
+    }
+
+    updateCheckbox = (value) => {
+        this.props.vendas.map(venda => {
+            
         })
     }
 
@@ -108,6 +114,12 @@ const mapStateToProps = store => ({
     isLoadingVendasConcluidas: store.venda.isLoadingVendasConcluidas,
     isLoadingVendasEmTransito: store.venda.isLoadingVendasEmTransito,
     isLoadingVendasAEnviar: store.venda.isLoadingVendasAEnviar
+})
+
+const mapDispatchToProps = dispatch => ({
+    updateCheckbox: (vendas) => {
+        dispatch({type: 'GET_VENDAS_CONCLUIDAS', vendas: vendas})
+    }
 })
 
 export default connect(mapStateToProps)(VendasController)

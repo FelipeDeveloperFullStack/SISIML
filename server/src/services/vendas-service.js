@@ -22,7 +22,7 @@ exports.obterTotalDeVendas = async (req, res) => {
     })
 }
 
-exports.obterVendaProntoParaEnviar = async (req, res) => {
+/*exports.obterVendaProntoParaEnviar = async (req, res) => {
     let anoAtual = new Date().getFullYear()
     let mesAtual = new Date().getMonth() + 1
     let cincoDiasAtras = new Date().getDate() - 5
@@ -55,6 +55,7 @@ const obterVendaProntoParaEnviarCOMShipping = async (response, user) => {
                 return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
                     return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
                         let json = {
+                            id_usuario: JSON.stringify(user.id),
                             id_venda: response.id,
                             status: response.status,
                             data_venda: util.formatarDataHora(response.date_closed),
@@ -115,6 +116,7 @@ const obterVendaProntoParaEnviarCOMShipping = async (response, user) => {
 const obterVendaProntoParaEnviarSEMShipping = async (response, user) => {
     return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
         let json = {
+            id_usuario: JSON.stringify(user.id),
             id_venda: response.id,
             status: response.status,
             data_venda: util.formatarDataHora(response.date_closed),
@@ -149,11 +151,12 @@ const obterVendaProntoParaEnviarSEMShipping = async (response, user) => {
             },
             msg: msg.data.messages,
             qtde: obterQuantidadeChar(msg.data.messages)
+
         }
         return json
     })
 
-}
+}*/
 
 exports.gerarEtiquetaEnvio = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
@@ -314,7 +317,7 @@ const obterVendasPendentesSEMShipping = async (response) => {
     return json
 }
 
-exports.obterVendasEmTransito = async (req, res) => {
+/*exports.obterVendasEmTransito = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/recent?seller=${user.id}&access_token=${user.accessToken}`).then(async resp => {
             let vendasEmTransito = await resp.data.results.map(async response => {
@@ -344,6 +347,7 @@ const obterVendasEmTransitoCOMShipping = async (response, user) => {
         return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
             return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
                 let json = {
+                    id_usuario: JSON.stringify(user.id),
                     id_venda: response.id,
                     status: response.status,
                     data_venda: util.formatarDataHora(response.date_closed),
@@ -373,6 +377,7 @@ const obterVendasEmTransitoCOMShipping = async (response, user) => {
                     dados_pagamento: obterDadosPagamento(response.payments),
                     dados_entrega: {
                         status: ship.data.status,
+                        substatus: ship.data.substatus,
                         id: ship.data.id,
                         cod_rastreamento: ship.data.tracking_number,
                         metodo_envio: ship.data.tracking_method,
@@ -394,13 +399,14 @@ const obterVendasEmTransitoCOMShipping = async (response, user) => {
                 }
                 return json
             }).catch(error => res.send(error))
-        })
+        }).catch(error => res.send(error))
     }
 }
 
 const obterVendasEmTransitoSEMShipping = async (response, user) => {
     return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
         let json = {
+            id_usuario: JSON.stringify(user.id),
             id_venda: response.id,
             status: response.status,
             data_venda: util.formatarDataHora(response.date_closed),
@@ -435,10 +441,11 @@ const obterVendasEmTransitoSEMShipping = async (response, user) => {
             },
             msg: msg.data.messages,
             qtde: obterQuantidadeChar(msg.data.messages)
+
         }
         return json
     }).catch(error => res.send(error))
-}
+}*/
 
 exports.obterTotalVendas = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
@@ -504,7 +511,7 @@ exports.obterTotalVendasAEnviar = async (req, res) => {
     let diaAtual = new Date().getDate()
 
     await usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
-        await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&order.date_created.from=${anoAtual}-${mesAtual}-01T00:00:00.000-00:00&order.date_created.to=${anoAtual}-${mesAtual}-${diaAtual}T00:00:00.000-00:00&&access_token=${user.accessToken}`).then(response => {
+        await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&access_token=${user.accessToken}`).then(response => {
             let resultVendas = response.data.results.map(result => {
                 if (result.shipping.id !== undefined) {
                     if (result.shipping.id !== undefined) {
@@ -629,10 +636,9 @@ const processarVendasConcluidasComShipments = async (response, user) => {
                         telefonePessoaEntrega: ship.data.receiver_address.receiver_phone
                     }
                 },
-
                 msg: msg.data.messages,
-                qtde: obterQuantidadeChar(msg.data.messages)
-
+                qtde: obterQuantidadeChar(msg.data.messages),
+                checkbox: false
             }
             return json
         }).catch(error => res.send(error))
@@ -676,8 +682,8 @@ const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, u
                 status_message: "Entrega a combinar com o vendedor"
             },
             msg: msg.data.messages,
-            qtde: obterQuantidadeChar(msg.data.messages)
-
+            qtde: obterQuantidadeChar(msg.data.messages),
+            checkbox: false
         }
         return json
     }).catch(error => res.send(error))

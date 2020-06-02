@@ -56,7 +56,7 @@ export default function vendaReducer(state = INITIAL_STATE, action) {
                 }
             }
         }
-        case GET_VENDAS_EM_TRANSITO: {
+       /*case GET_VENDAS_EM_TRANSITO: {
             if(action.vendasEmTransito.data !== null){
                 let vendas = state.vendas
                 action.vendasEmTransito.data.map(venda => {
@@ -68,8 +68,8 @@ export default function vendaReducer(state = INITIAL_STATE, action) {
                     vendas: vendas
                 }
             }
-        }
-        case GET_VENDAS_A_ENVIAR: {
+        }*/
+        /*case GET_VENDAS_A_ENVIAR: {
             if (action.vendasAEnviar.data !== null) {
                 let vendas = state.vendas
                 action.vendasAEnviar.data.map(venda => {
@@ -81,7 +81,7 @@ export default function vendaReducer(state = INITIAL_STATE, action) {
                     vendas: vendas
                 }
             }
-        }
+        }*/
         case GET_TOTAL_VENDAS: {
             return {
                 ...state,

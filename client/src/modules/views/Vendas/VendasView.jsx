@@ -37,6 +37,7 @@ import Chip from '@material-ui/core/Chip';
 import PrintIcon from '@material-ui/icons/Print';
 import SendIcon from '@material-ui/icons/Send';
 import Badge from '@material-ui/core/Badge';
+import Checkbox from '@material-ui/core/Checkbox';
 
 export default class VendasView extends React.Component {
 
@@ -335,6 +336,7 @@ export default class VendasView extends React.Component {
 
                                     <Paper elevation={3} key={key}>
                                         <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
+                                            {venda.dados_entrega.id !== undefined ? <Checkbox checked={venda.checkbox} value={venda.id_venda}/> : <></>}
                                             <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={
@@ -402,7 +404,7 @@ export default class VendasView extends React.Component {
                                                                                             size='small'
                                                                                             onClick={() => this.exibirBoleto(venda)}
                                                                                             startIcon={<PictureAsPdfIcon color="primary" />}>
-                                                                                            Visualizar Boleto
+                                                                                            Visualizar Boleto do cliente
                                                                                 </Button>
                                                                                     }
                                                                                 </CardActions>
@@ -457,7 +459,7 @@ export default class VendasView extends React.Component {
                                                                         </div> :
                                                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                                                             <div>Entrega a combinar com o comprador</div>
-                                                                            <div>Contate-o para combinar o pagamento do frete.</div>
+                                                                            {(venda.dados_pagamento[0].status_pagamento === 'pending' && venda.dados_entrega.status === 'to_be_agreed') ? <div>Após o cliente realizar o pagamento do boleto, contate-o para combinar o pagamento do frete.</div> : <div>Contate-o para combinar o pagamento do frete.</div>}
                                                                         </div>
                                                                     }
                                                                 </div>

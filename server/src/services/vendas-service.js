@@ -168,7 +168,13 @@ exports.gerarEtiquetaEnvio = async (req, res) => {
             //var data = fs.readFileSync(response.data);
             //res.send(data)
         }).catch(error => res.send(error))*/
-        res.send('https://api.mercadolibre.com/shipment_labels?shipment_ids=' + req.params.shipping_id + '&savePdf=Y&access_token=' + user.accessToken)
+        res.send('https://api.mercadolibre.com/shipment_labels?shipment_ids=' + req.params.shipping_id + '&response_type='+user.tipo_impressao+'&access_token=' + user.accessToken)
+    }).catch(error => res.send(error))
+}
+
+exports.gerarEtiquetaEnvioMesmaPLP = async (req, res) => {
+    usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
+        res.send('https://api.mercadolibre.com/shipment_labels?shipment_ids=' + req.body.shipping_ids + '&response_type='+user.tipo_impressao+'&access_token=' + user.accessToken)
     }).catch(error => res.send(error))
 }
 
@@ -317,7 +323,7 @@ const obterVendasPendentesSEMShipping = async (response) => {
     return json
 }
 
-/*exports.obterVendasEmTransito = async (req, res) => {
+exports.obterVendasEmTransito = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {
         await axios.get(`https://api.mercadolibre.com/orders/search/recent?seller=${user.id}&access_token=${user.accessToken}`).then(async resp => {
             let vendasEmTransito = await resp.data.results.map(async response => {
@@ -445,7 +451,7 @@ const obterVendasEmTransitoSEMShipping = async (response, user) => {
         }
         return json
     }).catch(error => res.send(error))
-}*/
+}
 
 exports.obterTotalVendas = async (req, res) => {
     usuarioService.buscarUsuarioPorID(req.params.userId).then(async user => {

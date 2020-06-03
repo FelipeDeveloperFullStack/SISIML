@@ -21,6 +21,12 @@ const usuarioModel = mongoose.Schema({
         required: true,
         trim: true
     },
+    tipo_impressao:{
+        type: String,
+        required: true,
+        trim: true,
+        default: 'pdf'
+    },
     password: {
         type: String,
         required: false,

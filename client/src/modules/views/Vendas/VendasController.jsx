@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import VendasView from './VendasView'
 import axios from 'axios'
-import { DOMAIN } from '../../constants/constants'
+import { DOMAIN, UPDATE_VENDAS } from '../../constants/constants'
 //import sendNotification from '../../components/Notification/Notification'
 import swal from 'sweetalert'
 import { Dimmer, Loader, Segment } from 'semantic-ui-react'
@@ -51,14 +51,46 @@ class VendasController extends React.Component {
         }).catch(error => swal('Error', 'Houve um erro ao tentar gerar a etiqueta de envio! \n \n ' + error, 'error'))
     }
 
+    gerarEtiqueteEnvioMesmaPLP = async () => {
+        let userId = String(localStorage.getItem('@sigiml/id'))
+        await axios.post(`${DOMAIN}/vendas/gerarEtiquetaEnvioMesmoPLP/get01/get02/get03/get04/get05/get06/get07/get08/get09/get10/get11/get12/${userId}`, {shipping_ids: this.verificarSeExisteVendasAEnviar().join(",")}).then(response => {
+
+            window.open(response.data);
+
+        }).catch(error => swal('Error', 'Houve um erro ao tentar gerar a etiqueta de envio (PLP)! \n \n ' + error, 'error'))
+        
+    }
+
+    verificarSeExisteVendasAEnviar = () => {
+        let temp = []
+        this.props.vendas.filter(venda => {
+            if(venda.dados_entrega.status === 'ready_to_ship'){
+                temp.push(venda.dados_entrega.id)
+            }
+        })
+        return temp
+    }
+
     obterQuantidadeDelinhasTextArea = (qtde, msgId) => {
         return qtde.map(line => {
             return line.id === msgId ? line.qtdeBarraN : ''
         })
     }
 
-    updateCheckbox = (value, id_venda) => {
-        console.log(value, id_venda)
+    updateCheckbox = () => {
+        let temp = []
+        this.props.vendas.map(venda => {
+            if(venda.dados_entrega.status === 'ready_to_ship'){
+                venda.checkbox = !venda.checkbox
+                temp.push(venda)
+            }else{
+                temp.push(venda)
+            }
+        })
+        this.props.updateVendasAenviar(temp)
+    }
+
+    setCheckbox = (value) => {
         this.setState({checkbox: value})    
     }
 
@@ -80,6 +112,7 @@ class VendasController extends React.Component {
                         {...this.state}
                         resetDadosRastreamento={this.resetDadosRastreamento}
                         vendas={this.props.vendas}
+                        setCheckbox={this.setCheckbox}
                         updateCheckbox={this.updateCheckbox}
                         obterRastreioCorreios={this.obterRastreioCorreios}
                         dadosRastreamento={this.state.dadosRastreamento}
@@ -94,6 +127,7 @@ class VendasController extends React.Component {
                         qtdeVendasPendentes={this.props.qtdeVendasPendentes}
                         qtdeVendasAEnviar={this.props.qtdeVendasAEnviar}
                         qtdeVendasEmTransito={this.props.qtdeVendasEmTransito}
+                        gerarEtiqueteEnvioMesmaPLP={this.gerarEtiqueteEnvioMesmaPLP}
                         />
                 </Dimmer.Dimmable>
             </>
@@ -118,4 +152,10 @@ const mapStateToProps = store => ({
     isLoadingVendasAEnviar: store.venda.isLoadingVendasAEnviar
 })
 
-export default connect(mapStateToProps)(VendasController)
+const mapDispatchToProps = dispatch => ({
+    updateVendasAenviar: (vendas) => {
+        dispatch({type: UPDATE_VENDAS, data: vendas})
+    }
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(VendasController)

@@ -8,7 +8,7 @@ import imgConcluido from '../../../assets/img/Accept-icon128px.png'
 import iconCancelled from '../../../assets/img/cancelled.png'
 
 import { Divider, Icon, Step, Dimmer, Loader, Segment, Message } from 'semantic-ui-react'
-
+import PrintIcon from '@material-ui/icons/Print';
 import SmsIcon from '@material-ui/icons/Sms';
 import iconInterrogation from '../../../assets/img/interrogation.png'
 import Avatar from '@material-ui/core/Avatar';
@@ -34,10 +34,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Chip from '@material-ui/core/Chip';
-import PrintIcon from '@material-ui/icons/Print';
 import SendIcon from '@material-ui/icons/Send';
 import Badge from '@material-ui/core/Badge';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+
 
 export default class VendasView extends React.Component {
 
@@ -56,7 +57,7 @@ export default class VendasView extends React.Component {
             openModalEnviarMensagemMercadoLivre: false,
             textFieldSearch: '',
             temporalizar: false,
-            id_venda_for_using_checkbox: 0
+            disabledButtonImprimirEtiquetaPLP: true
         }
 
         this.handleClickSearch = this.handleClickSearch.bind(this)
@@ -75,7 +76,6 @@ export default class VendasView extends React.Component {
         })
         this.setState({ vendas: vendasPending, renderizar: true })
         this.mostrarLoading()
-
     }
 
     getStatusProntoParaEnviar = () => {
@@ -92,6 +92,7 @@ export default class VendasView extends React.Component {
         if (vendasAEnviar !== null) {
             this.setState({ vendas: vendasAEnviar, renderizar: true })
             this.mostrarLoading()
+            this.setState({showCheckboxSelectAll: true})
         }
 
     }
@@ -218,9 +219,24 @@ export default class VendasView extends React.Component {
         this.mostrarLoading()
     }
 
-    handleUpdateCheckbox = event => {
-        this.props.updateCheckbox(event.target.checked, event.target.value)
-        this.setState({id_venda_for_using_checkbox: event.target.value})
+    handleUpdateCheckbox = (event) => {
+        this.props.setCheckbox(!this.props.checkbox)
+        this.props.updateCheckbox()
+        this.setState({showButtonSelectAll: !this.state.showButtonSelectAll, disabledButtonImprimirEtiquetaPLP: !this.state.disabledButtonImprimirEtiquetaPLP})
+    }
+
+    verificarSeExisteVendasAEnviar = () => {
+        let temp = false
+        this.props.vendas.filter(venda => {
+            if(venda.dados_entrega.status === 'ready_to_ship'){
+                temp = true
+            }
+        })
+        return temp
+    }
+
+    obterQuantidadeDeVendasSelecionadasParaImprirmir = () => {
+        return this.props.vendas.filter(venda => venda.checkbox).length
     }
 
     render() {
@@ -302,18 +318,15 @@ export default class VendasView extends React.Component {
                                 </Paper>
 
                             </Grid>
-                        </Row>
 
-                        <Divider />
-                        <span>
-                            <TextField style={{ width: '80%' }}
+                            <TextField style={{ width: '97%', left: '15px', top: '10px'}}
                                 value={this.state.textFieldSearch}
                                 label='Buscar por título'
                                 variant='outlined'
                                 size='small'
                                 onChange={(event) => this.handleSearch(event)} />
 
-                            {/**<Button
+                                {/**<Button
                                 variant="contained"
                                 color="primary"
                                 startIcon={<SearchIcon />}
@@ -322,11 +335,34 @@ export default class VendasView extends React.Component {
                                 style={{ height: '51px', margin: '0 5px 0', backgroundColor: '#4682B4' }}>
                                 Pesquisar
                             </Button>*/}
+                        </Row>
 
+                        <p></p>
+
+                        <span>
+                            {this.verificarSeExisteVendasAEnviar() && <>
+                                <FormControlLabel style={{paddingLeft: '10px'}}
+                                        control={
+                                        <Checkbox
+                                            color="default"
+                                            checked={this.props.checkbox} onChange={() => this.handleUpdateCheckbox()}/>}
+                                        label='Selecionar todos(A ENVIAR)'/>
+                                <Tooltip title='Clique aqui para imprimir as vendas selecionadas na mesma PLP'>
+                                    <Button 
+                                        startIcon={<PrintIcon/>} 
+                                        variant="contained"
+                                        disabled={this.state.disabledButtonImprimirEtiquetaPLP} 
+                                        onClick={() => this.props.gerarEtiqueteEnvioMesmaPLP()}
+                                        size='small'>Imprimir etiqueta ({this.obterQuantidadeDeVendasSelecionadasParaImprirmir()})
+                                    </Button>
+                                </Tooltip>     
+                            </>}   
                         </span>
                         <Divider />
                     </div>
                 </div>
+
+                
 
                 {this.state.vendas.length > 0
 
@@ -342,7 +378,7 @@ export default class VendasView extends React.Component {
 
                                     <Paper elevation={3} key={key}>
                                         <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
-                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status !== 'pending') ? <Checkbox color="default" checked={this.props.checkbox} value={venda.id_venda} onChange={this.handleUpdateCheckbox}/> : <></>}
+                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status !== 'pending') ? <Checkbox color="default" disabled checked={this.props.checkbox}/> : <></>}
                                             <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={

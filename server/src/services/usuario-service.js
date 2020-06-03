@@ -117,8 +117,15 @@ const getAllUsers = async (req, res) => {
     }).catch(error => res.send(error))
 }
 
+const atualizarTipoImpressao = async (req, res) => {
+    await Usuario.findOneAndUpdate({id: req.body.id}, {$set: {tipo_impressao: req.body.tipo_impressao}}).then(response => {
+        res.status(200).send("Tipo de impressao atualizado!")
+    }).catch(error => res.send(error))
+}
+
 module.exports = {
     salvarUsuario,
+    atualizarTipoImpressao,
     buscarUsuarioPorID,
     salvarUsuarioRoute,
     listarTodosUsuarios,

@@ -6,7 +6,7 @@ import { DOMAIN, UPDATE_VENDAS } from '../../constants/constants'
 //import sendNotification from '../../components/Notification/Notification'
 import swal from 'sweetalert'
 import { Dimmer, Loader, Segment } from 'semantic-ui-react'
-//import socketIOClient from 'socket.io-client'
+
 
 
 class VendasController extends React.Component {
@@ -22,15 +22,6 @@ class VendasController extends React.Component {
 
     resetDadosRastreamento = () => {
         this.setState({dadosRastreamento: {}})
-    }
-
-    componentDidMount = async () => {
-    
-        /*const socket = socketIOClient(DOMAIN)
-        socket.on('ml-notification-perguntas', (data) => {
-            console.log("message: "+data);
-            
-          });*/
     }
 
     obterRastreioCorreios = async (codigo) => {

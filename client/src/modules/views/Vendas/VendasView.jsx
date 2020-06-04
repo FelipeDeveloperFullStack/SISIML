@@ -378,7 +378,7 @@ export default class VendasView extends React.Component {
 
                                     <Paper elevation={3} key={key}>
                                         <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
-                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status !== 'pending') ? <Checkbox color="default" disabled checked={this.props.checkbox}/> : <></>}
+                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status === 'ready_to_ship') ? <Checkbox color="default" disabled checked={this.props.checkbox}/> : <></>}
                                             <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={

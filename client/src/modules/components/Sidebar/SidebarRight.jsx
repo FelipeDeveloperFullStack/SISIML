@@ -112,7 +112,6 @@ export default function Sidebar(props) {
   const obterUsuarioPorID = async () => {
     let userId = String(localStorage.getItem('@sigiml/id'))
     await axios.post(`${DOMAIN}/usuario/post/usuario_by_id`, {id: userId}).then(response => {
-      console.log("response.data.tipo_impressao "+ response.data[0].tipo_impressao)
         setTipoImpressao(response.data[0].tipo_impressao)
     }).catch(error => {
       sendNotification("error", 'Ocorreu um erro ao tentar obter usuario por id! Entre em contato com o suporte técnico!', 3000)

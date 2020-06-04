@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Route, Switch } from "react-router-dom";
 import NavbarController from "../modules/components/Navbars/NavbarController";
 import Sidebar from "../modules/components/Sidebar/Sidebar";
@@ -14,15 +14,18 @@ import CallApiVenda from '../modules/actions/CallApi/CallApiVenda'
 import CallApiPerguntas from '../modules/actions/CallApi/CallApiPerguntas'
 import axios from 'axios'
 import socketIOClient from 'socket.io-client'
-import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS } from '../../src/modules/constants/constants'
+import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS, GET_VENDAS_A_ENVIAR, GET_TOTAL_VENDAS_A_ENVIAR } from '../../src/modules/constants/constants'
 import swal from 'sweetalert'
+import senNotification from '../modules/components/Notification/Notification'
 
 export default function Admin(props) {
 
+  const storeVenda = useSelector(store => store.venda)
   const [itemID, setItemID] = useState('')
   const [ClientID, setClientID] = useState(0)
   const [contBadge, setContBadge] = useState(0)
   const dispatch = useDispatch()
+
 
   const handleNewUserMessage = (newMessage) => {
     console.log(`New message incoming! ${newMessage}`);
@@ -32,16 +35,21 @@ export default function Admin(props) {
 
   const setUserId = async () => {
     await axios.get(`${DOMAIN}/usuario/procurar_usuario_byEmail/${localStorage.getItem('@sigiml/email-usuario')}`).then(resp => {
-        resp.data.map(user => {
-            localStorage.setItem('@sigiml/id', user.id)
-        })
+      resp.data.map(user => {
+        localStorage.setItem('@sigiml/id', user.id)
+      })
     }).catch(error => { swal('Error', 'Houve um erro ao tentar procurar o usuario pelo e-mail \n' + error, 'error') })
-}
+  }
 
 
   useEffect(() => {
     setUserId()
     let socket = socketIOClient(DOMAIN)
+    socketNotification(socket)
+    socketNovaVenda(socket)
+  }, [])
+
+  const socketNotification = (socket) => {
     socket.on('notification-ml', (perguntas) => {
       if (perguntas.status === 'UNANSWERED') {
         console.log(perguntas)
@@ -52,10 +60,24 @@ export default function Admin(props) {
         axios.get(`${DOMAIN}/perguntas/fila_perguntas`).then(questions => {
           dispatch({ type: GET_PERGUNTAS, question: questions.data })
           dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: questions.data.length })
+          senNotification("success", "Uma nova pergunta recebida!", 10000)
         }).catch(error => console.log(error))
       }
     })
-  }, [])
+  }
+
+  const socketNovaVenda = async (socket) => {
+    let userId = String(localStorage.getItem('@sigiml/id'))
+    socket.on("nova_venda", async (venda) => {
+      dispatch({ type: GET_VENDAS_A_ENVIAR, vendasAEnviar: venda })
+      senNotification("success", `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 10000)
+      await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/${userId}`).then(totalVendasAEnviar => {
+        dispatch({type: GET_TOTAL_VENDAS_A_ENVIAR, qtdeVendasAEnviar: totalVendasAEnviar.data.qtdeVendasAEnviar + 1, isLoadingQtdeVendasAEnviar: false})
+      }).catch(error => {
+        senNotification('error', 'Ocorreu um erro ao tentar atualizar o total de vendas a enviar! Entre em contato com o suporte técnico!', 5000)
+      })
+    })
+  }
 
   const useStyles = makeStyles(theme => (
     {
@@ -131,7 +153,7 @@ export default function Admin(props) {
         />
 
         <Sidebar {...props} routes={routes} ref={React.createRef()} />
-      
+
         <main className={classes.content} >
 
           <div className={classes.toolbar} />
@@ -168,10 +190,10 @@ export default function Admin(props) {
 
         </main>
 
-        
+
 
       </div>
-      <SidebarRight/>
+      <SidebarRight />
     </>
   );
 

@@ -79,19 +79,18 @@ export default function vendaReducer(state = INITIAL_STATE, action) {
                 }
             }
         }
-        /*case GET_VENDAS_A_ENVIAR: {
-            if (action.vendasAEnviar.data !== null) {
+        case GET_VENDAS_A_ENVIAR: {
+            if (action.vendasAEnviar !== null) {
                 let vendas = state.vendas
-                action.vendasAEnviar.data.map(venda => {
+                action.vendasAEnviar.map(venda => {
                     vendas.push(venda)
                 })
                 return {
                     ...state,
-                    isLoadingVendasAEnviar: false,
                     vendas: vendas
                 }
             }
-        }*/
+        }
         case GET_TOTAL_VENDAS: {
             return {
                 ...state,

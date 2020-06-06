@@ -167,24 +167,24 @@ export default function DashboardView(props) {
 
             <Row>
               <Col md={6}>
-                <div style={{ 'color': '#71D8BF', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>0</div>
+                <div style={{ 'color': '#71D8BF', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>{props.qtdeVendasDiaria}</div>
                 <div style={{ 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center' }}>Vendas</div>
               </Col>
 
               <Col md={6}>
-                <div style={{ 'color': '#4194D8', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>R$ 0,00</div>
+                <div style={{ 'color': '#4194D8', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>R$ {props.faturamentoDiario.toFixed(2)}</div>
                 <div style={{ 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center' }}>Faturamento</div>
               </Col>
             </Row>
 
             <Row style={{ 'paddingBottom': '20px', 'paddingTop': '30px' }}>
               <Col md={6}>
-                <div style={{ 'color': '#71D8BF', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>0</div>
+                <div style={{ 'color': '#71D8BF', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>{props.qtdePerguntasDiaria}</div>
                 <div style={{ 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center' }}>Perguntas</div>
               </Col>
 
               <Col md={6}>
-                <div style={{ 'color': '#4194D8', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>R$ 0,00</div>
+                <div style={{ 'color': '#4194D8', 'fontSize': '25px', 'lineHeight': '30px', 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center', 'fontWeight': 'bold' }}>R$ {props.ticketMedioDiario.toFixed(2)}</div>
                 <div style={{ 'display': 'flex', 'flexDirection': 'row', 'justifyContent': 'center' }}>Ticket médio</div>
               </Col>
             </Row>

@@ -94,7 +94,7 @@ export default function AnuncioController() {
 
     let updateAnuncioPrice = async (itemId, price) => {
         if (price != '' || price != 0) {
-            await axios.put(`${DOMAIN}/anuncio/update_price/put01/:userId`, { itemId: itemId, price: price }).then(user => {
+            await axios.put(`${DOMAIN}/anuncio/update_price/put01/${userId}`, { itemId: itemId, price: price }).then(user => {
 
                 setIsShowEditPrice(false)
                 setLoadingButton(false)

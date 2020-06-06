@@ -14,16 +14,25 @@ import CallApiVenda from '../modules/actions/CallApi/CallApiVenda'
 import CallApiPerguntas from '../modules/actions/CallApi/CallApiPerguntas'
 import axios from 'axios'
 import socketIOClient from 'socket.io-client'
-import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS, GET_VENDAS_A_ENVIAR, GET_TOTAL_VENDAS_A_ENVIAR } from '../../src/modules/constants/constants'
+import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS, GET_VENDAS_A_ENVIAR, GET_TOTAL_VENDAS_A_ENVIAR, UPDATE_ATIVIDADE_DIARIO } from '../../src/modules/constants/constants'
 import swal from 'sweetalert'
-import senNotification from '../modules/components/Notification/Notification'
+import sendNotification from '../modules/components/Notification/Notification'
+import _ from 'lodash'
+import { formatarData } from '../Helpers/util'
 
 export default function Admin(props) {
 
-  const storeVenda = useSelector(store => store.venda)
+  let MENSAGEM_ERROR = "Ocorreu um erro ao tentar atualizar o total de vendas a enviar! Entre em contato com o suporte técnico"
+
+  //STORE
+  //const storeVenda = useSelector(store => store.venda)
+  const storeDashboard = useSelector(store => store.dashboard)
+
+  // Component state
   const [itemID, setItemID] = useState('')
   const [ClientID, setClientID] = useState(0)
   const [contBadge, setContBadge] = useState(0)
+
   const dispatch = useDispatch()
 
 
@@ -52,7 +61,6 @@ export default function Admin(props) {
   const socketNotification = (socket) => {
     socket.on('notification-ml', (perguntas) => {
       if (perguntas.status === 'UNANSWERED') {
-        console.log(perguntas)
         setContBadge(1)
         setClientID(perguntas.from.id)
         setItemID(' - ' + perguntas.item_id)
@@ -60,8 +68,9 @@ export default function Admin(props) {
         axios.get(`${DOMAIN}/perguntas/fila_perguntas`).then(questions => {
           dispatch({ type: GET_PERGUNTAS, question: questions.data })
           dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: questions.data.length })
-          senNotification("success", "Uma nova pergunta recebida!", 10000)
-        }).catch(error => console.log(error))
+          atualizarAtividadeDiaria(String(localStorage.getItem('@sigiml/id')), questions.data.length, undefined)
+          sendNotification("success", "Uma nova pergunta recebida!", 10000)
+        }).catch(error => sendNotification("error", MENSAGEM_ERROR + ' ' + error, 5000))
       }
     })
   }
@@ -70,12 +79,71 @@ export default function Admin(props) {
     let userId = String(localStorage.getItem('@sigiml/id'))
     socket.on("nova_venda", async (venda) => {
       dispatch({ type: GET_VENDAS_A_ENVIAR, vendasAEnviar: venda })
-      senNotification("success", `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 10000)
-      await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/${userId}`).then(totalVendasAEnviar => {
-        dispatch({type: GET_TOTAL_VENDAS_A_ENVIAR, qtdeVendasAEnviar: totalVendasAEnviar.data.qtdeVendasAEnviar + 1, isLoadingQtdeVendasAEnviar: false})
+      sendNotification("success", `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 10000)
+      await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/${userId}`).then(async totalVendasAEnviar => {
+        dispatch({
+          type: GET_TOTAL_VENDAS_A_ENVIAR,
+          qtdeVendasAEnviar: totalVendasAEnviar.data.qtdeVendasAEnviar,
+          isLoadingQtdeVendasAEnviar: false
+        })
+        atualizarAtividadeDiaria(userId, undefined, venda)
       }).catch(error => {
-        senNotification('error', 'Ocorreu um erro ao tentar atualizar o total de vendas a enviar! Entre em contato com o suporte técnico!', 5000)
+        sendNotification('error', MENSAGEM_ERROR + ' ' + error, 5000)
       })
+    })
+  }
+
+  const atualizarAtividadeDiaria = async (userId, questionLength, venda) => {
+    await axios.post(`${DOMAIN}/atividade/find_by/user`, { userId }).then(async response => {
+      //SE CASO O USUÁRIO NÃO TIVER NENHUM REGISTRO DE ATIVIDADE DIÁRIA, SALVA UM NOVO REGISTRO
+      if (response.data.length === 0) {
+        await axios.post(`${DOMAIN}/atividade/save`, {
+          usuario: userId,
+          qtdeVendasDiaria: 1,
+          qtdePerguntasDiaria: questionLength !== undefined ? questionLength : 0,
+          faturamentoDiario: venda !== undefined ? venda[0].valor_venda : response.data[0].faturamentoDiario,
+          ticketMedioDiario: venda !== undefined ? venda[0].valor_venda : response.data[0].ticketMedioDiario,
+          data: new Date()
+        }).then(response => {
+          dispatch({
+            type: UPDATE_ATIVIDADE_DIARIO,
+            qtdeVendasDiaria: response.data.qtdeVendasDiaria,
+            qtdePerguntasDiaria: questionLength !== undefined ? questionLength : response.data.qtdePerguntasDiaria,
+            faturamentoDiario: response.data.faturamentoDiario,
+            ticketMedioDiario: response.data.ticketMedioDiario
+          })
+        }
+        ).catch(error => {
+          sendNotification('error', MENSAGEM_ERROR + ' ' + error, 5000)
+        })
+      } else {
+        //CASO JÁ TIVER, ATUALIZA. 
+        if (formatarData(response.data[0].data) !== new Date().toLocaleDateString()) {
+          console.log("DATAS diferentes")
+        } else {
+          let faturamento = _.add(response.data[0].faturamentoDiario, venda !== undefined ? venda[0].valor_venda : 0)
+          let qtdeVendas = _.add(response.data[0].qtdeVendasDiaria, 1)
+          await axios.post(`${DOMAIN}/atividade/save`, {
+            usuario: userId,
+            qtdeVendasDiaria: venda !== undefined ? qtdeVendas : response.data[0].qtdeVendasDiaria,
+            qtdePerguntasDiaria: questionLength !== undefined ? questionLength : response.data[0].qtdePerguntasDiaria,
+            faturamentoDiario: venda !== undefined ? faturamento : response.data[0].faturamentoDiario,
+            ticketMedioDiario: venda !== undefined ? _.divide(faturamento, qtdeVendas) : response.data[0].ticketMedioDiario,
+            data: response.data[0].data
+          }).then(resp => {
+            dispatch({
+              type: UPDATE_ATIVIDADE_DIARIO,
+              qtdeVendasDiaria: venda !== undefined ? qtdeVendas : response.data[0].qtdeVendasDiaria,
+              qtdePerguntasDiaria: questionLength !== undefined ? questionLength : response.data[0].qtdePerguntasDiaria,
+              faturamentoDiario: venda !== undefined ? faturamento : response.data[0].faturamentoDiario,
+              ticketMedioDiario: venda !== undefined ? _.divide(faturamento, qtdeVendas) : response.data[0].ticketMedioDiario
+            })
+          }
+          ).catch(error => {
+            sendNotification('error', MENSAGEM_ERROR + ' ' + error, 5000)
+          })
+        }
+      }
     })
   }
 

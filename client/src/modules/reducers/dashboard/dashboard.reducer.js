@@ -2,7 +2,8 @@ import {
     OBTER_SALDO_TOTAL,
     OBTER_TOTAL_VENDAS_NO_MES,
     OBTER_VENDAS_PENDENTE,
-    OBTER_STATUS_ANUNCIOS
+    OBTER_STATUS_ANUNCIOS,
+    UPDATE_ATIVIDADE_DIARIO
 }
     from '../../constants/constants'
 
@@ -19,12 +20,27 @@ const INITIAL_STATE = {
     saldoBloqueado: Number(),
     totalVendasPendentes: Number(),
     totalAtivos: Number(),
-    totalPausados: Number()
+    totalPausados: Number(),
+
+    //ATIVIDADE DIÁRIA
+    qtdeVendasDiaria: Number(),
+    qtdePerguntasDiaria: Number(),
+    faturamentoDiario: Number(),
+    ticketMedioDiario: Number(),
 }
 
 export default function dashboardReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
-        case OBTER_SALDO_TOTAL:{
+        case UPDATE_ATIVIDADE_DIARIO : {
+            return {
+                ...state,
+                qtdeVendasDiaria: action.qtdeVendasDiaria,
+                qtdePerguntasDiaria: action.qtdePerguntasDiaria,
+                faturamentoDiario: action.faturamentoDiario,
+                ticketMedioDiario: action.ticketMedioDiario
+            }
+        }
+        case OBTER_SALDO_TOTAL: {
             return {
                 ...state,
                 saldoTotal: action.saldoTotal,

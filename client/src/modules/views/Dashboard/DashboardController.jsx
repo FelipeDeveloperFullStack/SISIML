@@ -10,7 +10,8 @@ import {
     OBTER_TOTAL_VENDAS_NO_MES,
     OBTER_VENDAS_PENDENTE,
     OBTER_STATUS_ANUNCIOS,
-    GET_PERGUNTAS
+    GET_PERGUNTAS,
+    UPDATE_ATIVIDADE_DIARIO
 }
     from '../../constants/constants'
 import { DOMAIN } from '../../constants/constants'
@@ -154,6 +155,18 @@ export default function DashboardController() {
             })
         }).catch(error => {
             swal("Error", "Houve um erro ao mostrar os status dos anuncios   \n \n " + error, "error");
+        })
+
+        await axios.post(`${DOMAIN}/atividade/find_by/user`, { userId }).then(response => {
+            if(response.data[0] !== undefined){
+                dispatch({
+                    type: UPDATE_ATIVIDADE_DIARIO,
+                    qtdeVendasDiaria: response.data[0].qtdeVendasDiaria,
+                    qtdePerguntasDiaria: response.data[0].qtdePerguntasDiaria,
+                    faturamentoDiario: response.data[0].faturamentoDiario,
+                    ticketMedioDiario: response.data[0].ticketMedioDiario
+                  })
+            }
         })
     }
 

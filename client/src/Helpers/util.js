@@ -7,6 +7,12 @@ export const formatarDataHora = (date) => {
     return dataHoraFormatada
 }
 
+export const formatarData = (date) => {
+    let formatData = date.substring(0, 10).split('-')
+    let dataHoraFormatada = formatData[2] + '/' + formatData[1] + '/' + formatData[0]
+    return dataHoraFormatada
+}
+
 export const removerCaracteresEspeciaisEAcentos = (especialChar) => {
     especialChar = especialChar.replace('/[áàãâä]/ui', 'a');
     especialChar = especialChar.replace('/[éèêë]/ui', 'e');

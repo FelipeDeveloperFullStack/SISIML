@@ -51,6 +51,8 @@ export const OPEN_DRAWER_MENU_RIGHT = 'OPEN_DRAWER_MENU_RIGHT'
 //Domain production
 //export const DOMAIN = ''
 
+//export const DOMAIN = 'https://sisimlserver.herokuapp.com'
 export const DOMAIN = 'http://localhost:5000'
 
-
+//http://localhost:5000
+//https://sisimlserver.herokuapp.com/

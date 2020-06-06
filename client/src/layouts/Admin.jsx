@@ -59,16 +59,17 @@ export default function Admin(props) {
   }, [])
 
   const socketNotification = (socket) => {
+    let userId = String(localStorage.getItem('@sigiml/id'))
     socket.on('notification-ml', (perguntas) => {
       if (perguntas.status === 'UNANSWERED') {
         setContBadge(1)
         setClientID(perguntas.from.id)
         setItemID(' - ' + perguntas.item_id)
         addResponseMessage(perguntas.text)
-        axios.get(`${DOMAIN}/perguntas/fila_perguntas`).then(questions => {
+        axios.get(`${DOMAIN}/perguntas/fila_perguntas/${userId}`).then(questions => {
           dispatch({ type: GET_PERGUNTAS, question: questions.data })
           dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: questions.data.length })
-          atualizarAtividadeDiaria(String(localStorage.getItem('@sigiml/id')), questions.data.length, undefined)
+          atualizarAtividadeDiaria(userId, questions.data.length, undefined)
           sendNotification("success", "Uma nova pergunta recebida!", 10000)
         }).catch(error => sendNotification("error", MENSAGEM_ERROR + ' ' + error, 5000))
       }
@@ -118,31 +119,28 @@ export default function Admin(props) {
         })
       } else {
         //CASO JÁ TIVER, ATUALIZA. 
-        if (formatarData(response.data[0].data) !== new Date().toLocaleDateString()) {
-          console.log("DATAS diferentes")
-        } else {
-          let faturamento = _.add(response.data[0].faturamentoDiario, venda !== undefined ? venda[0].valor_venda : 0)
-          let qtdeVendas = _.add(response.data[0].qtdeVendasDiaria, 1)
-          await axios.post(`${DOMAIN}/atividade/save`, {
-            usuario: userId,
+        //formatarData(response.data[0].data) !== new Date().toLocaleDateString()
+        let faturamento = _.add(response.data[0].faturamentoDiario, venda !== undefined ? venda[0].valor_venda : 0)
+        let qtdeVendas = _.add(response.data[0].qtdeVendasDiaria, 1)
+        await axios.post(`${DOMAIN}/atividade/save`, {
+          usuario: userId,
+          qtdeVendasDiaria: venda !== undefined ? qtdeVendas : response.data[0].qtdeVendasDiaria,
+          qtdePerguntasDiaria: questionLength !== undefined ? questionLength : response.data[0].qtdePerguntasDiaria,
+          faturamentoDiario: venda !== undefined ? faturamento : response.data[0].faturamentoDiario,
+          ticketMedioDiario: venda !== undefined ? _.divide(faturamento, qtdeVendas) : response.data[0].ticketMedioDiario,
+          data: response.data[0].data
+        }).then(resp => {
+          dispatch({
+            type: UPDATE_ATIVIDADE_DIARIO,
             qtdeVendasDiaria: venda !== undefined ? qtdeVendas : response.data[0].qtdeVendasDiaria,
             qtdePerguntasDiaria: questionLength !== undefined ? questionLength : response.data[0].qtdePerguntasDiaria,
             faturamentoDiario: venda !== undefined ? faturamento : response.data[0].faturamentoDiario,
-            ticketMedioDiario: venda !== undefined ? _.divide(faturamento, qtdeVendas) : response.data[0].ticketMedioDiario,
-            data: response.data[0].data
-          }).then(resp => {
-            dispatch({
-              type: UPDATE_ATIVIDADE_DIARIO,
-              qtdeVendasDiaria: venda !== undefined ? qtdeVendas : response.data[0].qtdeVendasDiaria,
-              qtdePerguntasDiaria: questionLength !== undefined ? questionLength : response.data[0].qtdePerguntasDiaria,
-              faturamentoDiario: venda !== undefined ? faturamento : response.data[0].faturamentoDiario,
-              ticketMedioDiario: venda !== undefined ? _.divide(faturamento, qtdeVendas) : response.data[0].ticketMedioDiario
-            })
-          }
-          ).catch(error => {
-            sendNotification('error', MENSAGEM_ERROR + ' ' + error, 5000)
+            ticketMedioDiario: venda !== undefined ? _.divide(faturamento, qtdeVendas) : response.data[0].ticketMedioDiario
           })
         }
+        ).catch(error => {
+          sendNotification('error', MENSAGEM_ERROR + ' ' + error, 5000)
+        })
       }
     })
   }

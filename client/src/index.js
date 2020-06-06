@@ -1,12 +1,12 @@
 import React from "react";
 
 import ReactDOM from "react-dom";
-import '../../client/node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import "./assets/css/animate.min.css";
-import "./assets/sass/light-bootstrap-dashboard-react.scss?v=1.3.0";
+//import "./assets/sass/light-bootstrap-dashboard-react.scss?v=1.3.0";
 import "./assets/css/demo.css";
 import "./assets/css/pe-icon-7-stroke.css";
 

@@ -25,7 +25,7 @@ app.set('io', io)
 app.use('/notifications', notificacoesMercadoLivreRoute);
 
 /** Envia uma requisição para o servidor da Heroku, a fim de evitar a hibernação do mesmo*/
-let SERVER_MESSAGE = "[SERVIDOR SISIML] - Enviando requisição GET para o servidor de refresh token"
+let SERVER_MESSAGE = `[SERVIDOR SISIML] - Enviando requisição GET para o servidor de refresh token - ${new Date()}`
 setInterval(() => {
     axios.get("https://sisiml-atualizador-refreashtk.herokuapp.com").then(response => {
         console.info(SERVER_MESSAGE)

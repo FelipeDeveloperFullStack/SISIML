@@ -7,8 +7,8 @@ const util = require('../helpers/util')
 
 module.exports = (io) => {
 
-    router.post('/', (req, res) => {
-        usuarioService.buscarUsuarioPorID(req.body.user_id).then(async user => {
+    router.post('/', async (req, res) => {
+        await usuarioService.buscarUsuarioPorID(req.body.user_id).then(async user => {
             /** PERGUNTAS */
             if (req.body.topic === 'questions') { 
                 let resource = req.body.resource.split('').filter(caracter => { return Number(caracter) || caracter == 0 }).join('') //Obtem apenas o número de EX: /questions/5036111111, devolvendo apenas o 5036111111
@@ -46,7 +46,8 @@ module.exports = (io) => {
                                     newVendas.push(venda)
                                 }
                             })
-                            res.send(newVendas)
+                            console.log(req.body)
+                            res.status(200).send(newVendas)
                             io.emit("nova_venda", newVendas)
                         })
                     })

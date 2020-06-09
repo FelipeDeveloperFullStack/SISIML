@@ -8,7 +8,8 @@ const util = require('../helpers/util')
 const postAnuncio = require('./postAnuncio')
 const cheerio = require('cheerio');
 const Usuario = require('../models/usuario-model')
-
+require('moment/locale/pt-br')
+const moment = require("moment")
 
 const usuario = {
     id: 3311227,
@@ -875,4 +876,10 @@ const getProcurarUsuarioPorEmail = async () => {
     }).catch(error => console.log(error))
 }
 
-obterVendasConcluidas(541569110)
+const testeMomentJS = (date) => {
+    if(moment(util.formatarDataInverter(date)).isBefore(util.formatarDataInverter(moment().format()))) {
+        console.log("Atrasado")
+    }
+}
+
+testeMomentJS('2020-06-06T02:26:43.264Z')

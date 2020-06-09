@@ -38,7 +38,7 @@ import SendIcon from '@material-ui/icons/Send';
 import Badge from '@material-ui/core/Badge';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
+import SettingsIcon from '@material-ui/icons/Settings';
 
 export default class VendasView extends React.Component {
 
@@ -339,25 +339,31 @@ export default class VendasView extends React.Component {
 
                         <p></p>
 
-                        <span>
-                            {this.verificarSeExisteVendasAEnviar() && <>
-                                <FormControlLabel style={{paddingLeft: '10px'}}
-                                        control={
-                                        <Checkbox
-                                            color="default"
-                                            checked={this.props.checkbox} onChange={() => this.handleUpdateCheckbox()}/>}
-                                        label='Selecionar todos(A ENVIAR)'/>
-                                <Tooltip title='Clique aqui para imprimir as vendas selecionadas na mesma PLP'>
-                                    <Button 
-                                        startIcon={<PrintIcon/>} 
-                                        variant="contained"
-                                        disabled={this.state.disabledButtonImprimirEtiquetaPLP} 
-                                        onClick={() => this.props.gerarEtiqueteEnvioMesmaPLP()}
-                                        size='small'>Imprimir etiqueta ({this.obterQuantidadeDeVendasSelecionadasParaImprirmir()})
-                                    </Button>
-                                </Tooltip>     
-                            </>}   
-                        </span>
+                        <div style={{display: 'flex', justifyContent: 'space-between'}}>        
+                            <span>
+                                    {this.verificarSeExisteVendasAEnviar() && <>
+                                        <FormControlLabel style={{paddingLeft: '10px'}}
+                                                control={
+                                                <Checkbox
+                                                    color="default"
+                                                    checked={this.props.checkbox} onChange={() => this.handleUpdateCheckbox()}/>}
+                                                label='Selecionar todos(A ENVIAR)'/>
+                                        <Tooltip title='Clique aqui para imprimir as vendas selecionadas na mesma PLP'>
+                                            <Button 
+                                                startIcon={<PrintIcon/>} 
+                                                variant="contained"
+                                                disabled={this.state.disabledButtonImprimirEtiquetaPLP} 
+                                                onClick={() => this.props.gerarEtiqueteEnvioMesmaPLP()}
+                                                size='small'>Imprimir etiqueta ({this.obterQuantidadeDeVendasSelecionadasParaImprirmir()})
+                                            </Button>
+                                        </Tooltip>     
+                                    </>}   
+                            </span>
+                            <span>
+                                <FormControlLabel control={<Checkbox/>} label="Vendas em atraso(2)"/>       
+                                <FormControlLabel control={<Checkbox color="primary"/>} label="Vendas a combinar(16)"/>            
+                            </span>                        
+                        </div>
                         <Divider />
                     </div>
                 </div>
@@ -379,7 +385,7 @@ export default class VendasView extends React.Component {
                                     <Paper elevation={3} key={key}>
                                         <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
                                             {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status === 'ready_to_ship') ? <Checkbox color="default" disabled checked={this.props.checkbox}/> : <></>}
-                                            <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip></span> - Nº #{venda.id_venda} - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
+                                            <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip> {venda.atraso_no_envio && <Chip color="secondary" size="small" label={venda.atraso_no_envio ? 'ATRASADO' : ''}/>} </span> - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={
                                                 <>

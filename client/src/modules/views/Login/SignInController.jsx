@@ -18,7 +18,8 @@ export default class SignInController extends React.Component {
             redirectServer: false,
             redirectDashboard: false,
             checked: checkedStorage,
-            isShowMessageMain: checkedStorage
+            isShowMessageMain: checkedStorage,
+            isLoadingButton: false
         }
     }
 
@@ -81,6 +82,7 @@ export default class SignInController extends React.Component {
                         localStorage.setItem('@sigiml/data_expiracao_plano_free', user.data_expiracao_plano_free)
                         localStorage.setItem('@sigiml/data_inicio_plano', user.data_inicio_plano)
                         localStorage.setItem('@sigiml/expiration_day', this.calcularDiferenteEmDias())
+                        this.setState({isLoadingButton: true})
                         /**
                          * Verificar se possui token se sim, direcionar para o dashboard do sistema sem passar pelo server
                          */

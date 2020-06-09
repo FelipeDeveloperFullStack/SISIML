@@ -4,6 +4,8 @@ const anuncioService = require('../services/anuncio-service')
 const constants = require('../constants/constants')
 const util = require('../helpers/util')
 const fs = require('fs')
+require('moment/locale/pt-br')
+const moment = require("moment")
 
 
 exports.obterTotalDeVendas = async (req, res) => {
@@ -599,6 +601,8 @@ const processarVendasConcluidasComShipments = async (response, user) => {
                 id_venda: response.id,
                 status: response.status,
                 data_venda: util.formatarDataHora(response.date_closed),
+                data_venda_formatada: util.formatarDataInverter(response.date_closed),
+                atraso_no_envio: isAtrasoNoEnvio(response.date_closed, ship),
                 pack_id: response.pack_id,
                 itens_pedido: {
                     quantidade_vendido: response.order_items[0].quantity,
@@ -658,6 +662,7 @@ const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, u
             id_venda: response.id,
             status: response.status,
             data_venda: util.formatarDataHora(response.date_closed),
+            data_venda_formatada: util.formatarDataInverter(response.date_closed),
             pack_id: response.pack_id,
             itens_pedido: {
                 quantidade_vendido: response.order_items[0].quantity,
@@ -693,6 +698,18 @@ const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, u
         }
         return json
     }).catch(error => res.send(error))
+}
+
+let isAtrasoNoEnvio = (date, ship) => {
+    if(ship.data.status === 'ready_to_ship' || ship.data.substatus === 'printed'){
+        if(moment(util.formatarDataInverter(date)).isBefore(util.formatarDataInverter(moment().format()))) {
+            return true
+        }else{
+            return false
+        }
+    }else{
+        return false
+    }
 }
 
 let obterQuantidadeChar = (messages) => {

@@ -1,7 +1,7 @@
 import React from 'react'
 import ChatView from './ChatView'
 import {connect} from 'react-redux'
-import {GET_PERGUNTAS, DOMAIN} from '../../constants/constants'
+import {GET_PERGUNTAS, DOMAIN , GET_QTDE_PERGUNTAS} from '../../constants/constants'
 import axios from 'axios'
 import sendNotification from '../../components/Notification/Notification'
 
@@ -19,6 +19,7 @@ class ChatController extends React.Component {
         let userId = localStorage.getItem("@sigiml/id")
         await axios.post(`${DOMAIN}/notifications/responder/${userId}`, {question_id: question_id, text: text}).then(async response => {
            await this.atualizarStorePerguntas()
+           this.props.atualizarQtdePerguntas(this.props.qtdePerguntas - 1)
         }).catch(error => console.log(error))
     }
 
@@ -38,14 +39,18 @@ class ChatController extends React.Component {
 }
 
 const mapStateToProps = store => ({
-    perguntas: store.perguntas.question
+    perguntas: store.perguntas.question,
+    qtdePerguntas: store.perguntas.qtdePerguntas
 })
 
 const mapDispatchToProps = dispatch => {
     return ({
         listarPerguntas: (perguntas) => {
             dispatch({type: GET_PERGUNTAS, question: perguntas})
-        }
+        },
+        atualizarQtdePerguntas: (qtde) => {
+            dispatch({type: GET_QTDE_PERGUNTAS, qtdePerguntas: qtde})
+        } 
     })
 }
 

@@ -151,7 +151,7 @@ export default function Sidebar(props) {
                     style={{color: 'black'}}>
 
                     <ListItem button key={key} onClick={() => handleListItemClick(prop.layout + prop.path, prop.name)} selected={selectedIndex === prop.layout + prop.path}>
-                      <Badge anchorOrigin={{ vertical: 'top', horizontal: 'left' }} badgeContent={prop.name === 'Chat' ? perguntas.qtdePerguntas : 0} color="primary">
+                      <Badge anchorOrigin={{ vertical: 'top', horizontal: 'left' }} badgeContent={prop.name === 'Chat' ? (perguntas.qtdePerguntas >= 0 ? perguntas.qtdePerguntas : 0) : 0} color="primary">
                         <ListItemIcon style={{ 'marginLeft': '10px', color: 'black' }}><i className={prop.icon} style={{ 'fontSize': '15px' }} /></ListItemIcon>
                       </Badge>
                       <ListItemText style={{fontSize: '5px'}} primary={prop.name} />

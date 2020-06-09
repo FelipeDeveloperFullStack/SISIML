@@ -8,6 +8,21 @@ exports.formatarDataHora = (date) => {
     return dataHoraFormatada
 }
 
+exports.formatarDataComTraco = (date) => {
+    date = date.replace(/"/g, '')
+    let formatData = date.substring(0,10).split('-')
+    let dataHoraFormatada = formatData[2]+'-'+formatData[1]+'-'+formatData[0]
+    return dataHoraFormatada
+}
+
+exports.formatarDataInverter = (date) => {
+    date = date.replace(/"/g, '')
+    let formatData = date.substring(0,10).split('-')
+    let dataHoraFormatada = formatData[0]+'-'+formatData[1]+'-'+formatData[2]
+    return dataHoraFormatada
+}
+
+
 exports.tratarNumeroCelularComDDD = (ddd, numero) =>{
     if(ddd != null) ddd = ddd.replace(' ','') 
     if(ddd === null || ddd == undefined || numero != null || numero != undefined){

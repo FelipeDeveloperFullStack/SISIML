@@ -13,6 +13,13 @@ export const formatarData = (date) => {
     return dataHoraFormatada
 }
 
+export const formatarDataInverter = (date) => {
+    date = date.replace(/"/g, '')
+    let formatData = date.substring(0,10).split('-')
+    let dataHoraFormatada = formatData[0]+'-'+formatData[1]+'-'+formatData[2]
+    return dataHoraFormatada
+}
+
 export const removerCaracteresEspeciaisEAcentos = (especialChar) => {
     especialChar = especialChar.replace('/[áàãâä]/ui', 'a');
     especialChar = especialChar.replace('/[éèêë]/ui', 'e');

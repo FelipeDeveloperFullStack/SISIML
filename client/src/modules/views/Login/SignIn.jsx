@@ -141,7 +141,7 @@ export default function SignIn(props) {
                 color="primary"
                 onClick={() => props.signinUsuario()}
                 className={classes.submit}>
-                Acessar
+                {props.isLoadingButton ? <>Entrando, aguarde...</> : <>Acessar</>}
           </ButtonUI>
 
 

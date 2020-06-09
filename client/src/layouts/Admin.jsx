@@ -25,20 +25,18 @@ export default function Admin(props) {
   let MENSAGEM_ERROR = "Ocorreu um erro ao tentar atualizar o total de vendas a enviar! Entre em contato com o suporte técnico"
 
   //STORE
-  //const storeVenda = useSelector(store => store.venda)
   const storeDashboard = useSelector(store => store.dashboard)
+  const storePerguntas = useSelector(store => store.perguntas)
 
   // Component state
   const [itemID, setItemID] = useState('')
-  const [ClientID, setClientID] = useState(0)
-  const [contBadge, setContBadge] = useState(0)
-
+  const [showWidget, setShowWidget] = useState(false)
   const dispatch = useDispatch()
 
 
   const handleNewUserMessage = (newMessage) => {
-    console.log(`New message incoming! ${newMessage}`);
-    setContBadge(0)
+    dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: (storePerguntas.qtdePerguntas -1)})
+    setShowWidget(storePerguntas.qtdePerguntas === 0 ? false : true)
     //Enviar para o Mercado livre
   }
 
@@ -62,15 +60,17 @@ export default function Admin(props) {
     let userId = String(localStorage.getItem('@sigiml/id'))
     socket.on('notification-ml', (perguntas) => {
       if (perguntas.status === 'UNANSWERED') {
-        setContBadge(1)
-        setClientID(perguntas.from.id)
+        //setContBadge(1)
+        //setClientID(perguntas.from.id)
         setItemID(' - ' + perguntas.item_id)
         addResponseMessage(perguntas.text)
+
         axios.get(`${DOMAIN}/perguntas/fila_perguntas/${userId}`).then(questions => {
           dispatch({ type: GET_PERGUNTAS, question: questions.data })
           dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: questions.data.length })
           atualizarAtividadeDiaria(userId, questions.data.length, undefined)
-          sendNotification("success", "Uma nova pergunta recebida!", 10000)
+          sendNotification("success", "Uma nova pergunta recebida!", 5000)
+          setShowWidget(true)
         }).catch(error => sendNotification("error", MENSAGEM_ERROR + ' ' + error, 5000))
       }
     })
@@ -231,29 +231,15 @@ export default function Admin(props) {
           <Switch>{getRoutes(routes)}</Switch>
 
 
-          <div className="App">
-            <Widget
+          {/**<div className="App">
+            {showWidget && <Widget
               title="Perguntas"
               subtitle={new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + "\n" + itemID}
-              badge={contBadge}
+              badge={storePerguntas.qtdePerguntas}
               handleNewUserMessage={handleNewUserMessage}
               senderPlaceHolder='Digite uma resposta'
-              showCloseButton={true} />
-          </div>
-
-          {/**<div>
-          <Launcher
-            agentProfile={{
-              teamName: 'react-chat-window',
-              imageUrl: 'https://a.slack-edge.com/66f9/img/avatars-teams/ava_0001-34.png'
-            }}
-            onMessageWasSent={_onMessageWasSent}
-            messageList={message.messageList}
-            sendMessage={_sendMessage}
-            showEmoji
-          />
-        </div> */}
-
+              showCloseButton={true} />}
+            </div>*/}
         </main>
 
 

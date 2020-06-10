@@ -39,6 +39,8 @@ import Badge from '@material-ui/core/Badge';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SettingsIcon from '@material-ui/icons/Settings';
+import sendNotification from '../../components/Notification/Notification'
+
 
 export default class VendasView extends React.Component {
 
@@ -57,7 +59,11 @@ export default class VendasView extends React.Component {
             openModalEnviarMensagemMercadoLivre: false,
             textFieldSearch: '',
             temporalizar: false,
-            disabledButtonImprimirEtiquetaPLP: true
+            disabledButtonImprimirEtiquetaPLP: true,
+            qtdeVendasEmAtraso: 0,
+            qtdeVendasACombinar: 0,
+            checkedVendasEmAtraso: false,
+            checkedVendasACombinar: false
         }
 
         this.handleClickSearch = this.handleClickSearch.bind(this)
@@ -74,7 +80,7 @@ export default class VendasView extends React.Component {
                 return venda.status === 'payment_required'
             }
         })
-        this.setState({ vendas: vendasPending, renderizar: true })
+        this.setState({ vendas: vendasPending, renderizar: true, checkedVendasEmAtraso: false, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0 })
         this.mostrarLoading()
     }
 
@@ -88,13 +94,70 @@ export default class VendasView extends React.Component {
                 }
             }
         })
-
         if (vendasAEnviar !== null) {
-            this.setState({ vendas: vendasAEnviar, renderizar: true })
+            this.setState({ vendas: vendasAEnviar, renderizar: true, checkedVendasEmAtraso: false, showCheckboxSelectAll: true, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0 })
             this.mostrarLoading()
-            this.setState({showCheckboxSelectAll: true})
         }
+    }
 
+    getVendasACombinar = event => {
+        let vendasACombinar = this.props.vendas.filter(venda => {
+            if(venda != null){
+                if(venda.dados_entrega.id === undefined){
+                    if(event.target.checked){
+                        return venda.dados_entrega.status === 'to_be_agreed'
+                    }
+                }    
+            }
+        })
+        if (vendasACombinar !== null) {
+            this.setState({ vendas: vendasACombinar, renderizar: true, checkedVendasACombinar: event.target.checked , checkedVendasEmAtraso: false, showCheckboxSelectAll: true, qtdeVendasEmAtraso: 0 })
+            this.mostrarLoading()
+            this.getQtdeVendasACombinar(event.target.checked)
+        }
+    }
+
+    getQtdeVendasACombinar = checked => {
+        let qtdeVendasACombinar = this.props.vendas.filter(venda => {
+            if(venda != null){
+                if(venda.dados_entrega.id  === undefined){
+                    if(checked){
+                        return venda.dados_entrega.status === 'to_be_agreed'
+                    }
+                }    
+            }
+        })
+        this.setState({qtdeVendasACombinar: qtdeVendasACombinar.length})
+    }
+
+    getQtdeVendasEmAtraso = checked => {
+        let qtdeVendasEmAtraso = this.props.vendas.filter(venda => {
+            if(venda != null){
+                if(venda.atraso_no_envio !== undefined){
+                    if(checked){
+                        return venda.atraso_no_envio === checked
+                    }
+                }    
+            }
+        })
+        this.setState({qtdeVendasEmAtraso: qtdeVendasEmAtraso.length})
+    }
+
+    getVendasEmAtraso = event => {
+        let vendasEmAtraso = this.props.vendas.filter(venda => {
+            if(venda != null){
+                if(venda.atraso_no_envio !== undefined){
+                    if(event.target.checked){
+                        return venda.atraso_no_envio === event.target.checked
+                    }
+                }    
+            }
+        })
+        if (vendasEmAtraso !== null) {
+            this.setState({ vendas: vendasEmAtraso, renderizar: true, checkedVendasACombinar: false, qtdeVendasACombinar: 0, checkedVendasEmAtraso: event.target.checked, showCheckboxSelectAll: true })
+            this.mostrarLoading()
+            this.getQtdeVendasEmAtraso(event.target.checked)
+        }
     }
 
     getStatusEmTransito = () => {
@@ -103,7 +166,7 @@ export default class VendasView extends React.Component {
                 return venda.dados_entrega.status === 'shipped'
             }
         })
-        this.setState({ vendas: vendasDelivered, renderizar: true })
+        this.setState({ vendas: vendasDelivered, renderizar: true, checkedVendasEmAtraso: false, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0 })
         this.mostrarLoading()
     }
 
@@ -113,7 +176,7 @@ export default class VendasView extends React.Component {
                 return venda.dados_entrega.status === 'delivered'
             }
         })
-        this.setState({ vendas: vendasDelivered, renderizar: true })
+        this.setState({ vendas: vendasDelivered, renderizar: true, checkedVendasEmAtraso: false, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0 })
         this.mostrarLoading()
     }
 
@@ -123,14 +186,13 @@ export default class VendasView extends React.Component {
                 return venda.dados_entrega.status === 'cancelled'
             }
         })
-        this.setState({ vendas: vendasDelivered, renderizar: true })
+        this.setState({ vendas: vendasDelivered, renderizar: true, checkedVendasEmAtraso: false, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0 })
         this.mostrarLoading()
     }
 
     mostrarLoading = () => {
         this.setState({ temporalizar: true })
         setTimeout(() => {
-            console.log("Timeout... ")
             this.setState({ temporalizar: false })
         }, 3000)
 
@@ -360,9 +422,9 @@ export default class VendasView extends React.Component {
                                     </>}   
                             </span>
                             <span>
-                                <FormControlLabel control={<Checkbox/>} label="Vendas em atraso(2)"/>       
-                                <FormControlLabel control={<Checkbox color="primary"/>} label="Vendas a combinar(16)"/>            
-                            </span>                        
+                                <FormControlLabel control={<Checkbox checked={this.state.checkedVendasEmAtraso} onChange={this.getVendasEmAtraso}/>} label={<>Vendas em atraso({this.state.qtdeVendasEmAtraso})</>}/>      
+                                <FormControlLabel control={<Checkbox checked={this.state.checkedVendasACombinar} onChange={this.getVendasACombinar} color="primary"/>} label={<>Vendas a combinar({this.state.qtdeVendasACombinar})</>}/>            
+                            </span>                         
                         </div>
                         <Divider />
                     </div>
@@ -398,7 +460,7 @@ export default class VendasView extends React.Component {
                                                                         <Typography gutterBottom variant="h5" component="h2">
                                                                             {venda.comprador.first_name_comprador === undefined ? <>Usuario</> : <>Nome</>}:  {venda.comprador.first_name_comprador === undefined ? venda.comprador.nickname_comprador : <>{venda.comprador.first_name_comprador} {venda.comprador.last_name_comprador}</>}
                                                                             <p></p>
-                                                                            {venda.dados_entrega.status === 'pending' ? <>Nome: {venda.dados_entrega.endereco_entrega.nomePessoaEntrega} </> : <>Nome: Não informado</>}
+                                                                            {venda.comprador.first_name_comprador === undefined ? (venda.dados_entrega.status === 'pending' ? <>Nome: {venda.dados_entrega.endereco_entrega.nomePessoaEntrega} </> : <>Nome: Não informado</>) : <></>}
                                                                         </Typography>
                                                                         <Typography variant="body2" component="p">
                                                                             {venda.comprador.documento_comprador === undefined ? <></> : <><strong>Usuário:</strong> {venda.comprador.nickname_comprador}  <strong>CPF:</strong> {venda.comprador.documento_comprador}</>}

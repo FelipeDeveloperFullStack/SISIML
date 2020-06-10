@@ -618,6 +618,7 @@ const processarVendasConcluidasComShipments = async (response, user) => {
                 },
                 valor_venda: response.total_amount,
                 comprador: {
+                    id: response.buyer.id,
                     nickname_comprador: response.buyer.nickname,
                     email_comprador: response.buyer.email,
                     first_name_comprador: response.buyer.first_name,
@@ -625,6 +626,10 @@ const processarVendasConcluidasComShipments = async (response, user) => {
                     tipo_documento_comprador: response.buyer.billing_info.doc_type,
                     documento_comprador: response.buyer.billing_info.doc_number === undefined ||
                         response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+                },
+                vendedor: {
+                    id: response.seller.id,
+                    email: response.seller.email
                 },
                 dados_pagamento: obterDadosPagamento(response.payments),
                 dados_entrega: {
@@ -678,6 +683,7 @@ const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, u
             },
             valor_venda: response.total_amount,
             comprador: {
+                id: response.buyer.id,
                 nickname_comprador: response.buyer.nickname,
                 email_comprador: response.buyer.email,
                 first_name_comprador: response.buyer.first_name,
@@ -685,6 +691,10 @@ const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, u
                 tipo_documento_comprador: response.buyer.billing_info.doc_type,
                 documento_comprador: response.buyer.billing_info.doc_number === undefined ||
                     response.buyer.billing_info.doc_number === null ? 'Não informado' : response.buyer.billing_info.doc_number
+            },
+            vendedor: {
+                id: response.seller.id,
+                email: response.seller.email
             },
             dados_pagamento: obterDadosPagamento(response.payments),
             dados_entrega: {
@@ -745,6 +755,15 @@ let obterDadosPagamento = (payments) => {
         }
         return dados_pagamento
 
+    })
+}
+
+exports.obterQuantidadeDeMensagensNaoRespondidas = async (req, res) => {
+    await usuarioService.buscarUsuarioPorID(req.body.userId).then(async user => {
+        await axios.get(`https://api.mercadolibre.com/messages/unread?access_token=${user.accessToken}`).then(message => {
+            let total = message.data.results.map(result => result.count).reduce((previousValue, currentValue) => previousValue + currentValue)
+            res.status(200).send({total})
+        })
     })
 }
 

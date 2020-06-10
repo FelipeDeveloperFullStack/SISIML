@@ -11,7 +11,8 @@ import {
     OBTER_VENDAS_PENDENTE,
     OBTER_STATUS_ANUNCIOS,
     GET_PERGUNTAS,
-    UPDATE_ATIVIDADE_DIARIO
+    UPDATE_ATIVIDADE_DIARIO,
+    GET_TOTAL_MENSAGENS_NAO_LIDAS
 }
     from '../../constants/constants'
 import { DOMAIN } from '../../constants/constants'
@@ -167,6 +168,10 @@ export default function DashboardController() {
                     ticketMedioDiario: response.data[0].ticketMedioDiario
                   })
             }
+        })
+
+        await axios.post(`${DOMAIN}/vendas/getTotalMessagensNaoLidas/post01/post02/post03/post04/post05/post06/post07/post08/post09/post10/post11/post12/post13`, {userId}).then(response => {
+            dispatch({type: GET_TOTAL_MENSAGENS_NAO_LIDAS, qtdeMessagensNaoLidas: response.data.total})
         })
     }
 

@@ -14,5 +14,5 @@ router.get('/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get
 router.get('/getTotalVendasPendentes/get01/get02/get03/get04/get05/get06/get07/get08/get09/:userId', vendasService.obterTotalVendasPendentes)
 router.get('/gerarEtiquetaEnvio/get01/get02/get03/get04/get05/get06/get07/get08/get09/get10/:shipping_id/:userId', vendasService.gerarEtiquetaEnvio)
 router.post('/gerarEtiquetaEnvioMesmoPLP/get01/get02/get03/get04/get05/get06/get07/get08/get09/get10/get11/get12/:userId', vendasService.gerarEtiquetaEnvioMesmaPLP)
-
+router.post('/getTotalMessagensNaoLidas/post01/post02/post03/post04/post05/post06/post07/post08/post09/post10/post11/post12/post13/', vendasService.obterQuantidadeDeMensagensNaoRespondidas)
 module.exports = router

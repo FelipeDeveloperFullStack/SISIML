@@ -3,7 +3,8 @@ import {
     OBTER_TOTAL_VENDAS_NO_MES,
     OBTER_VENDAS_PENDENTE,
     OBTER_STATUS_ANUNCIOS,
-    UPDATE_ATIVIDADE_DIARIO
+    UPDATE_ATIVIDADE_DIARIO,
+    GET_TOTAL_MENSAGENS_NAO_LIDAS
 }
     from '../../constants/constants'
 
@@ -19,18 +20,28 @@ const INITIAL_STATE = {
     saldoALiberar: Number(),
     saldoBloqueado: Number(),
     totalVendasPendentes: Number(),
-    totalAtivos: Number(),
-    totalPausados: Number(),
+    
 
     //ATIVIDADE DIÁRIA
     qtdeVendasDiaria: Number(),
     qtdePerguntasDiaria: Number(),
     faturamentoDiario: Number(),
     ticketMedioDiario: Number(),
+
+    //Estado das publicações
+    qtdeMessagensNaoLidas: Number(),
+    totalAtivos: Number(),
+    totalPausados: Number(),
 }
 
 export default function dashboardReducer(state = INITIAL_STATE, action) {
     switch (action.type) {
+        case GET_TOTAL_MENSAGENS_NAO_LIDAS : {
+            return {
+                ...state,
+                qtdeMessagensNaoLidas: action.qtdeMessagensNaoLidas
+            }
+        }
         case UPDATE_ATIVIDADE_DIARIO : {
             return {
                 ...state,

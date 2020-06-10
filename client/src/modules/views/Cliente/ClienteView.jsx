@@ -39,7 +39,7 @@ export default function ClientView(props) {
         debounceFindByName(event.target.value)
     }
 
-    const debounceFindByName = React.useRef(_.debounce(func => sendQuery(func), 600)).current //Debounce in TextField
+    const debounceFindByName = React.useRef(_.debounce(func => sendQuery(func), 300)).current //Debounce in TextField
 
     return (
         <div>

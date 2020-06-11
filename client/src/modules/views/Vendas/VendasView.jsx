@@ -87,9 +87,9 @@ export default class VendasView extends React.Component {
     getStatusProntoParaEnviar = () => {
         let vendasAEnviar = this.props.vendas.filter(venda => {
             if (venda !== null) {
-                if(venda.dados_entrega.id !== undefined){
-                    return (venda.dados_entrega.substatus === 'ready_to_print' || venda.dados_entrega.substatus === 'printed' )
-                }else{
+                if (venda.dados_entrega.id !== undefined) {
+                    return (venda.dados_entrega.substatus === 'ready_to_print' || venda.dados_entrega.substatus === 'printed')
+                } else {
                     return (venda.dados_entrega.status === 'to_be_agreed' && venda.dados_pagamento[0].status_pagamento !== 'pending')
                 }
             }
@@ -102,16 +102,16 @@ export default class VendasView extends React.Component {
 
     getVendasACombinar = event => {
         let vendasACombinar = this.props.vendas.filter(venda => {
-            if(venda != null){
-                if(venda.dados_entrega.id === undefined){
-                    if(event.target.checked){
+            if (venda != null) {
+                if (venda.dados_entrega.id === undefined) {
+                    if (event.target.checked) {
                         return venda.dados_entrega.status === 'to_be_agreed'
                     }
-                }    
+                }
             }
         })
         if (vendasACombinar !== null) {
-            this.setState({ vendas: vendasACombinar, renderizar: true, checkedVendasACombinar: event.target.checked , checkedVendasEmAtraso: false, showCheckboxSelectAll: true, qtdeVendasEmAtraso: 0 })
+            this.setState({ vendas: vendasACombinar, renderizar: true, checkedVendasACombinar: event.target.checked, checkedVendasEmAtraso: false, showCheckboxSelectAll: true, qtdeVendasEmAtraso: 0 })
             this.mostrarLoading()
             this.getQtdeVendasACombinar(event.target.checked)
         }
@@ -119,38 +119,38 @@ export default class VendasView extends React.Component {
 
     getQtdeVendasACombinar = checked => {
         let qtdeVendasACombinar = this.props.vendas.filter(venda => {
-            if(venda != null){
-                if(venda.dados_entrega.id  === undefined){
-                    if(checked){
+            if (venda != null) {
+                if (venda.dados_entrega.id === undefined) {
+                    if (checked) {
                         return venda.dados_entrega.status === 'to_be_agreed'
                     }
-                }    
+                }
             }
         })
-        this.setState({qtdeVendasACombinar: qtdeVendasACombinar.length})
+        this.setState({ qtdeVendasACombinar: qtdeVendasACombinar.length })
     }
 
     getQtdeVendasEmAtraso = checked => {
         let qtdeVendasEmAtraso = this.props.vendas.filter(venda => {
-            if(venda != null){
-                if(venda.atraso_no_envio !== undefined){
-                    if(checked){
+            if (venda != null) {
+                if (venda.atraso_no_envio !== undefined) {
+                    if (checked) {
                         return venda.atraso_no_envio === checked
                     }
-                }    
+                }
             }
         })
-        this.setState({qtdeVendasEmAtraso: qtdeVendasEmAtraso.length})
+        this.setState({ qtdeVendasEmAtraso: qtdeVendasEmAtraso.length })
     }
 
     getVendasEmAtraso = event => {
         let vendasEmAtraso = this.props.vendas.filter(venda => {
-            if(venda != null){
-                if(venda.atraso_no_envio !== undefined){
-                    if(event.target.checked){
+            if (venda != null) {
+                if (venda.atraso_no_envio !== undefined) {
+                    if (event.target.checked) {
                         return venda.atraso_no_envio === event.target.checked
                     }
-                }    
+                }
             }
         })
         if (vendasEmAtraso !== null) {
@@ -284,13 +284,13 @@ export default class VendasView extends React.Component {
     handleUpdateCheckbox = (event) => {
         this.props.setCheckbox(!this.props.checkbox)
         this.props.updateCheckbox()
-        this.setState({showButtonSelectAll: !this.state.showButtonSelectAll, disabledButtonImprimirEtiquetaPLP: !this.state.disabledButtonImprimirEtiquetaPLP})
+        this.setState({ showButtonSelectAll: !this.state.showButtonSelectAll, disabledButtonImprimirEtiquetaPLP: !this.state.disabledButtonImprimirEtiquetaPLP })
     }
 
     verificarSeExisteVendasAEnviar = () => {
         let temp = false
         this.props.vendas.filter(venda => {
-            if(venda.dados_entrega.status === 'ready_to_ship'){
+            if (venda.dados_entrega.status === 'ready_to_ship') {
                 temp = true
             }
         })
@@ -381,14 +381,14 @@ export default class VendasView extends React.Component {
 
                             </Grid>
 
-                            <TextField style={{ width: '97%', left: '15px', top: '10px'}}
+                            <TextField style={{ width: '97%', left: '15px', top: '10px' }}
                                 value={this.state.textFieldSearch}
                                 label='Buscar por título'
                                 variant='outlined'
                                 size='small'
                                 onChange={(event) => this.handleSearch(event)} />
 
-                                {/**<Button
+                            {/**<Button
                                 variant="contained"
                                 color="primary"
                                 startIcon={<SearchIcon />}
@@ -401,36 +401,36 @@ export default class VendasView extends React.Component {
 
                         <p></p>
 
-                        <div style={{display: 'flex', justifyContent: 'space-between'}}>        
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <span>
-                                    {this.verificarSeExisteVendasAEnviar() && <>
-                                        <FormControlLabel style={{paddingLeft: '10px'}}
-                                                control={
-                                                <Checkbox
-                                                    color="default"
-                                                    checked={this.props.checkbox} onChange={() => this.handleUpdateCheckbox()}/>}
-                                                label='Selecionar todos(A ENVIAR)'/>
-                                        <Tooltip title='Clique aqui para imprimir as vendas selecionadas na mesma PLP'>
-                                            <Button 
-                                                startIcon={<PrintIcon/>} 
-                                                variant="contained"
-                                                disabled={this.state.disabledButtonImprimirEtiquetaPLP} 
-                                                onClick={() => this.props.gerarEtiqueteEnvioMesmaPLP()}
-                                                size='small'>Imprimir etiqueta ({this.obterQuantidadeDeVendasSelecionadasParaImprirmir()})
+                                {this.verificarSeExisteVendasAEnviar() && <>
+                                    <FormControlLabel style={{ paddingLeft: '10px' }}
+                                        control={
+                                            <Checkbox
+                                                color="default"
+                                                checked={this.props.checkbox} onChange={() => this.handleUpdateCheckbox()} />}
+                                        label='Selecionar todos(A ENVIAR)' />
+                                    <Tooltip title='Clique aqui para imprimir as vendas selecionadas na mesma PLP'>
+                                        <Button
+                                            startIcon={<PrintIcon />}
+                                            variant="contained"
+                                            disabled={this.state.disabledButtonImprimirEtiquetaPLP}
+                                            onClick={() => this.props.gerarEtiqueteEnvioMesmaPLP()}
+                                            size='small'>Imprimir etiqueta ({this.obterQuantidadeDeVendasSelecionadasParaImprirmir()})
                                             </Button>
-                                        </Tooltip>     
-                                    </>}   
+                                    </Tooltip>
+                                </>}
                             </span>
                             <span>
-                                <FormControlLabel control={<Checkbox checked={this.state.checkedVendasEmAtraso} onChange={this.getVendasEmAtraso}/>} label={<>Vendas em atraso({this.state.qtdeVendasEmAtraso})</>}/>      
-                                <FormControlLabel control={<Checkbox checked={this.state.checkedVendasACombinar} onChange={this.getVendasACombinar} color="primary"/>} label={<>Vendas a combinar({this.state.qtdeVendasACombinar})</>}/>            
-                            </span>                         
+                                <FormControlLabel control={<Checkbox checked={this.state.checkedVendasEmAtraso} onChange={this.getVendasEmAtraso} />} label={<>Vendas em atraso({this.state.qtdeVendasEmAtraso})</>} />
+                                <FormControlLabel control={<Checkbox checked={this.state.checkedVendasACombinar} onChange={this.getVendasACombinar} color="primary" />} label={<>Vendas a combinar({this.state.qtdeVendasACombinar})</>} />
+                            </span>
                         </div>
                         <Divider />
                     </div>
                 </div>
 
-                
+
 
                 {this.state.vendas.length > 0
 
@@ -446,8 +446,8 @@ export default class VendasView extends React.Component {
 
                                     <Paper elevation={3} key={key}>
                                         <Panel style={{ 'backgroundColor': '#4682B4', 'color': 'white' }} key={key} title={<div><span style={{ 'color': 'white' }}>
-                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status === 'ready_to_ship') ? <Checkbox color="default" disabled checked={this.props.checkbox}/> : <></>}
-                                            <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip> {venda.atraso_no_envio && <Chip color="secondary" size="small" label={venda.atraso_no_envio ? 'ATRASADO' : ''}/>} </span> - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
+                                            {(venda.dados_entrega.id !== undefined && venda.dados_entrega.status === 'ready_to_ship') ? <Checkbox color="default" disabled checked={this.props.checkbox} /> : <></>}
+                                            <Chip size="small" label={this.getTraduzirStatusEnvio(venda.dados_entrega.status, venda.dados_pagamento)}></Chip> {venda.atraso_no_envio && <Chip color="secondary" size="small" label={venda.atraso_no_envio ? 'ATRASADO' : ''} />} </span> - {venda.itens_pedido.titulo_anuncio} - {venda.data_venda}
                                         </div>}
                                             content={
                                                 <>
@@ -734,15 +734,15 @@ export default class VendasView extends React.Component {
 
                         </Modal.Body>
 
-                        <TextField multiline variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
+                        <TextField multiline size='small' variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
                         <Button
                             variant="contained"
                             color="primary"
+                            size='small'
                             startIcon={<SendIcon />}
-                            style={{ backgroundColor: '#4682B4', height: '53px' }}>
+                            style={{ backgroundColor: '#4682B4', height: '45px' }}>
                             Enviar mensagem
-                            </Button>
-
+                        </Button>
                     </Modal>
 
                 }

@@ -1,6 +1,8 @@
 import React from 'react'
 import { Input, Button } from 'semantic-ui-react'
 import '../../../assets/css/Global/chat.css'
+import Avatar from '@material-ui/core/Avatar';
+import TextField from '@material-ui/core/TextField';
 
 /** Created by Felipe M Santos */
 
@@ -28,10 +30,10 @@ export default class Chat extends React.Component {
                                 <div className='direct-chat-info clearfix'>
                                     <span className="direct-chat-name pull-left"><b>{this.props.nomeCompletoCliente}</b></span>
                                 </div>
-                                <img className="direct-chat-img" src='https://adminlte.io/themes/AdminLTE/dist/img/user1-128x128.jpg' alt="Message User Image" style={{ display: 'none' }}></img>
-                                <textarea rows={this.props.rows}  value={this.props.pergunta} className="direct-chat-text" style={{width : '100%', margin: '0 0 0', color: 'white', backgroundColor: '#4169E1'}}>
-                                    
-                                </textarea>
+                                <div style={{display: 'flex'}}>
+                                    <Avatar alt="" src="/" />
+                                    <div style={{backgroundColor: '#435F7A', margin: '0px 10px', maxWidth: '800px', width: 'max-content', padding: '15px', borderRadius: '25px', color: 'white'}}>{this.props.pergunta}</div>
+                                </div>    
                             </div>
                             : <></>
                         }
@@ -43,10 +45,10 @@ export default class Chat extends React.Component {
                                 <div className="direct-chat-info clearfix">
                                     <span className="direct-chat-name pull-right"><b>{this.props.nomeEmpresa}</b></span>
                                 </div>
-                                <img className="direct-chat-img" src='https://adminlte.io/themes/AdminLTE/dist/img/user7-128x128.jpg' alt="Message User Image" style={{ display: 'none' }}></img>
-                                <textarea rows={this.props.rows} value={this.props.resposta} className="direct-chat-text" style={{width : '100%', color: 'black', backgroundColor: '#87CEFA'}}>
-                                   
-                                </textarea>
+                                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                                    <div className="direct-chat-name pull-right" style={{backgroundColor: '#E6EAEA', margin: '0px 10px 10px', maxWidth: '800px', width: 'max-content', padding: '15px', borderRadius: '25px', color: 'black'}}>{this.props.resposta}</div>
+                                    <Avatar alt="" src="/" />
+                                </div>    
                             </div>
                             : <></>
                         }

@@ -10,8 +10,8 @@ export default class Chat extends React.Component {
 
     render() {
         return (
-            <div className='box box-primary direct-chat direct-chat-primary'>
-                <div className='box-header with-border'>
+            <div className='box box-primary direct-chat direct-chat-primary' style={{border: 'none'}}>
+                <div className='box-header'>
 
                     <h3 className='box-title'>
                         {this.props.title}
@@ -46,7 +46,9 @@ export default class Chat extends React.Component {
                                     <span className="direct-chat-name pull-right"><b>{this.props.nomeEmpresa}</b></span>
                                 </div>
                                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                                    <div className="direct-chat-name pull-right" style={{backgroundColor: '#E6EAEA', margin: '0px 10px 10px', maxWidth: '800px', width: 'max-content', padding: '15px', borderRadius: '25px', color: 'black'}}>{this.props.resposta}</div>
+                                    <div className="direct-chat-name pull-right" style={{backgroundColor: '#E6EAEA', margin: '0px 10px 10px', maxWidth: '800px', width: 'max-content', padding: '15px', borderRadius: '25px', color: 'black'}}>
+                                        {this.props.resposta.replace("&lt;", '<').replace("&gt;", ">").replace("&lt;/a&gt;", "</a>")}
+                                    </div>
                                     <Avatar alt="" src="/" />
                                 </div>    
                             </div>

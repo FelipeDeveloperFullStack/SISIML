@@ -40,6 +40,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import SettingsIcon from '@material-ui/icons/Settings';
 import sendNotification from '../../components/Notification/Notification'
+import _ from 'lodash'
+import { yellow } from '@material-ui/core/colors'
 
 
 export default class VendasView extends React.Component {
@@ -219,7 +221,7 @@ export default class VendasView extends React.Component {
         }
 
         if (status_envio === 'to_be_agreed') {
-            return 'A COMBINAR'
+            return 'A COMBINAR ENVIO'
         }
     }
 
@@ -301,11 +303,18 @@ export default class VendasView extends React.Component {
         return this.props.vendas.filter(venda => venda.checkbox).length
     }
 
+    /*reverseMessages = mensagens => {
+        _.reverse(mensagens)
+    }*/
+
+    
+
     render() {
         return (
             <div className="content">
                 <div >
                     <div >
+                    {/*this.reverseMessages(this.state.venda.msg) Inverte as posições do array de mensagens -  */}
                         <Row>
                             <Grid container direction="row" justify="center" alignItems="center">
                                 <Paper elevation={2}>
@@ -714,7 +723,7 @@ export default class VendasView extends React.Component {
                             <Message warning>
                                 <Message.Header>Lembre-se de que não enviaremos mensagens com linguagem ofensiva nem com links de redes sociais.</Message.Header>
                             </Message>
-
+                            {console.log(this.state.venda.msg)}
                             {this.state.venda.msg.map((msg, key) => {
                                 return (
                                     <>
@@ -725,7 +734,7 @@ export default class VendasView extends React.Component {
                                             displayFooter={'none'}
                                             displayButtonClose={'none'}
                                             height={this.state.venda.msg.length === 0 ? '400px' : ''}
-                                            rows={this.state.venda.qtde[key].qtdeBarraN + 1} />
+                                            />
 
                                     </>
                                 )
@@ -734,14 +743,16 @@ export default class VendasView extends React.Component {
 
                         </Modal.Body>
 
-                        <TextField multiline size='small' variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
+                        <TextField multiline value={this.props.inputTextMensagem} onChange={(event) => this.props.setInputTextMensagem(event)} size='small' variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
                         <Button
                             variant="contained"
                             color="primary"
                             size='small'
                             startIcon={<SendIcon />}
-                            style={{ backgroundColor: '#4682B4', height: '45px' }}>
+                            onClick={() => this.props.enviarMensagem(this.state.venda.msg, this.props.inputTextMensagem)}
+                            style={{ backgroundColor: '#4682B4', height: '45px', width: '179px'}}>
                             Enviar mensagem
+                            
                         </Button>
                     </Modal>
 

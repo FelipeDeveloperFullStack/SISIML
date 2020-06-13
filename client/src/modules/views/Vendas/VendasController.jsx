@@ -6,7 +6,7 @@ import { DOMAIN, UPDATE_VENDAS } from '../../constants/constants'
 //import sendNotification from '../../components/Notification/Notification'
 import swal from 'sweetalert'
 import { Dimmer, Loader, Segment } from 'semantic-ui-react'
-
+import _ from 'lodash'
 
 
 class VendasController extends React.Component {
@@ -16,8 +16,26 @@ class VendasController extends React.Component {
         document.title = "Vendas"
         this.state = {
             dadosRastreamento: {},
-            checkbox: false
+            checkbox: false,
+            inputTextMensagem: ''
         }
+    }
+
+    enviarMensagem = (msgArray, text) => {
+        
+        console.log(msgArray)
+        console.log(text)
+        msgArray.push({
+            text: text,
+            from: {
+                name: msgArray.length !== 0 ? msgArray[0].from.name : 'Sistema'
+            }
+        })
+        console.log(msgArray)
+    }
+
+    setInputTextMensagem = (event) => {
+        this.setState({inputTextMensagem: event.target.value})
     }
 
     resetDadosRastreamento = () => {
@@ -78,12 +96,16 @@ class VendasController extends React.Component {
                 temp.push(venda)
             }
         })
-        this.props.updateVendasAenviar(temp)
+        this.props.updateVendas(temp)
     }
 
     setCheckbox = (value) => {
         this.setState({checkbox: value})    
     }
+
+    /*reverseVendas = vendas => {
+        _.reverse(vendas)
+    }*/
 
 
     render() {
@@ -91,6 +113,7 @@ class VendasController extends React.Component {
             && this.props.isLoadingVendasConcluidas
             && this.props.isLoadingVendasEmTransito
             && this.props.isLoadingVendasAEnviar
+        //this.reverseVendas(this.props.vendas) /**Inverte as posições do array de vendas - Isso irá mostrar os dados mais recentes */
         return (
             <>
                 <Dimmer.Dimmable dimmer={isShowLoading.toString()}>
@@ -98,11 +121,12 @@ class VendasController extends React.Component {
                     <Dimmer active={isShowLoading} inverted>
                         <Loader>Carregando dados do Mercado Livre, por favor aguarde...</Loader>
                     </Dimmer>
-
+                    
                     <VendasView
                         {...this.state}
                         resetDadosRastreamento={this.resetDadosRastreamento}
                         vendas={this.props.vendas}
+                        setInputTextMensagem={this.setInputTextMensagem}
                         setCheckbox={this.setCheckbox}
                         updateCheckbox={this.updateCheckbox}
                         obterRastreioCorreios={this.obterRastreioCorreios}
@@ -119,6 +143,7 @@ class VendasController extends React.Component {
                         qtdeVendasAEnviar={this.props.qtdeVendasAEnviar}
                         qtdeVendasEmTransito={this.props.qtdeVendasEmTransito}
                         gerarEtiqueteEnvioMesmaPLP={this.gerarEtiqueteEnvioMesmaPLP}
+                        enviarMensagem={this.enviarMensagem}
                         />
                 </Dimmer.Dimmable>
             </>
@@ -144,7 +169,7 @@ const mapStateToProps = store => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    updateVendasAenviar: (vendas) => {
+    updateVendas: (vendas) => {
         dispatch({type: UPDATE_VENDAS, data: vendas})
     }
 })

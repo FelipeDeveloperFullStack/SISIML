@@ -21,7 +21,10 @@ class CallApiVenda extends React.Component {
     }
 
     componentDidMount = async () => {
+        this.callAPI()
+    }
 
+    callAPI = async () => {
         let userId = String(localStorage.getItem('@sigiml/id'))
 
         await axios.get(`${DOMAIN}/vendas/getVendasPendentes/get01/get02/get03/${userId}`).then(vendasPendentes => {
@@ -51,7 +54,7 @@ class CallApiVenda extends React.Component {
         })*/
 
         await axios.get(`${DOMAIN}/vendas/getTotalVendas/get01/get02/get03/get04/get05/get06/${userId}`).then(totalVendas => {
-           this.props.totalVendas(totalVendas)
+            this.props.totalVendas(totalVendas)
         }).catch(error => {
             swal('Aviso', 'O Mercado Livre está passando por instabilidade. \n\n Aguarde um instante, recarregue a página e tente novamente \n\n' + error, 'error')
         })

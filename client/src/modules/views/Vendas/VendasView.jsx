@@ -65,7 +65,8 @@ export default class VendasView extends React.Component {
             qtdeVendasEmAtraso: 0,
             qtdeVendasACombinar: 0,
             checkedVendasEmAtraso: false,
-            checkedVendasACombinar: false
+            checkedVendasACombinar: false,
+            inputTextMensagem: ''
         }
 
         this.handleClickSearch = this.handleClickSearch.bind(this)
@@ -255,6 +256,7 @@ export default class VendasView extends React.Component {
     }
 
     exibirModalEnviarMensagemMercadolivre = (venda) => {
+        this.props.markAsReadMessage(venda.msg)
         this.setState(
             {
                 openModalEnviarMensagemMercadoLivre: true,
@@ -307,7 +309,11 @@ export default class VendasView extends React.Component {
         _.reverse(mensagens)
     }*/
 
-    
+    sendMessageForBuyer = async () => {
+        await _.reverse(this.state.venda.msg)
+        await this.props.enviarMensagem(this.state.venda, this.state.inputTextMensagem)
+        this.setState({ openModalEnviarMensagemMercadoLivre: false, inputTextMensagem: '' })
+    }
 
     render() {
         return (
@@ -723,7 +729,6 @@ export default class VendasView extends React.Component {
                             <Message warning>
                                 <Message.Header>Lembre-se de que não enviaremos mensagens com linguagem ofensiva nem com links de redes sociais.</Message.Header>
                             </Message>
-                            {console.log(this.state.venda.msg)}
                             {this.state.venda.msg.map((msg, key) => {
                                 return (
                                     <>
@@ -734,6 +739,8 @@ export default class VendasView extends React.Component {
                                             displayFooter={'none'}
                                             displayButtonClose={'none'}
                                             height={this.state.venda.msg.length === 0 ? '400px' : ''}
+                                            isShowView
+                                            isViewed={msg.message_date.read !== null ? false : true}
                                             />
 
                                     </>
@@ -743,13 +750,13 @@ export default class VendasView extends React.Component {
 
                         </Modal.Body>
 
-                        <TextField multiline value={this.props.inputTextMensagem} onChange={(event) => this.props.setInputTextMensagem(event)} size='small' variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
+                        <TextField multiline value={this.state.inputTextMensagem} onChange={(event) => this.setState({inputTextMensagem: event.target.value})} size='small' variant='filled' label='Escreva ao comprador' style={{ width: '80%' }}></TextField>
                         <Button
                             variant="contained"
                             color="primary"
                             size='small'
                             startIcon={<SendIcon />}
-                            onClick={() => this.props.enviarMensagem(this.state.venda.msg, this.props.inputTextMensagem)}
+                            onClick={() => this.sendMessageForBuyer()}
                             style={{ backgroundColor: '#4682B4', height: '45px', width: '179px'}}>
                             Enviar mensagem
                             

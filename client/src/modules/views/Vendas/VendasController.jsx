@@ -5,8 +5,9 @@ import axios from 'axios'
 import { DOMAIN, UPDATE_VENDAS } from '../../constants/constants'
 //import sendNotification from '../../components/Notification/Notification'
 import swal from 'sweetalert'
-import { Dimmer, Loader, Segment } from 'semantic-ui-react'
+import { Dimmer, Loader, Segment, Accordion } from 'semantic-ui-react'
 import _ from 'lodash'
+import sendNotification from 'modules/components/Notification/Notification'
 
 
 class VendasController extends React.Component {
@@ -16,26 +17,33 @@ class VendasController extends React.Component {
         document.title = "Vendas"
         this.state = {
             dadosRastreamento: {},
-            checkbox: false,
-            inputTextMensagem: ''
+            checkbox: false
         }
     }
 
-    enviarMensagem = (msgArray, text) => {
-        
-        console.log(msgArray)
-        console.log(text)
-        msgArray.push({
+    enviarMensagem = async (venda, text) => {
+        venda.msg.push({
             text: text,
             from: {
-                name: msgArray.length !== 0 ? msgArray[0].from.name : 'Sistema'
+                user_id: venda.id_usuario,
+                name: venda.msg.length !== 0 ? venda.msg[0].from.name : 'Sistema'
+            },
+            message_date: {
+                read: 'read'
             }
         })
-        console.log(msgArray)
-    }
-
-    setInputTextMensagem = (event) => {
-        this.setState({inputTextMensagem: event.target.value})
+        
+        let objectMessage = {
+            userId: String(localStorage.getItem('@sigiml/id')),
+            packId: venda.id_venda,
+            email: venda.vendedor.email,
+            buyerId: venda.comprador.id,
+            text: text
+        }
+       await axios.post(`${DOMAIN}/vendas/sendMessage/post01/post02/post03/post04/post05/post06/post07/post08/post09/post10/post11/post12/post13/post14/post15`, objectMessage).then(message => {
+            sendNotification("success", 'Pronto, enviamos sua mensagem para o comprador!', 4000)
+            _.reverse(venda.msg)
+        }).catch(error => swal('Error', 'Houve um erro ao tentar enviar a mensagem para o comprador. Entre em contato com o suporte técnico! \n \n ' + error, 'error'))
     }
 
     resetDadosRastreamento = () => {
@@ -49,6 +57,14 @@ class VendasController extends React.Component {
                 isLoading: false
             })
         })
+    }
+
+    markAsReadMessage = async (msg) => {
+        let userId = String(localStorage.getItem('@sigiml/id'))
+        let messageId = msg.map(message => message.id).join(',')
+        await axios.put(`${DOMAIN}/vendas/markAsReadMessage/put01/put02/put03/put04/put05/put06/put07/put08/put09/put10/put11/put12/put13/put14`, {userId, messageId}).then(message => {
+            console.log("Read Messages OK")
+        }).catch(error => swal('Error', 'Houve um erro ao marcar mensagem como lido! \n \n ' + error, 'error'))
     }
 
     gerarEtiqueteEnvio = async (shippingId) => {
@@ -144,6 +160,7 @@ class VendasController extends React.Component {
                         qtdeVendasEmTransito={this.props.qtdeVendasEmTransito}
                         gerarEtiqueteEnvioMesmaPLP={this.gerarEtiqueteEnvioMesmaPLP}
                         enviarMensagem={this.enviarMensagem}
+                        markAsReadMessage={this.markAsReadMessage}
                         />
                 </Dimmer.Dimmable>
             </>

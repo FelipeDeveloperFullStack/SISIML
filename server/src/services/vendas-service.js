@@ -353,7 +353,7 @@ exports.obterVendasEmTransito = async (req, res) => {
 const obterVendasEmTransitoCOMShipping = async (response, user) => {
     if (response.shipping.id != null) {
         return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
-            return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+            return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}&limit=50`).then(msg => {
                 let json = {
                     id_usuario: JSON.stringify(user.id),
                     id_venda: response.id,
@@ -412,7 +412,7 @@ const obterVendasEmTransitoCOMShipping = async (response, user) => {
 }
 
 const obterVendasEmTransitoSEMShipping = async (response, user) => {
-    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}&limit=50`).then(msg => {
         let json = {
             id_usuario: JSON.stringify(user.id),
             id_venda: response.id,
@@ -595,7 +595,7 @@ exports.obterVendasConcluidas = async (req, res) => {
 
 const processarVendasConcluidasComShipments = async (response, user) => {
     return await axios.get(`https://api.mercadolibre.com/shipments/${response.shipping.id}?access_token=${user.accessToken}`).then(async ship => {
-        return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+        return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}&limit=50`).then(msg => {
             let json = {
                 id_usuario: JSON.stringify(user.id),
                 id_venda: response.id,
@@ -661,7 +661,7 @@ const processarVendasConcluidasComShipments = async (response, user) => {
 }
 
 const processarVendasConcluidasSemShipmentsEntregaACombinar = async (response, user) => {
-    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}`).then(msg => {
+    return await axios.get(`https://api.mercadolibre.com/messages/packs/${response.pack_id === null ? response.id : response.pack_id}/sellers/${user.id}?access_token=${user.accessToken}&limit=50`).then(msg => {
         let json = {
             id_usuario: JSON.stringify(user.id),
             id_venda: response.id,
@@ -763,8 +763,35 @@ exports.obterQuantidadeDeMensagensNaoRespondidas = async (req, res) => {
         await axios.get(`https://api.mercadolibre.com/messages/unread?access_token=${user.accessToken}`).then(message => {
             let total = message.data.results.map(result => result.count).reduce((previousValue, currentValue) => previousValue + currentValue)
             res.status(200).send({total})
-        })
-    })
+        }).catch(err => res.send(err))
+    }).catch(err => res.send(err))
+}
+
+exports.markAsReadMessage = async(req, res) => {
+    await usuarioService.buscarUsuarioPorID(req.body.userId).then(async user => {
+        await axios.put(`https://api.mercadolibre.com/messages/mark_as_read/${req.body.messageId}?access_token=${user.accessToken}`).then(message => {
+            res.status(200).send("Messages Read")
+        }).catch(err => res.send(err))
+    }).catch(err => res.send(err))
+}
+
+exports.sendMessage = async (req, res) => {
+    await usuarioService.buscarUsuarioPorID(req.body.userId).then(async user => {
+        await axios.post(`https://api.mercadolibre.com/messages/packs/${req.body.packId}/sellers/${req.body.userId}?access_token=${user.accessToken}`, {
+            from : 
+            {
+                user_id: req.body.userId,
+                email : req.body.email
+            },
+                to: 
+                    {
+                        user_id : req.body.buyerId
+                    },
+                   text: req.body.text
+        }).then(message => {
+            res.status(201).send(message)
+        }).catch(err => res.send(err))
+    }).catch(err => res.send(err))
 }
 
 

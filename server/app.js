@@ -26,6 +26,7 @@ const filaPerguntasRoute = require("./src/routes/filaPerguntas.route")
 const comunicadoVendedorRoute = require("./src/routes/comunicadoVendedor.route")
 const atualizadorRefreshToken = require("./src/services/agendadorRefreshToken/atualizadorRefreshToken")
 const atividadeDiariaRoute = require('./src/routes/atividadeDiaria.route')
+const mensagemPosVenda = require("./src/routes/msgPosVenda.route")
 //  Adicionar e configurar middleware
 app.use(session({
     secret: 'sessionSecretKey',
@@ -69,6 +70,7 @@ app.use('/atualizador_refresh_token', atualizadorRefreshToken)
 
 app.use('/atividade', atividadeDiariaRoute)
 
+app.use("/msg_pos_venda", mensagemPosVenda)
 
 
 module.exports = app;

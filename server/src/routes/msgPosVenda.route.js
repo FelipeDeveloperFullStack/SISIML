@@ -3,6 +3,6 @@ const router = express.Router()
 const msgPosVenda = require('../services/msgPosVenda-service')
 
 
-router.get('/', msgPosVenda.obterMensagemPosVenda)
+router.post('/', msgPosVenda.salvarBd)
 
 module.exports = router

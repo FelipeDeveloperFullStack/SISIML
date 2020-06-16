@@ -2,8 +2,9 @@ import React from 'react';
 import Navbar from './Navbar';
 import socketIOClient from 'socket.io-client'
 import { DOMAIN } from '../../constants/constants'
+import { connect } from 'react-redux';
 
-export default class NavbarController extends React.Component {
+class NavbarController extends React.Component {
     constructor(props) {
         super(props);
 
@@ -30,3 +31,10 @@ export default class NavbarController extends React.Component {
         );
     }
 }
+
+const mapStateToProps = store => ({
+    question: store.perguntas.question
+})
+
+
+export default connect(mapStateToProps, null)(NavbarController)

@@ -18,7 +18,6 @@ import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS, GET_VENDAS_A_ENVIAR, GET_TOT
 import swal from 'sweetalert'
 import sendNotification from '../modules/components/Notification/Notification'
 import _ from 'lodash'
-import { formatarData } from '../Helpers/util'
 
 export default function Admin(props) {
 
@@ -80,7 +79,8 @@ export default function Admin(props) {
     let userId = String(localStorage.getItem('@sigiml/id'))
     socket.on("nova_venda", async (venda) => {
       dispatch({ type: GET_VENDAS_A_ENVIAR, vendasAEnviar: venda })
-      sendNotification("success", `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 10000)
+      //sendNotification("success", `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 10000)
+      swal('Nova venda', `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 'info')
       await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/${userId}`).then(async totalVendasAEnviar => {
         dispatch({
           type: GET_TOTAL_VENDAS_A_ENVIAR,

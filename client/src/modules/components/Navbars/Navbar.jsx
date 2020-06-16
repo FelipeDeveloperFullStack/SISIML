@@ -48,6 +48,9 @@ const useStyles = makeStyles(theme => ({
   grow: {
     flexGrow: 1,
   },
+  alignNotification: {
+    left: '755px'
+  },
   root: {
     display: 'flex',
   },
@@ -143,112 +146,76 @@ export default function Navbar(props) {
     }, 3000)
   }
 
-return (
-  <>
-    <CssBaseline />
-    <AppBar
-      style={{ 'backgroundColor': '#4682B4' }}
-      position="fixed"
-      className={clsx(classes.appBar, {
-        [classes.appBarShift]: sideBarState.isSidebar,
-        [classes.appBarShiftRight]: sideBarState.isSidebarRight
-      })}
-    >
-      <Toolbar>
-        <IconButton
-          edge="start"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: sideBarState.isSidebar,
-          })}
-          color="inherit"
-          aria-label="open drawer"
-          onClick={handleClickOpen}>
-
-          <MenuIcon />
-
-        </IconButton>
-
-        <Typography className={classes.title} noWrap>
-          Licença {localStorage.getItem('@sigiml/plano').toLocaleUpperCase()} - {localStorage.getItem('@sigiml/expiration_day') == 0 ? <>Expira hoje</> : <>Expira daqui a {localStorage.getItem('@sigiml/expiration_day')}  dias</>}
-        </Typography>
-
-        {/**<Popup
-            content={<div>Até hoje, sua cor como vendedor é verde escuro:</div>}
-            header='Reputação'
-            trigger={<img style={{height: '8px', marginLeft : '20px'}} 
-            src='https://http2.mlstatic.com/resources/frontend/statics/reputation-dashboard-frontend/green@2x.png'></img> }
-          />*/}
-
-
-
-        <div className={classes.grow} />
-
-        <Typography className={classes.title} noWrap>
-          Ola! {props.nomeUsuario} {props.sobrenome}
-        </Typography>
-
-        <div className={classes.sectionDesktop}>
-
-          <IconButton color="inherit">
-            <Badge badgeContent={3} color="secondary">
-
-              <NotificationsIcon aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} />
-
-              <StyledMenu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}>
-
-                <StyledMenuItem>
-                  <ListItemIcon>
-                    <Avatar alt="Remy Sharp" src="https://material-ui.com/static/images/avatar/3.jpg" />
-                  </ListItemIcon>
-                  <ListItemText primary={<><b>Adriana Alves</b>: Bom dia tem tamanho G e GG ?</>} />
-                </StyledMenuItem>
-
-                <StyledMenuItem>
-                  <ListItemIcon>
-                    <Avatar alt="Remy Sharp" src="https://material-ui.com/static/images/avatar/1.jpg" />
-                  </ListItemIcon>
-                  <ListItemText primary={<><b>Mayara Melo Taveira</b>: Vem os mesmo modelo ?</>} />
-                </StyledMenuItem>
-
-                <StyledMenuItem>
-                  <ListItemIcon>
-                    <Avatar alt="Remy Sharp" src="https://material-ui.com/static/images/avatar/2.jpg" />
-                  </ListItemIcon>
-                  <ListItemText primary={<><b>Bruno Ribeiro Ferreira</b>: Boa noite vc tem link com menos quantidade ?</>} />
-                </StyledMenuItem>
-
-              </StyledMenu>
-
-            </Badge>
+  return (
+    <>
+      <CssBaseline />
+      <AppBar
+        style={{ 'backgroundColor': '#4682B4' }}
+        position="fixed"
+        className={clsx(classes.appBar, {
+          [classes.appBarShift]: sideBarState.isSidebar,
+          [classes.appBarShiftRight]: sideBarState.isSidebarRight
+        })}
+      >
+        <Toolbar>
+          <IconButton
+            edge="start"
+            className={clsx(classes.menuButton, {
+              [classes.hide]: sideBarState.isSidebar,
+            })}
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleClickOpen}>
+            <MenuIcon />
           </IconButton>
+          <Typography className={classes.title} noWrap>
+            Licença {localStorage.getItem('@sigiml/plano').toLocaleUpperCase()} - {localStorage.getItem('@sigiml/expiration_day') == 0 ? <>Expira hoje</> : <>Expira daqui a {localStorage.getItem('@sigiml/expiration_day')}  dias</>}
+          </Typography>
+          <div className={classes.grow} />
+          <Typography className={classes.title} style={{ paddingRight: '15px' }} noWrap>
+            Ola! {props.nomeUsuario} {props.sobrenome}
+          </Typography>
+          <div className={classes.sectionDesktop}>
+            <Badge badgeContent={props.question.length} color="secondary">
 
-        </div>
-
-
-        <NavLink to='/'>
-          <Button style={{ color: 'white' }} color="inherit" onClick={() => handleOnClickSair()}>Sair</Button>
-        </NavLink>
-
-        <IconButton
-          color="inherit"
-          className={clsx(classes.menuButton, {
-            [classes.hide]: sideBarState.isSidebarRight,
-          })}
-          onClick={handleClickOpenRight}
-        >
-
-          <SettingsIcon />
-
-        </IconButton>
-
-      </Toolbar>
-    </AppBar>
-  </>
-);
+              {(props.question.length > 0) &&
+                <>
+                  <NotificationsIcon aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} style={{ cursor: 'pointer' }} />
+                  <StyledMenu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    className={classes.alignNotification}>
+                    {props.question.map(value => {
+                      return (
+                        <StyledMenuItem>
+                          <NavLink to='/admin/chat'>
+                            <ListItemText primary={<><b>{value.nick_name}</b>: {value.text}</>} />
+                          </NavLink>
+                        </StyledMenuItem>
+                      )
+                    })}
+                  </StyledMenu>
+                </>}
+            </Badge>
+          </div>
+          <NavLink to='/'>
+            <Button style={{ color: 'white' }} color="inherit" onClick={() => handleOnClickSair()}>Sair</Button>
+          </NavLink>
+          <IconButton
+            color="inherit"
+            className={clsx(classes.menuButton, {
+              [classes.hide]: sideBarState.isSidebarRight,
+            })}
+            onClick={handleClickOpenRight}
+          >
+            <SettingsIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+    </>
+  );
 }
 

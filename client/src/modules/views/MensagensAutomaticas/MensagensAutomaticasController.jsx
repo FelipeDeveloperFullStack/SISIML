@@ -12,7 +12,7 @@ class PerguntasController extends React.Component {
             endPont: DOMAIN
         }
 
-        document.title = "Mensagens automaticas"
+        document.title = "Mensagens automatica"
     }
 
     componentDidMount = () => {

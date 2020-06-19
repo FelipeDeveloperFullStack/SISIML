@@ -23,7 +23,7 @@ class PerguntasController extends React.Component {
 
     render(){
         return(
-            <MensagensAutomaticasView {...this.state}/>
+            <MensagensAutomaticasView mensagem={this.state.mensagem}/>
         )
     }
 }

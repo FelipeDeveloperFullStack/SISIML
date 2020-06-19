@@ -12,32 +12,10 @@ export default class PerguntasView extends React.Component {
 
     constructor(props){
         super(props)
-        this.state = {
-            isHabilitarEnvioCompraRealizada: false,
-            mensagemCompraRealizada: '',
-            isHabilitarEnvioProdutoEmTransito: false,
-            mensagemProdutoEmTransito: '',
-            isHabilitarEnvioProntoParaRetirarCorreios: false,
-            mensagemProntoParaRetirarCorreios: '',
-            isHabilitarEnvioProdutoEntregue: false,
-            mensagemProdutoEntregue: '',
-        }
-    }
 
-    componentDidMount = () => {
-        console.log("\n")
-        console.log(this.props.mensagem.mensagemCompraRealizada)
-        console.log("\n")
-        this.setState({
-            isHabilitarEnvioCompraRealizada: Boolean(this.props.mensagem.isHabilitarEnvioCompraRealizada),
-            mensagemCompraRealizada: String(this.props.mensagem.mensagemCompraRealizada),
-            isHabilitarEnvioProdutoEmTransito: this.props.mensagem.isHabilitarEnvioProdutoEmTransito,
-            mensagemProdutoEmTransito: this.props.mensagem.mensagemProdutoEmTransito,
-            isHabilitarEnvioProntoParaRetirarCorreios: this.props.mensagem.isHabilitarEnvioProntoParaRetirarCorreios,
-            mensagemProntoParaRetirarCorreios: this.props.mensagem.mensagemProntoParaRetirarCorreios,
-            isHabilitarEnvioProdutoEntregue: this.props.mensagem.isHabilitarEnvioProdutoEntregue,
-            mensagemProdutoEntregue: this.props.mensagem.mensagemProdutoEntregue,
-        })
+        this.state = {
+            mensagemCompraRealizada: this.props.mensagem.mensagemCompraRealizada
+        }
     }
 
     render() {
@@ -56,7 +34,7 @@ export default class PerguntasView extends React.Component {
                 <div>
                     <FormControlLabel
                         control={
-                            <Checkbox checked={this.state.isHabilitarEnvioCompraRealizada} onChange={(event) => this.setState({isHabilitarEnvioCompraRealizada: event.target.checked})}/>
+                            <Checkbox checked={Boolean(this.props.mensagem.isHabilitarEnvioCompraRealizada)}/>
                         }
                         label="Enviar automaticamente uma mensagem ao comprador assim que realize a compra."
                     />
@@ -67,7 +45,8 @@ export default class PerguntasView extends React.Component {
                         rows="9"
                         placeholder="Olá @COMPRADOR, agradecemos a sua compra! Para continuar, por favor..."
                         variant="outlined"
-                        value={this.props.mensagem.mensagemCompraRealizada}
+                        value={this.state.mensagemCompraRealizada}
+                        onChange={(e) => this.setState({mensagemCompraRealizada: e.target.value})}
                         style={{ width: '100%' }}
                     />
                 </div>

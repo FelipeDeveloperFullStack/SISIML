@@ -12,10 +12,6 @@ export default class PerguntasView extends React.Component {
 
     constructor(props){
         super(props)
-
-        this.state = {
-            mensagemCompraRealizada: this.props.mensagem.mensagemCompraRealizada
-        }
     }
 
     render() {
@@ -34,7 +30,9 @@ export default class PerguntasView extends React.Component {
                 <div>
                     <FormControlLabel
                         control={
-                            <Checkbox checked={Boolean(this.props.mensagem.isHabilitarEnvioCompraRealizada)}/>
+                            <Checkbox name='isHabilitarEnvioCompraRealizada' 
+                                      checked={Boolean(this.props.mensagem.isHabilitarEnvioCompraRealizada)}
+                                      onChange={this.props.setChecked}/>
                         }
                         label="Enviar automaticamente uma mensagem ao comprador assim que realize a compra."
                     />
@@ -45,8 +43,9 @@ export default class PerguntasView extends React.Component {
                         rows="9"
                         placeholder="Olá @COMPRADOR, agradecemos a sua compra! Para continuar, por favor..."
                         variant="outlined"
-                        value={this.state.mensagemCompraRealizada}
-                        onChange={(e) => this.setState({mensagemCompraRealizada: e.target.value})}
+                        name='mensagemCompraRealizada'
+                        value={this.props.mensagem.mensagemCompraRealizada}
+                        onChange={this.props.setMessage}
                         style={{ width: '100%' }}
                     />
                 </div>
@@ -54,7 +53,9 @@ export default class PerguntasView extends React.Component {
                 <div>
                     <FormControlLabel
                         control={
-                            <Checkbox />
+                            <Checkbox name='isHabilitarEnvioProdutoEmTransito' 
+                                      checked={Boolean(this.props.mensagem.isHabilitarEnvioProdutoEmTransito)}
+                                      onChange={this.props.setChecked}/>
                         }
                         label="Enviar uma mensagem ao comprador quando o produto estiver em trânsito."
                     />
@@ -65,6 +66,9 @@ export default class PerguntasView extends React.Component {
                         rows="9"
                         placeholder="O seu pedido está em trânsito. @RASTREAMENTO"
                         variant="outlined"
+                        name='mensagemProdutoEmTransito'
+                        value={this.props.mensagem.mensagemProdutoEmTransito}
+                        onChange={this.props.setMessage}
                         style={{ width: '100%' }}
                     />
                 </div>
@@ -72,7 +76,9 @@ export default class PerguntasView extends React.Component {
                 <div>
                     <FormControlLabel
                         control={
-                            <Checkbox />
+                            <Checkbox name='isHabilitarEnvioProntoParaRetirarCorreios' 
+                                      checked={Boolean(this.props.mensagem.isHabilitarEnvioProntoParaRetirarCorreios)}
+                                      onChange={this.props.setChecked}/>
                         }
                         label="Enviar automaticamente uma mensagem ao comprador quando o produto estiver pronto para ser retirado nos correios"
                     />
@@ -83,6 +89,9 @@ export default class PerguntasView extends React.Component {
                         rows="9"
                         placeholder="Seu pedido já está pronto para retirar nos correios. @RASTREAMENTO"
                         variant="outlined"
+                        name='mensagemProntoParaRetirarCorreios'
+                        value={this.props.mensagem.mensagemProntoParaRetirarCorreios}
+                        onChange={this.props.setMessage}
                         style={{ width: '100%' }}
                     />
                 </div>
@@ -90,7 +99,9 @@ export default class PerguntasView extends React.Component {
                 <div>
                     <FormControlLabel
                         control={
-                            <Checkbox />
+                            <Checkbox name='isHabilitarEnvioProdutoEntregue' 
+                                      checked={Boolean(this.props.mensagem.isHabilitarEnvioProdutoEntregue)}
+                                      onChange={this.props.setChecked}/>
                         }
                         label="Enviar uma mensagem ao comprador quando o produto estiver sido entregue."
                     />
@@ -101,6 +112,9 @@ export default class PerguntasView extends React.Component {
                         rows="9"
                         placeholder="O produto que você comprou foi entregue! Muito obrigado!"
                         variant="outlined"
+                        name='mensagemProdutoEntregue'
+                        value={this.props.mensagem.mensagemProdutoEntregue}
+                        onChange={this.props.setMessage}
                         style={{ width: '100%' }}
                     />
                 </div>
@@ -109,6 +123,7 @@ export default class PerguntasView extends React.Component {
                     <Button
                         variant="contained"
                         color="primary"
+                        onClick={this.props.save}
                         startIcon={<SaveIcon />}
                     >
                         Salvar alterações

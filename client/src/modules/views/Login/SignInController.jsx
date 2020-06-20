@@ -87,8 +87,14 @@ export default class SignInController extends React.Component {
                          * Verificar se possui token se sim, direcionar para o dashboard do sistema sem passar pelo server
                          */
                         if (user.accessToken !== undefined) {
-                            this.setState({ redirectDashboard: true })
-                            this.handleOnClickSairMercadoLivre()
+                            console.log("[MENSAGEM DO SISTEMA] - Usuário logando no sistema!")
+                            setTimeout(() => {
+                                console.log("[MENSAGEM DO SISTEMA] - Direcionando...")
+                            }, 5000)
+                            setTimeout(() => {
+                                this.setState({ redirectDashboard: true })
+                                this.handleOnClickSairMercadoLivre()
+                            }, 1000)
                         } else {
                             this.setState({ redirectServer: true })
                         }

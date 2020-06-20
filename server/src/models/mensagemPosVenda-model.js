@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const mensagemPosVenda = mongoose.Schema({
-    user_id: {
+    userId: {
         type: Number
     },
     isHabilitarEnvioCompraRealizada: {

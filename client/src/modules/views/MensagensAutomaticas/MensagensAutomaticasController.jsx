@@ -18,11 +18,13 @@ class PerguntasController extends React.Component {
             isHabilitarEnvioProntoParaRetirarCorreios: false,
             mensagemProntoParaRetirarCorreios: '',
             isHabilitarEnvioProdutoEntregue: false,
-            mensagemProdutoEntregue: ''
+            mensagemProdutoEntregue: '',
+            isStatusButton: false
         }
     }
 
     setMessage = event => {
+        //** */
         const {target: {name, value}} = event
         this.setState({ [name]: value })
     }
@@ -52,8 +54,10 @@ class PerguntasController extends React.Component {
 
     save = async () => {
         let msg = this.state
+        this.setState({isStatusButton: true})
         await axios.post(`${DOMAIN}/msg_pos_venda/`, {msg}).then(response => {
             sendNotification('success', `Pronto, salvamos suas auterações!`, 6000)
+            this.setState({isStatusButton: false})
         }).catch(err => sendNotification("error", `Ops, aconteceu um problema ao tentar salvar as mensagens automáticas. Entre em contato com o suporte técnico! ${err}`, 10000)) 
     }
 

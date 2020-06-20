@@ -23,7 +23,7 @@ export default class PerguntasView extends React.Component {
                     </div>
 
                     <div style={{ borderLeft: '3px solid #179aa0', color: '#179aa0', backgroundColor: '#ebf8fa', padding: '10px 10px 10px', fontSize: '13px', display: 'grid', gridTemplateColumns: '30px auto' }}>
-                        <InfoIcon /> <div style={{ margin: '2px 0 0' }}>Utilize @NOME para chamar o comprador pelo seu nome e @COMPRADOR para utilizar seu apelido e @RASTREAMENTO para mostrar o código de rastreamento.</div>
+                        <InfoIcon /> <div style={{ margin: '2px 0 0' }}>Utilize @COMPRADOR para utilizar o apelido e @RASTREAMENTO para mostrar o código de rastreamento.</div>
                     </div>
                 </div>
 
@@ -126,7 +126,7 @@ export default class PerguntasView extends React.Component {
                         onClick={this.props.save}
                         startIcon={<SaveIcon />}
                     >
-                        Salvar alterações
+                        {this.props.mensagem.isStatusButton ? <>Salvando...</> : <>Salvar alterações</>}
                     </Button>
                 </div>
 

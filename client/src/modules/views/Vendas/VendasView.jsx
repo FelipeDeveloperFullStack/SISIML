@@ -41,7 +41,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import SettingsIcon from '@material-ui/icons/Settings';
 import sendNotification from '../../components/Notification/Notification'
 import _ from 'lodash'
-import { yellow } from '@material-ui/core/colors'
+import Pagination from '@material-ui/lab/Pagination';
 
 
 export default class VendasView extends React.Component {
@@ -441,6 +441,11 @@ export default class VendasView extends React.Component {
                                 <FormControlLabel control={<Checkbox checked={this.state.checkedVendasACombinar} onChange={this.getVendasACombinar} color="primary" />} label={<>Vendas a combinar({this.state.qtdeVendasACombinar})</>} />
                             </span>
                         </div>
+
+                            {/*PAGINAÇÃO*/}                
+                            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '10px'}}>
+                                <Pagination color="primary" showFirstButton showLastButton />
+                            </div>
                         <Divider />
                     </div>
                 </div>

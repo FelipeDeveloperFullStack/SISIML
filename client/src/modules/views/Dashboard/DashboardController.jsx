@@ -171,7 +171,7 @@ export default function DashboardController() {
         })
 
         await axios.post(`${DOMAIN}/vendas/getTotalMessagensNaoLidas/post01/post02/post03/post04/post05/post06/post07/post08/post09/post10/post11/post12/post13`, {userId}).then(response => {
-            dispatch({type: GET_TOTAL_MENSAGENS_NAO_LIDAS, qtdeMessagensNaoLidas: response.data.total})
+            dispatch({type: GET_TOTAL_MENSAGENS_NAO_LIDAS, qtdeMessagensNaoLidas: response.data.total === undefined ? 0 : response.data.total})
         })
     }
 

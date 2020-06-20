@@ -8,7 +8,7 @@ const saveAndUpdate = async (req, res) => {
             let mensagemPosVenda = new MensagemPosVendaModel(req.body.msg)
             await mensagemPosVenda.save().then(response => {
                 console.info("[MENSAGEM DO SISTEMA] - Mensagem de pos venda salvo no banco de dados!")
-                res.status(200).send("OK")
+                res.status(200).send("OK!")
             }).catch(err => res.send(err))
         }else{
             MensagemPosVendaModel.findOneAndUpdate({ userId: req.body.msg.userId }, {

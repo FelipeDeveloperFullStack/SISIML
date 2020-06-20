@@ -4,6 +4,7 @@ const usuarioService = require("../services/usuario-service")
 const axios = require('axios')
 const FilaPerguntas = require('../models/filaPerguntas-model')
 const util = require('../helpers/util')
+const {localhost} = require('../constants/constants')
 
 module.exports = (io) => {
 
@@ -27,7 +28,6 @@ module.exports = (io) => {
             }
             /** VENDAS */
             if(req.body.topic === 'orders_v2'){
-                console.log("Nova venda \n")
                 let resource = req.body.resource.split('').filter(caracter => { return Number(caracter) || caracter == 0 }).join('') //Obtem apenas o número de EX: /questions/5036111111, devolvendo apenas o 5036111111
                 await axios.get(`https://api.mercadolibre.com/orders/${resource}?access_token=${user.accessToken}`).then(async question => {
                     await axios.get(`https://api.mercadolibre.com/orders/search?seller=${user.id}&q=${question.data.id}&access_token=${user.accessToken}`).then(order => {
@@ -47,13 +47,13 @@ module.exports = (io) => {
                                 }
                             })
                             console.log(req.body)
+                            console.log(vendas)
                             res.status(200).send(newVendas)
                             io.emit("nova_venda", newVendas)
                         })
                     })
                 
                 })
-                console.log("Nova venda \n")
             }
         }).catch(error => res.send(error))
     })
@@ -80,7 +80,12 @@ module.exports = (io) => {
                         variation_attributes: response.order_items[0].item.variation_attributes,
                     },
                     valor_venda: response.total_amount,
+                    vendedor: {
+                        id: response.seller.id,
+                        email: response.seller.email
+                    },
                     comprador: {
+                        id: response.buyer.id,
                         nickname_comprador: response.buyer.nickname,
                         email_comprador: response.buyer.email,
                         first_name_comprador: response.buyer.first_name,
@@ -139,7 +144,12 @@ module.exports = (io) => {
                     variation_attributes: response.order_items[0].item.variation_attributes,
                 },
                 valor_venda: response.total_amount,
+                vendedor: {
+                    id: response.seller.id,
+                    email: response.seller.email
+                },
                 comprador: {
+                    id: response.buyer.id,
                     nickname_comprador: response.buyer.nickname,
                     email_comprador: response.buyer.email,
                     first_name_comprador: response.buyer.first_name,

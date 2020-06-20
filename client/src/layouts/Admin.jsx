@@ -34,7 +34,7 @@ export default function Admin(props) {
 
 
   const handleNewUserMessage = (newMessage) => {
-    dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: (storePerguntas.qtdePerguntas -1)})
+    dispatch({ type: GET_QTDE_PERGUNTAS, qtdePerguntas: (storePerguntas.qtdePerguntas - 1) })
     setShowWidget(storePerguntas.qtdePerguntas === 0 ? false : true)
     //Enviar para o Mercado livre
   }
@@ -81,6 +81,7 @@ export default function Admin(props) {
       dispatch({ type: GET_VENDAS_A_ENVIAR, vendasAEnviar: venda })
       //sendNotification("success", `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 10000)
       swal('Nova venda', `Uma nova venda recebida.\n ${venda[0].itens_pedido.titulo_anuncio}`, 'info')
+      enviarMensagemComprador(userId, venda[0].id_venda, venda[0].vendedor.email, venda[0].comprador.id)
       await axios.get(`${DOMAIN}/vendas/getTotalVendasAEnviar/get01/get02/get03/get04/get05/get06/get07/get08/${userId}`).then(async totalVendasAEnviar => {
         dispatch({
           type: GET_TOTAL_VENDAS_A_ENVIAR,
@@ -92,6 +93,22 @@ export default function Admin(props) {
         sendNotification('error', MENSAGEM_ERROR + ' ' + error, 5000)
       })
     })
+  }
+
+  const enviarMensagemComprador = async (userId, packId, email, buyerId) => {
+    await axios.post(`${DOMAIN}/msg_pos_venda/find`, { userId }).then(async response => {
+      if (Boolean(response.data[0].isHabilitarEnvioCompraRealizada)) {
+        await axios.post(`${DOMAIN}/vendas/sendMessage/post01/post02/post03/post04/post05/post06/post07/post08/post09/post10/post11/post12/post13/post14/post15/`, {
+          userId: userId,
+          packId: packId,
+          email: email,
+          buyerId: buyerId,
+          text: response.data[0].mensagemCompraRealizada
+        }).then(response => {
+          console.log('[MENSAGEM DO SISTEMA] - Mensagem de nova compra enviada para o comprador!')
+        }).catch(err => sendNotification('error', 'Houve um erro ao tentar enviar uma mensagem para o comprador! Entre em contato com o suporte técnico!', 10000))
+      }
+    }).catch(err => sendNotification('error', 'Houve um erro ao tentar buscar mensagem automaticas no banco de dados! Entre em contato com o suporte técnico!', 10000))
   }
 
   const atualizarAtividadeDiaria = async (userId, questionLength, venda) => {

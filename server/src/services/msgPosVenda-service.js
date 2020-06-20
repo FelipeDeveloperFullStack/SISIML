@@ -31,7 +31,7 @@ const saveAndUpdate = async (req, res) => {
 }
 
 const findMessageByUser = async (req, res) => {
-    MensagemPosVendaModel.find({ userId: req.body.msg.userId }).then(response => {
+    MensagemPosVendaModel.find({ userId: req.body.userId }).then(response => {
         res.send(response)
     }).catch(err => res.send(err))
 }

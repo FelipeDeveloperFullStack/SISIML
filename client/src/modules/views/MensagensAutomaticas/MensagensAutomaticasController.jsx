@@ -33,7 +33,7 @@ class PerguntasController extends React.Component {
     }
 
     componentDidMount = async () => {
-        let userId = localStorage.getItem("@sigiml/id")
+        let {userId} = this.state
         await axios.post(`${DOMAIN}/msg_pos_venda/find`, { userId }).then(response => {
             if(response.data.length > 0){
                 this.setState({

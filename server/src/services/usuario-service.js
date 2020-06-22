@@ -70,6 +70,20 @@ const buscarUsuarioPorNumberDocumento = async (profile, accessToken, refreshToke
 
 }
 
+const atualizarCodigoSeguranca = async (email, codeSecurity) => {
+    await Usuario.findOneAndUpdate({email: email.trim()}, {$set: {
+        code_security: codeSecurity
+    }}).then(response => {
+        console.log("[MENSAGEM DO SISTEMA] - Codigo de segurança atualizado no banco de dados!")
+    }).catch(error => console.error(error))
+}
+
+const procurarCodigoSeguranca = async (req, res) => {
+    await Usuario.find({code_security: req.body.code}).then(response => {
+        res.send(response)
+    }).catch(error => console.error(error))
+}
+
 
 const salvarUsuarioRoute = async (req, res) => {
     console.log("User saved")
@@ -134,5 +148,7 @@ module.exports = {
     getProcurarUsuarioPorEmail,
     buscarUsuarioPorNumberDocumento,
     getUsuarioByID,
-    getAllUsers
+    getAllUsers,
+    atualizarCodigoSeguranca,
+    procurarCodigoSeguranca
 }

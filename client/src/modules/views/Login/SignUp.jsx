@@ -12,6 +12,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import swalert from 'sweetalert'
 import { NavLink } from 'react-router-dom';
+import { cpf } from 'cpf-cnpj-validator';
+import emailValidator from 'email-validator'
 
 
 function Copyright() {
@@ -56,6 +58,7 @@ export default function SignUp(props) {
   const [sobrenome, setSobrenome] = useState()
   const [email, setEmail] = useState()
   const [senha, setSenha] = useState()
+  const [confirmeSenha, setConfirmeSenha] = useState()
   const [documento, setDocumento] = useState()
 
   const handleUsuario = () => {
@@ -67,27 +70,44 @@ export default function SignUp(props) {
       cpf: documento
     }
     if (usuario.nome === undefined) {
-      swalert('Atenção', 'O nome é obrigatório! \n Tente novamente.', 'warning')
+      swalert('Atenção', 'O nome é obrigatório! \n\n Tente novamente.', 'warning')
       return
     }
 
     if (usuario.sobrenome === undefined) {
-      swalert('Atenção', 'O sobrenome é obrigatório! \n Tente novamente.', 'warning')
+      swalert('Atenção', 'O sobrenome é obrigatório! \n\n Tente novamente.', 'warning')
       return
     }
 
     if (usuario.email === undefined) {
-      swalert('Atenção', 'O e-mail é obrigatório! \n Tente novamente.', 'warning')
+      swalert('Atenção', 'O e-mail é obrigatório! \n\n Tente novamente.', 'warning')
       return
     }
 
     if (usuario.cpf === undefined) {
-      swalert('Atenção', 'O CPF/CNPJ é obrigatório! \n Tente novamente.', 'warning')
+      swalert('Atenção', 'O CPF/CNPJ é obrigatório! \n\n Tente novamente.', 'warning')
       return
     }
 
     if (usuario.password === undefined) {
-      swalert('Atenção', 'A senha de acesso é obrigatório! \n Tente novamente.', 'warning')
+      swalert('Atenção', 'A senha de acesso é obrigatório! \n\n Tente novamente.', 'warning')
+      return
+    }
+
+    if(confirmeSenha !== usuario.password){
+      swalert('Atenção', 'A senha que você informou é diferente da senha de confirmação, por segurança, você precisa informar a mesma senha nos dois campos! \n\n Tente novamente.', 'warning')
+      return
+    }
+
+    //https://www.npmjs.com/package/cpf-cnpj-validator
+    if(!cpf.isValid(usuario.cpf)){
+      swalert('Atenção', 'CPF inválido \n\n Tente novamente.', 'warning')
+      return
+    }
+
+    //https://www.npmjs.com/package/email-validator
+    if(!emailValidator.validate(usuario.email)){
+      swalert('Atenção', 'E-mail inválido! \n\n Tente novamente.', 'warning')
       return
     }
 
@@ -98,7 +118,7 @@ export default function SignUp(props) {
     setEmail('')
     setSenha('')
     setDocumento('')
-
+    setConfirmeSenha('')
 
   }
 
@@ -185,6 +205,21 @@ export default function SignUp(props) {
               autoComplete="current-password"
               value={senha}
               onChange={(event) => setSenha(event.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              variant="outlined"
+              required
+              fullWidth
+              name="password"
+              label="Confirme a senha"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={confirmeSenha}
+              onChange={(event) => setConfirmeSenha(event.target.value)}
             />
           </Grid>
 

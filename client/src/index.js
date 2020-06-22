@@ -21,7 +21,8 @@ import SignUpController from './modules/views/Login/SignUpController'
 import AcessoMercadoLivre from './modules/views/Login/AcessoMercadoLivre'
 import Page404 from './modules/views/404/Page404'
 import {DOMAIN} from '../src/modules/constants/constants'
-
+import ForgotPasswordController from './modules/views/Login/ForgotPasswordController'
+import CodeSecurityAccess from './modules/views/Login/CodeSecurityAccess'
 import 'primereact/resources/themes/nova-light/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
@@ -41,6 +42,8 @@ ReactDOM.render(
           <Route path='/signup' component={SignUpController}/>
           <Route path='/acesso_ml' component={AcessoMercadoLivre}/>
           <Route path="/admin" render={props => <AdminLayout {...props} />} />
+          <Route path='/forgot_password' component={ForgotPasswordController}/>
+          <Route path='/code_security' component={CodeSecurityAccess}/>
           <Route path="*" component={Page404}/>
           <Redirect from="/admin" to="/admin/dashboard" />
         </Switch>

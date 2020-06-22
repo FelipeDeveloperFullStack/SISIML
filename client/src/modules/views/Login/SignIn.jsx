@@ -147,17 +147,15 @@ export default function SignIn(props) {
 
 
               <Grid item xs>
-                <Link href="#" variant="body2">
+                <NavLink to='/forgot_password'>
                   Esqueci minha senha
-              </Link>
+              </NavLink>
               </Grid>
 
               <Grid item>
                 {'Quer experimentar grátis o SIGIML?'}{' '}
                 <NavLink to='/signup'>
-
                   Cadastre-se agora!
-  
             </NavLink>
               </Grid>
 

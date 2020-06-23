@@ -23,6 +23,7 @@ import Page404 from './modules/views/404/Page404'
 import {DOMAIN} from '../src/modules/constants/constants'
 import ForgotPasswordController from './modules/views/Login/ForgotPasswordController'
 import CodeSecurityAccess from './modules/views/Login/CodeSecurityAccess'
+import NewPasswordAccess from './modules/views/Login/NewPasswordAccess'
 import 'primereact/resources/themes/nova-light/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
@@ -44,6 +45,7 @@ ReactDOM.render(
           <Route path="/admin" render={props => <AdminLayout {...props} />} />
           <Route path='/forgot_password' component={ForgotPasswordController}/>
           <Route path='/code_security' component={CodeSecurityAccess}/>
+          <Route path='/new_password' component={NewPasswordAccess}/>
           <Route path="*" component={Page404}/>
           <Redirect from="/admin" to="/admin/dashboard" />
         </Switch>

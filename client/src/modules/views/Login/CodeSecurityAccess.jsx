@@ -1,4 +1,5 @@
 import React from 'react'
+import {useDispatch} from 'react-redux'
 import codeSecurityAccess from '../../../assets/img/code_security_access.jpg'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -8,6 +9,7 @@ import sendNotification from '../../components/Notification/Notification'
 import {DOMAIN} from '../../constants/constants'
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import {Redirect} from 'react-router-dom'
+import {SET_USER} from '../../constants/constants'
 
 export default function ForgotPassword(props) {
 
@@ -45,6 +47,8 @@ export default function ForgotPassword(props) {
     const [code, setCode] = React.useState('')
     const [redirectLogin, setRedirectLogin] = React.useState(false)
     const [loadingButton, setLoadingButton] = React.useState(false)
+    const [redirectNewPassword, setRedirectNewPassword] = React.useState(false)
+    const dispatch = useDispatch()
 
     const findCodeSecurity = async (code) => {
         if(code === ''){
@@ -59,6 +63,13 @@ export default function ForgotPassword(props) {
             }else{
                 sendNotification("success", 'OK', 5000)
                 setLoadingButton(false)
+                setRedirectNewPassword(true)
+                dispatch({type: SET_USER, 
+                    user: {
+                        id: response.data[0].id, 
+                        cpf: response.data[0].cpf
+                    }
+                })
             }
         }).catch(err => sendNotification('error', 'Houve um erro ao tentar enviar o email de redefinição de senha! Entre em contato com o suporte técnico!', 5000))    
     }
@@ -81,6 +92,7 @@ export default function ForgotPassword(props) {
             </div>
     
             {redirectLogin && <Redirect to='/'/>}
+            {redirectNewPassword && <Redirect to='/new_password'/>}
      
         </>
     )

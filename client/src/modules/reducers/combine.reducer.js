@@ -5,6 +5,7 @@ import dashboardReducer from './dashboard/dashboard.reducer'
 import sidebarReducer from './Sidebar/sidebar.reducer'
 import vendaReducer from './venda/venda.reducer'
 import perguntasReducer from './perguntas/perguntas.reducer'
+import forgotPasswordReducer from './forgotPassword/forgotPassword.reducer'
 
 /**
  * Created by: 
@@ -18,5 +19,6 @@ export const reducers = combineReducers({
     dashboard: dashboardReducer,
     sidebar: sidebarReducer,
     venda: vendaReducer,
-    perguntas: perguntasReducer
+    perguntas: perguntasReducer,
+    forgotPassword: forgotPasswordReducer
 });

@@ -1,4 +1,5 @@
 import React from 'react'
+import {Redirect} from 'react-router-dom'
 import {useSelector} from 'react-redux'
 import newPassword from '../../../assets/img/new_password_image.jpg'
 import TextField from '@material-ui/core/TextField'
@@ -44,6 +45,7 @@ export default function ForgotPassword(props) {
     const [senha, setSenha] = React.useState('')
     const [confirmeSenha, setConfirmeSenha] = React.useState('')
     const stateForgotPassword = useSelector(store => store.forgotPassword)
+    const [redirectLogin, setRedirectLogin] = React.useState(false)
 
     const confirmPassword = async () => {
         if(senha !== confirmeSenha){
@@ -53,6 +55,7 @@ export default function ForgotPassword(props) {
         let id = stateForgotPassword.user.id
         await Axios.post(`${DOMAIN}/usuario/post/usuario/senha/atualizar_senha`, {id: id, password: senha}).then(response => {
             sendNotification("success", 'Nova senha atualizada com sucesso!', 5000)
+            setRedirectLogin(true)
         }).catch(err => sendNotification("error", 'Houve um erro ao tentar confirmar a nova senha, por favor entre em contato com o suporte técnico!', 5000))
        
     }
@@ -73,6 +76,7 @@ export default function ForgotPassword(props) {
                     </Button>
                 </div>
             </div>
+            {redirectLogin && <Redirect to='/'/>}
         </>
     )
 }

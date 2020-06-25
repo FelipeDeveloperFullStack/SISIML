@@ -61,7 +61,6 @@ export default function ForgotPassword(props) {
                 sendNotification("error", "Código de segurança inválido! Verifique sua caixa de entrada e tente novamente.",5000)
                 setLoadingButton(false)
             }else{
-                sendNotification("success", 'OK', 5000)
                 setLoadingButton(false)
                 setRedirectNewPassword(true)
                 dispatch({type: SET_USER, 

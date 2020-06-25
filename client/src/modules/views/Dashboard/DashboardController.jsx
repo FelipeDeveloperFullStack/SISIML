@@ -164,8 +164,8 @@ export default function DashboardController() {
                     type: UPDATE_ATIVIDADE_DIARIO,
                     qtdeVendasDiaria: response.data[0].qtdeVendasDiaria,
                     qtdePerguntasDiaria: response.data[0].qtdePerguntasDiaria,
-                    faturamentoDiario: response.data[0].faturamentoDiario,
-                    ticketMedioDiario: response.data[0].ticketMedioDiario
+                    faturamentoDiario: response.data[0].faturamentoDiario.toLocaleString('pt-BR'),
+                    ticketMedioDiario: response.data[0].ticketMedioDiario.toLocaleString('pt-BR')
                   })
             }
         })

@@ -26,7 +26,7 @@ export default class ForgotPasswordController extends React.Component {
                 this.setState({ loadingButton: true })
                 await axios.post(`${DOMAIN}/forgot_password`, { emailToSend: emailToSend }).then(response => {
                     this.setState({ loadingButton: false, redirectToPageCodeSecurity: true })
-                    sendNotification("success", 'E-mail enviado, por favor verifique sua caixa de entrada, se em alguns minutos não chegar nenhum e-mail na sua caixa de entrada, verifique nos spams', 20000)
+                    sendNotification("success", 'E-mail enviado, por favor verifique sua caixa de entrada, se em alguns minutos não chegar nenhum e-mail na sua caixa de entrada, verifique nos spams', 8000)
                 }).catch(err => sendNotification('error', 'Houve um erro ao tentar enviar o email de redefinição de senha! Entre em contato com o suporte técnico!', 5000))
             }
         }).catch(err => sendNotification('error', 'Houve um erro ao tentar buscar o usuário pelo email! Entre em contato com o suporte técnico!', 5000))

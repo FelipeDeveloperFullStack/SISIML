@@ -265,13 +265,24 @@ export default class VendasView extends React.Component {
         )
     }
 
-    handleSearch = (event) => {
-        this.setState(
-            {
-                textFieldSearch: event.target.value, renderizar: true
-            }
-        )
+    sendQuery = titulo => {
+        if(titulo !== ''){
+            let vendaFiltered = this.props.vendas.filter(venda => {
+                let str = venda.itens_pedido.titulo_anuncio
+                return str.toLowerCase().includes(titulo.toLowerCase())
+            })
+            this.setState({vendas: vendaFiltered, checkedVendasEmAtraso: false, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0})
+        }else{
+            this.setState({vendas: [], checkedVendasEmAtraso: false, qtdeVendasEmAtraso: 0, checkedVendasACombinar: false, qtdeVendasACombinar: 0})
+        }
     }
+
+    handleSearch = (event) => {
+        this.setState({ textFieldSearch: event.target.value, renderizar: true })
+        this.debounceFindByName(event.target.value)
+    }
+
+    debounceFindByName = _.debounce(titulo => this.sendQuery(titulo), 300)
 
     handleClickSearch = () => {
         let pesquisa = this.props.vendas.filter(venda => {
@@ -320,7 +331,6 @@ export default class VendasView extends React.Component {
             <div className="content">
                 <div >
                     <div >
-                    {/*this.reverseMessages(this.state.venda.msg) Inverte as posições do array de mensagens -  */}
                         <Row>
                             <Grid container direction="row" justify="center" alignItems="center">
                                 <Paper elevation={2}>
@@ -401,17 +411,7 @@ export default class VendasView extends React.Component {
                                 label='Buscar por título'
                                 variant='outlined'
                                 size='small'
-                                onChange={(event) => this.handleSearch(event)} />
-
-                            {/**<Button
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SearchIcon />}
-                                size='small'
-                                onClick={() => this.handleClickSearch()}
-                                style={{ height: '51px', margin: '0 5px 0', backgroundColor: '#4682B4' }}>
-                                Pesquisar
-                            </Button>*/}
+                                onChange={this.handleSearch} />
                         </Row>
 
                         <p></p>

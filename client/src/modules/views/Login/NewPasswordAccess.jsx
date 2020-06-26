@@ -7,7 +7,10 @@ import Button from '@material-ui/core/Button'
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import sendNotification from '../../components/Notification/Notification'
 import Axios from 'axios'
-import {DOMAIN} from '../../constants/constants'
+import {DOMAIN, ACTIVE_STEP} from '../../constants/constants'
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
 
 export default function ForgotPassword(props) {
 
@@ -46,6 +49,8 @@ export default function ForgotPassword(props) {
     const [confirmeSenha, setConfirmeSenha] = React.useState('')
     const stateForgotPassword = useSelector(store => store.forgotPassword)
     const [redirectLogin, setRedirectLogin] = React.useState(false)
+    const forgotPasswordActiveStepState = useSelector(store => store.forgotPassword.activeStep)
+    const steps = useSelector(store => store.forgotPassword.steps)
 
     const confirmPassword = async () => {
         if(senha !== confirmeSenha){
@@ -76,6 +81,15 @@ export default function ForgotPassword(props) {
                     </Button>
                 </div>
             </div>
+            <Stepper style={{ margin: '-195px 300px 200px' }} activeStep={forgotPasswordActiveStepState}>
+                {steps.map((label) => {
+                    return (
+                        <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                        </Step>
+                    );
+                })}
+            </Stepper>
             {redirectLogin && <Redirect to='/'/>}
         </>
     )

@@ -1,11 +1,12 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import ForgotPassword from './ForgotPassword'
 import axios from 'axios'
 import sendNotification from '../../components/Notification/Notification'
-import { DOMAIN } from '../../constants/constants'
+import { DOMAIN, ACTIVE_STEP } from '../../constants/constants'
 import { Redirect } from 'react-router-dom'
 
-export default class ForgotPasswordController extends React.Component {
+class ForgotPasswordController extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -26,6 +27,7 @@ export default class ForgotPasswordController extends React.Component {
                 this.setState({ loadingButton: true })
                 await axios.post(`${DOMAIN}/forgot_password`, { emailToSend: emailToSend }).then(response => {
                     this.setState({ loadingButton: false, redirectToPageCodeSecurity: true })
+                    this.props.updateActiveStep(1)
                     sendNotification("success", 'E-mail enviado, por favor verifique sua caixa de entrada, se em alguns minutos não chegar nenhum e-mail na sua caixa de entrada, verifique nos spams', 8000)
                 }).catch(err => sendNotification('error', 'Houve um erro ao tentar enviar o email de redefinição de senha! Entre em contato com o suporte técnico!', 5000))
             }
@@ -44,3 +46,11 @@ export default class ForgotPasswordController extends React.Component {
         }
     }
 }
+
+const mapDispatchToProps = dispatch => ({
+    updateActiveStep: (activeStep) => {
+        dispatch({type: ACTIVE_STEP, activeStep})
+    }
+})
+
+export default connect(null, mapDispatchToProps)(ForgotPasswordController)

@@ -55,6 +55,15 @@ module.exports = (io) => {
 
                 })
             }
+            // MENSAGEM DE POS VENDA
+            if (req.body.topic === 'messages') {
+                await axios.get(`https://api.mercadolibre.com/messages/${req.body.resource}?access_token=${user.accessToken}`).then(async message => {
+                    console.log(req.body)
+                    console.log(message.data)
+                    io.emit("mensagem_pos_venda", message.data)
+                    res.status(200).send(message.data)
+                })
+            }
         }).catch(error => res.send(error))
     })
 

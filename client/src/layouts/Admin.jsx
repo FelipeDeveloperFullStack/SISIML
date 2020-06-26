@@ -14,7 +14,7 @@ import CallApiVenda from '../modules/actions/CallApi/CallApiVenda'
 import CallApiPerguntas from '../modules/actions/CallApi/CallApiPerguntas'
 import axios from 'axios'
 import socketIOClient from 'socket.io-client'
-import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS, GET_VENDAS_A_ENVIAR, GET_TOTAL_VENDAS_A_ENVIAR, UPDATE_ATIVIDADE_DIARIO } from '../../src/modules/constants/constants'
+import { DOMAIN, GET_PERGUNTAS, GET_QTDE_PERGUNTAS, GET_VENDAS_A_ENVIAR, GET_TOTAL_VENDAS_A_ENVIAR, UPDATE_ATIVIDADE_DIARIO, UPDATE_VENDAS } from '../../src/modules/constants/constants'
 import swal from 'sweetalert'
 import sendNotification from '../modules/components/Notification/Notification'
 import _ from 'lodash'
@@ -26,6 +26,7 @@ export default function Admin(props) {
   //STORE
   const storeDashboard = useSelector(store => store.dashboard)
   const storePerguntas = useSelector(store => store.perguntas)
+  const storeVendas = useSelector(store => store.venda)
 
   // Component state
   const [itemID, setItemID] = useState('')
@@ -53,7 +54,24 @@ export default function Admin(props) {
     let socket = socketIOClient(DOMAIN)
     socketNotification(socket)
     socketNovaVenda(socket)
+    socketMensagemPosVenda(socket)
   }, [])
+
+  const socketMensagemPosVenda = (socket) => {
+    socket.on("mensagem_pos_venda", (message) => {
+        sendNotification("success", "Uma nova mensagem recebida!", 5000)
+        let tempVenda = []
+        let vendas = storeVendas.vendas.map(venda => {
+          if(Number(venda.id_venda) === Number(message.resource_id)){
+            venda.msg.push(message)
+            tempVenda.push(venda)
+            console.log("venda.id_venda === message.resource_id")
+          }
+          return tempVenda
+        })
+        dispatch({type: UPDATE_VENDAS, data: vendas})
+    })
+  }
 
   const socketNotification = (socket) => {
     let userId = String(localStorage.getItem('@sigiml/id'))

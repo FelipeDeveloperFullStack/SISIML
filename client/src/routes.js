@@ -31,7 +31,7 @@ const dashboardRoutes = [
   },
   {
     path: "/controle_estoque",
-    name: "Controle de estoque",
+    name: "Concorrente",
     icon: "fa fa-book",
     component: ControleEstoqueController,
     layout: "/admin"

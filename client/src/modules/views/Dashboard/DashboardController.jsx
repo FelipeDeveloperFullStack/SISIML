@@ -114,10 +114,10 @@ export default function DashboardController() {
         await axios.get(`${DOMAIN}/saldo/${userId}`).then(res => {
             dispatch({
                 type: OBTER_SALDO_TOTAL,
-                saldoTotal: res.data.saldo_total.toLocaleString('pt-BR'),
-                saldoDisponivel: res.data.disponivel.toLocaleString('pt-BR'),
-                saldoALiberar: res.data.liberar.toLocaleString('pt-BR'),
-                saldoBloqueado: res.data.bloqueado.toLocaleString('pt-BR'),
+                saldoTotal: res.data.saldo_total.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' }),
+                saldoDisponivel: res.data.disponivel.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' }),
+                saldoALiberar: res.data.liberar.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' }),
+                saldoBloqueado: res.data.bloqueado.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' }),
                 isLoading: false,
                 isLoadingStatusPublicacoes: false
             })
@@ -164,8 +164,8 @@ export default function DashboardController() {
                     type: UPDATE_ATIVIDADE_DIARIO,
                     qtdeVendasDiaria: response.data[0].qtdeVendasDiaria,
                     qtdePerguntasDiaria: response.data[0].qtdePerguntasDiaria,
-                    faturamentoDiario: response.data[0].faturamentoDiario.toLocaleString('pt-BR'),
-                    ticketMedioDiario: response.data[0].ticketMedioDiario.toLocaleString('pt-BR')
+                    faturamentoDiario: response.data[0].faturamentoDiario.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' }),
+                    ticketMedioDiario: response.data[0].ticketMedioDiario.toLocaleString('pt-BR', { minimumFractionDigits: 2, style: 'currency', currency: 'BRL' })
                   })
             }
         })

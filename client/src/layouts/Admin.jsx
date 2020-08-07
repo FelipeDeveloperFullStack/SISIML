@@ -59,8 +59,8 @@ export default function Admin(props) {
 
   const socketMensagemPosVenda = (socket) => {
     socket.on("mensagem_pos_venda", (message) => {
-        sendNotification("success", "Uma nova mensagem recebida!", 5000)
-        let tempVenda = []
+      swal("Nova mensagem", `Cliente: ${message.from.name} \n\n Mensagem: ${message.text.plain}`, 'info')
+        /*let tempVenda = []
         let vendas = storeVendas.vendas.map(venda => {
           if(Number(venda.id_venda) === Number(message.resource_id)){
             venda.msg.push(message)
@@ -69,7 +69,7 @@ export default function Admin(props) {
           }
           return tempVenda
         })
-        dispatch({type: UPDATE_VENDAS, data: vendas})
+        dispatch({type: UPDATE_VENDAS, data: vendas})*/
     })
   }
 

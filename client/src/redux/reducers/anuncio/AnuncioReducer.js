@@ -4,7 +4,7 @@ import {
     SOURCES,
     PAGE_OFFSET,
     IMAGENS_ANUNCIO
-} from '../../constants/constants'
+} from '../../actions/anuncioActions'
 
 /**
  * 

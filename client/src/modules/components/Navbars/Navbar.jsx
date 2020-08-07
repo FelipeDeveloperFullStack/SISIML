@@ -150,7 +150,7 @@ export default function Navbar(props) {
     <>
       <CssBaseline />
       <AppBar
-        style={{ 'backgroundColor': '#4682B4' }}
+        style={{ 'backgroundColor': '#7467EF' }}
         position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: sideBarState.isSidebar,

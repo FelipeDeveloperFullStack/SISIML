@@ -6,7 +6,7 @@ import {
     UPDATE_ATIVIDADE_DIARIO,
     GET_TOTAL_MENSAGENS_NAO_LIDAS
 }
-    from '../../constants/constants'
+    from '../../../modules/constants/constants'
 
 
 const INITIAL_STATE = {

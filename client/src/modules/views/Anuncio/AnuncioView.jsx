@@ -37,7 +37,6 @@ export default function AnuncioView(props) {
   const dispatch = useDispatch()
 
   const [showModal, setShowModal] = useState(false)
-  const [anuncio, setAnuncio] = useState({})
   const [isActive, setIsActive] = useState('active')
   const [isSelectedEstadoProduto, setIsSelectedEstadoProduto] = useState('novo')
   const [isSelectedFrete, setIsSelectedFrete] = useState(props.freteGratis)
@@ -46,7 +45,7 @@ export default function AnuncioView(props) {
   const [isShowDuplicarAnuncio, setIsShowDuplicarAnuncio] = useState(false)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openDialogModificadorEmMassa, setOpenDialogModificadorEmMassa] = React.useState(false)
-  
+  const [anuncio, setAnuncio] = React.useState({})
 
   const handleClickNovoAnuncio = (event) => {
     setAnchorEl(event.currentTarget);

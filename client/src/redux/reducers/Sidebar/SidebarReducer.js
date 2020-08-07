@@ -1,4 +1,4 @@
-import {OPEN_DRAWER_MENU, OPEN_DRAWER_MENU_RIGHT} from '../../constants/constants'
+import {OPEN_DRAWER_MENU, OPEN_DRAWER_MENU_RIGHT} from '../../../modules/constants/constants'
 
 const INITIAL_STATE = {
     isSidebar: true,

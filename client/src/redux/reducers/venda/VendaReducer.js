@@ -8,7 +8,7 @@ import {
     GET_TOTAL_VENDAS_A_ENVIAR,
     GET_TOTAL_VENDAS_PENDENTES,
     UPDATE_VENDAS
-} from '../../constants/constants'
+} from '../../../modules/constants/constants'
 
 
 const INITIAL_STATE = {

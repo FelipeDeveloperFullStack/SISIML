@@ -51,16 +51,27 @@ export default function ForgotPassword(props) {
     const [redirectLogin, setRedirectLogin] = React.useState(false)
     const forgotPasswordActiveStepState = useSelector(store => store.forgotPassword.activeStep)
     const steps = useSelector(store => store.forgotPassword.steps)
+    const [disabledButton, setDisabledButton] = React.useState(false)
 
     const confirmPassword = async () => {
+        if(senha === '' && confirmeSenha === ''){
+            sendNotification("error", 'Por favor informe a senha e depois confirme a senha.', 5000)
+            return
+        }
+        if(senha === '' || confirmeSenha === ''){
+            sendNotification("error", 'Por favor informe a senha e depois confirme a senha.', 5000)
+            return
+        }
         if(senha !== confirmeSenha){
             sendNotification("error", 'Senhas diferentes, por favor informe a mesma senha nos dois campos de texto e tente novamente.', 5000)
             return
         }
         let id = stateForgotPassword.user.id
+        setDisabledButton(true)
         await Axios.post(`${DOMAIN}/usuario/post/usuario/senha/atualizar_senha`, {id: id, password: senha}).then(response => {
             sendNotification("success", 'Nova senha atualizada com sucesso!', 5000)
             setRedirectLogin(true)
+            setDisabledButton(false)
         }).catch(err => sendNotification("error", 'Houve um erro ao tentar confirmar a nova senha, por favor entre em contato com o suporte técnico!', 5000))
        
     }
@@ -76,7 +87,7 @@ export default function ForgotPassword(props) {
                     <div>Digite abaixo a nova senha para acesso ao sistema.</div>
                     <TextField type="password" value={senha} onChange={(e) => setSenha(e.target.value)} style={boxRightEmail} label='Nova senha' />
                     <TextField type="password" value={confirmeSenha} onChange={(e) => setConfirmeSenha(e.target.value)} style={boxRightEmail} label='Confirme a nova senha' />
-                    <Button onClick={confirmPassword} startIcon={<AssignmentTurnedInIcon/>} style={boxRightButton} variant="contained" color="primary">
+                    <Button disabled={disabledButton} onClick={confirmPassword} startIcon={<AssignmentTurnedInIcon/>} style={boxRightButton} variant="contained" color="primary">
                         {props.loadingButton ? <>Direcionando para a tela de login...</> : <>Confirmar nova senha</>}
                     </Button>
                 </div>

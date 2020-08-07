@@ -11,7 +11,8 @@ class ForgotPasswordController extends React.Component {
         super(props)
         this.state = {
             loadingButton: false,
-            redirectToPageCodeSecurity: false
+            redirectToPageCodeSecurity: false,
+            disabledButton: false
         }
     }
 
@@ -24,7 +25,7 @@ class ForgotPasswordController extends React.Component {
             if (response.data.length === 0) {
                 sendNotification('error', 'Não existe nenhum usuário cadastrado com esse e-mail! Tente novamente.', 5000)
             } else {
-                this.setState({ loadingButton: true })
+                this.setState({ loadingButton: true, disabledButton: true})
                 await axios.post(`${DOMAIN}/forgot_password`, { emailToSend: emailToSend }).then(response => {
                     this.setState({ loadingButton: false, redirectToPageCodeSecurity: true })
                     this.props.updateActiveStep(1)

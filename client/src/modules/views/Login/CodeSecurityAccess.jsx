@@ -53,6 +53,7 @@ export default function ForgotPassword(props) {
     const dispatch = useDispatch()
     const forgotPasswordActiveStepState = useSelector(store => store.forgotPassword.activeStep)
     const steps = useSelector(store => store.forgotPassword.steps)
+    const [disabledButton, setDisabledButton] = React.useState(false)
 
     const findCodeSecurity = async (code) => {
         if (code === '') {
@@ -60,11 +61,14 @@ export default function ForgotPassword(props) {
             return
         }
         setLoadingButton(true)
+        setDisabledButton(true)
         await axios.post(`${DOMAIN}/usuario/post/usuario/procurarCodigoSeguranca`, { code }).then(response => {
             if (response.data.length === 0) {
                 sendNotification("error", "Código de segurança inválido! Verifique sua caixa de entrada e tente novamente.", 5000)
                 setLoadingButton(false)
+                setDisabledButton(false)
             } else {
+                setDisabledButton(false)
                 setLoadingButton(false)
                 setRedirectNewPassword(true)
                 dispatch({
@@ -75,6 +79,7 @@ export default function ForgotPassword(props) {
                     }
                 })
                 dispatch({type: ACTIVE_STEP, activeStep: 2})
+                
             }
         }).catch(err => sendNotification('error', 'Houve um erro ao tentar enviar o email de redefinição de senha! Entre em contato com o suporte técnico!', 5000))
     }
@@ -90,7 +95,7 @@ export default function ForgotPassword(props) {
                     <div>Digite abaixo o código de segurança que enviamos para o seu e-mail.</div>
                     <TextField value={code} onChange={(e) => setCode(e.target.value)} style={boxRightEmail} label='Codígo de segurança' />
                     <div style={{ display: 'flex' }}>
-                        <Button size='small' onClick={() => findCodeSecurity(code)} startIcon={<LockOpenIcon />} style={boxRightButton} variant="contained" color="primary">{loadingButton ? <>Um momento aguarde...</> : <>Confirmar código de segurança</>}</Button>
+                        <Button disabled={disabledButton} size='small' onClick={() => findCodeSecurity(code)} startIcon={<LockOpenIcon />} style={boxRightButton} variant="contained" color="primary">{loadingButton ? <>Um momento aguarde...</> : <>Confirmar código de segurança</>}</Button>
                         <Button size='small' onClick={() => setRedirectLogin(true)} startIcon={<ArrowBackIosIcon />} style={{ marginLeft: '10px', marginTop: '35px' }} variant="contained" color="secondary">Voltar</Button>
                     </div>
                 </div>

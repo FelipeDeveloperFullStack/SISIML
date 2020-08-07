@@ -54,7 +54,7 @@ export default function ForgotPassword(props) {
                     <div style={boxRightText01}>Esqueceu sua senha?</div>
                     <div>Digite seu endereço de e-mail abaixo e enviaremos um link para redefinir sua senha.</div>
                     <TextField value={email} onChange={(e) => setEmail(e.target.value)} style={boxRightEmail} label='E-mail' />
-                    <Button onClick={() => props.sendEmail(email)} startIcon={<EmailIcon />} style={boxRightButton} variant="contained" color="primary">
+                    <Button disabled={props.disabledButton} onClick={() => props.sendEmail(email)} startIcon={<EmailIcon />} style={boxRightButton} variant="contained" color="primary">
                         {props.loadingButton ? <>Enviando e-mail, aguarde...</> : <>Enviar link de redefinição</>}
                     </Button>
                 </div>

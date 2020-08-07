@@ -1,5 +1,5 @@
 import {createStore} from 'redux';
-import {reducers} from './modules/reducers/combine.reducer'
+import {reducers} from '../redux/reducers/RootReducer'
 //import {anuncioReducer} from './modules/reducers/anuncio/anuncio-reducer';
 
 /**

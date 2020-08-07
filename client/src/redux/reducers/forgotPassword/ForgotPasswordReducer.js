@@ -1,4 +1,4 @@
-import {SET_USER, ACTIVE_STEP} from '../../constants/constants'
+import {SET_USER, ACTIVE_STEP} from '../../../modules/constants/constants'
 
 let INIT_STATE = {
     user: {},

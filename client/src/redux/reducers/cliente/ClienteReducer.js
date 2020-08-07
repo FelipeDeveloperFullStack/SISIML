@@ -1,4 +1,4 @@
-import {LISTAR_TODOS_CLIENTES, PAGE_OFFSET_CLIENTE} from '../../constants/constants'
+import {LISTAR_TODOS_CLIENTES, PAGE_OFFSET_CLIENTE} from '../../../modules/constants/constants'
 
 const INIT_STATE = {
     result: [{}], 

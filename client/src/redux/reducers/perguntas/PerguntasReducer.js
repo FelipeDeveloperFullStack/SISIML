@@ -1,4 +1,4 @@
-import { GET_PERGUNTAS, GET_QTDE_PERGUNTAS } from '../../constants/constants'
+import { GET_PERGUNTAS, GET_QTDE_PERGUNTAS } from '../../../modules/constants/constants'
 
 const INITIAL_STATE = {
     question: [],

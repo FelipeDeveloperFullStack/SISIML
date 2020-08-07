@@ -15,7 +15,7 @@ import '../node_modules/notyf/notyf.min.css';
 
 import AdminLayout from "layouts/Admin.jsx";
 import { Provider } from 'react-redux';
-import { store } from './store';
+import { store } from './redux/Store';
 import SignInController from './modules/views/Login/SignInController'
 import SignUpController from './modules/views/Login/SignUpController'
 import AcessoMercadoLivre from './modules/views/Login/AcessoMercadoLivre'

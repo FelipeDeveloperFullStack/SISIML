@@ -56,3 +56,7 @@ ReactDOM.render(
     document.getElementById("root")
   
   );
+
+  const socket = () => {
+    console.log("Socket")
+  }

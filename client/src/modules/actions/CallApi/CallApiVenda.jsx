@@ -87,52 +87,52 @@ class CallApiVenda extends React.Component {
 
 const mapDispatchToProps = dispatch => {
     return ({
-        vendasPendentes: (vendasPendentes) => {
+        vendasPendentes: vendasPendentes => {
             dispatch({
                 type: GET_VENDAS_PENDENTES,
                 vendasPendentes: vendasPendentes
             })
         },
-        vendasConcluidas: (vendasConcluidas) => {
+        vendasConcluidas: vendasConcluidas => {
             dispatch({
                 type: GET_VENDAS_CONCLUIDAS,
                 vendasConcluidas: vendasConcluidas
             })
         },
-        vendasEmTransito: (vendasEmTransito) => {
+        vendasEmTransito: vendasEmTransito => {
             dispatch({
                 type: GET_VENDAS_EM_TRANSITO,
                 vendasEmTransito: vendasEmTransito
             })
         },
-        vendasAEnviar: (vendasAEnviar) => {
+        vendasAEnviar: vendasAEnviar => {
             dispatch({
                 type: GET_VENDAS_A_ENVIAR,
                 vendasAEnviar: vendasAEnviar
             })
         },
-        totalVendas: (totalVendas) => {
+        totalVendas: totalVendas => {
             dispatch({
                 type: GET_TOTAL_VENDAS,
                 qtdeVendasConcluidas: totalVendas.data.qtdeVendasConcluidas,
                 qtdeVendasCanceladas: totalVendas.data.qtdeVendasCanceladas
             })
         },
-        totalVendasEmTransito: (totalVendasEmTransito) => {
+        totalVendasEmTransito: totalVendasEmTransito => {
             dispatch({
                 type: GET_TOTAL_VENDAS_EM_TRANSITO,
                 qtdeVendasEmTransito: totalVendasEmTransito.data.qtdeVendasEmTransito,
                 isLoadingQtdeVendasEmTransito: false
             })
         },
-        totalVendasAEnviar: (totalVendasAEnviar) => {
+        totalVendasAEnviar: totalVendasAEnviar => {
             dispatch({
                 type: GET_TOTAL_VENDAS_A_ENVIAR,
                 qtdeVendasAEnviar: totalVendasAEnviar.data.qtdeVendasAEnviar,
                 isLoadingQtdeVendasAEnviar: false
             })
         },
-        totalVendasPendentes: (totalVendasPendentes) => {
+        totalVendasPendentes: totalVendasPendentes => {
             dispatch({
                 type: GET_TOTAL_VENDAS_PENDENTES,
                 qtdeVendasPendentes: totalVendasPendentes.data.qtdeVendasPendentes,
